@@ -135,7 +135,10 @@ public class GelfMessage {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         toJson(OutputAccessor.from(buffer), additionalFieldPrefix);
 
-        return buffer.toByteArray();
+        byte[] rs = buffer.toByteArray();
+//        String json = new String(rs, StandardCharsets.UTF_8);
+//        System.out.println("TODO: " + json);
+        return rs;
     }
 
     /**
@@ -451,7 +454,9 @@ public class GelfMessage {
 
             stream.write(message);
             stream.finish();
+            stream.flush();
             Closer.close(stream);
+            stream.close();
             byte[] zipped = bos.toByteArray();
             Closer.close(bos);
             return zipped;

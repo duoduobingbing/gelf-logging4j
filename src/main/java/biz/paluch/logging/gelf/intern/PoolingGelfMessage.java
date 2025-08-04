@@ -2,6 +2,7 @@ package biz.paluch.logging.gelf.intern;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Represents a Gelf message using resource pooling. Special caution is required with methods accepting {@link ByteBuffer}:
@@ -23,9 +24,25 @@ class PoolingGelfMessage extends GelfMessage {
         this.poolHolder = poolHolder;
     }
 
+    public static ByteBuffer clone(ByteBuffer original) {
+        ByteBuffer clone = ByteBuffer.allocate(original.capacity());
+        original.rewind();//copy from the beginning
+        clone.put(original);
+        original.rewind();
+        clone.flip();
+        return clone;
+    }
+
     @Override
     public void toJson(ByteBuffer byteBuffer, String additionalFieldPrefix) {
         toJson(OutputAccessor.from(poolHolder.getOutputAccessorPoolHolder(), byteBuffer), additionalFieldPrefix);
+
+//        var newBb = clone(byteBuffer);
+//        byte[] arr = new byte[newBb.remaining()];
+//        newBb.get(arr);
+
+//        System.out.println("TODO: " + (new Object()).hashCode() + ":" + new String(arr));
+
     }
 
     @Override

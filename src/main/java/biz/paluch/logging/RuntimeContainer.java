@@ -37,7 +37,7 @@ public class RuntimeContainer {
     /**
      * Current Address.
      */
-    public static String ADDRESS;
+    public static String ADDRESS = "";
 
     /**
      * Load-Time of this class.
@@ -76,7 +76,7 @@ public class RuntimeContainer {
     public static void lookupHostname(ErrorReporter errorReporter) {
         String myHostName = getProperty(PROPERTY_LOGSTASH_GELF_HOSTNAME, "unknown");
         String myFQDNHostName = getProperty(PROPERTY_LOGSTASH_GELF_FQDN_HOSTNAME, "unknown");
-        String myAddress = "";
+        String myAddress = null;
 
         if (!Boolean.parseBoolean(getProperty(PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "false"))) {
 
@@ -112,7 +112,7 @@ public class RuntimeContainer {
 
         FQDN_HOSTNAME = myFQDNHostName;
         HOSTNAME = myHostName;
-        ADDRESS = myAddress;
+        ADDRESS = myAddress != null ? myAddress : "";
     }
 
     private static String getHostname(InetAddress inetAddress, boolean fqdn) throws IOException {

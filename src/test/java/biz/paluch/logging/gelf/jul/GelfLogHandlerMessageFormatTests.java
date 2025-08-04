@@ -12,10 +12,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import biz.paluch.logging.gelf.GelfTestSender;
 import biz.paluch.logging.gelf.intern.GelfMessage;
-import biz.paluch.logging.gelf.jboss7.JBoss7GelfLogHandler;
 
 /**
- * Unit tests for {@link JBoss7GelfLogHandler}.
+ * Unit tests for {@link GelfLogHandler}.
  *
  * @author Ralf Thaenert
  * @author Mark Paluch

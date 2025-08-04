@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import biz.paluch.logging.gelf.intern.ErrorReporter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -42,12 +43,22 @@ class GelfLogAppenderNettyTcpIntegrationTests {
     private static LoggerContext loggerContext;
     private static NettyLocalServer server = new NettyLocalServer(NioServerSocketChannel.class);
 
+    private static class SystemOutErrorReporter implements ErrorReporter {
+
+        @Override
+        public void reportError(String message, Exception e) {
+            System.err.println(message);
+            e.printStackTrace(System.err);
+        }
+    }
+
     @BeforeAll
     static void setupClass() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-netty-tcp.xml");
         PropertiesUtil.getProperties().reload();
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
+        RuntimeContainer.lookupHostname(new SystemOutErrorReporter());
         server.run();
     }
 
