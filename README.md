@@ -1,5 +1,4 @@
-logstash-gelf
-=========================
+# logstash-gelf
               
 
 **This project is now archived, after a decade of maintenance, with 36 releases and several occasional contributors. The project is feature complete, and we see little issue traffic. With me being the sole maintainer, it is about time to turn off the lights here and move on to free up time for other duties. K, thx, good bye.**
@@ -71,8 +70,7 @@ Using snapshot builds:
 
 <a name="jul"/>
 
-Java Util Logging GELF configuration
---------------
+## Java Util Logging GELF configuration
 
 **Properties**
 
@@ -98,15 +96,12 @@ biz.paluch.logging.gelf.jul.GelfLogHandler.additionalFieldTypes=fieldName1=Strin
 biz.paluch.logging.gelf.jul.GelfLogHandler.level=INFO
 ```
 
-Glassfish/Payara configuration
--------------
-Install the library with its dependencies (see download above) in Glassfish. Place it below the `$GFHOME/glassfish/domains/$YOURDOMAIN/lib/ext/` path, then add the [Java Util Logging](#jul) to your `logging.properties` file.
-
-
 <a name="payara"/>
 
+## Glassfish/Payara configuration
+Install the library with its dependencies (see download above) in Glassfish. Place it below the `$GFHOME/glassfish/domains/$YOURDOMAIN/lib/ext/` path, then add the [Java Util Logging](#jul) to your `logging.properties` file.
 
-**Properties**
+**Properties**<br/>
 
 ```properties
 log4j.appender.gelf=biz.paluch.logging.gelf.log4j.GelfLogAppender
@@ -164,8 +159,7 @@ log4j.appender.gelf.IncludeFullMdc=true
 
 <a name="log4j2"/>
 
-log4j2 GELF configuration
--------------------------
+## log4j2 GELF configuration
 
 ### Fields
 
