@@ -73,7 +73,6 @@ class GelfLogHandlerErrorsTests {
     }
 
     @Test
-    @Disabled("Fails on TravisCI for whatever reason...")
     void testInvalidMessage() {
 
         sut.publish(MESSAGE);
@@ -82,7 +81,6 @@ class GelfLogHandlerErrorsTests {
     }
 
     @Test
-    @Disabled("Fails on TravisCI for whatever reason...")
     void testErrorOnSend() {
 
         sut.publish(MESSAGE);

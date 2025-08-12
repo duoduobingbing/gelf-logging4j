@@ -56,21 +56,21 @@
         <!-- Versions -->
         <log4j.version>1.2.17</log4j.version>
         <log4j2.version>2.17.1</log4j2.version>
-        <junit5.version>5.5.2</junit5.version>
+        <junit5.version>5.13.4</junit5.version>
         <assertj.version>3.22.0</assertj.version>
         <mockito.version>4.2.0</mockito.version>
         <jackson.version>2.13.1</jackson.version>
         <jedis.version>3.8.0</jedis.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <logback-classic.version>1.2.10</logback-classic.version>
+        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <logback-classic.version>1.5.18</logback-classic.version>
         <org.jboss.logmanager.version>1.5.2.Final</org.jboss.logmanager.version>
         <arquillian.version>1.5.0.Final</arquillian.version>
 
         <site-plugin.version>3.10.0</site-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
         <doxia-module-markdown.version>1.12.0</doxia-module-markdown.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
@@ -78,7 +78,7 @@
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <tempus-fugit.version>1.1</tempus-fugit.version>
         <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
         <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -87,6 +87,7 @@
         <kafka-junit.version>4.2.0</kafka-junit.version>
 
         <bouncycastle.version>1.81</bouncycastle.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
     </properties>
 
     <developers>
@@ -179,6 +180,27 @@
                         <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <includes>
+                                <include>**/*IntegrationTests.java</include>
+                                <include>**/*IntegrationTest.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -292,6 +314,16 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- Sadly we need this for now because of https://github.com/testcontainers/testcontainers-java/issues/970 :/ -->
+        <!-- https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine -->
+        <!-- and we need it here because something else lower has a lower dep ver. -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -331,6 +363,12 @@
         </dependency>
 
         <!-- log4j2 END -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -339,17 +377,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback-classic.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -363,6 +395,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -393,12 +426,7 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.code.tempus-fugit</groupId>
-            <artifactId>tempus-fugit</artifactId>
-            <version>${tempus-fugit.version}</version>
-            <scope>test</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -486,6 +514,37 @@
             <version>${bouncycastle.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.tempus-fugit</groupId>
+            <artifactId>tempus-fugit</artifactId>
+            <version>${tempus-fugit.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+
 
     </dependencies>
 
