@@ -12,6 +12,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import biz.paluch.logging.gelf.SslCertHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,13 +37,13 @@ class GelfTCPSSLSenderIntegrationTests {
     @BeforeAll
     static void setupClass() throws Exception {
 
-        File file = new File("work/keystore.jks");
-        assumeTrue(file.exists());
+        final String keyStorePassword = "changeit";
+        final File file = SslCertHelper.createTestKeystoreFile(keyStorePassword);
 
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(new FileInputStream(file), "changeit".toCharArray());
+        keyStore.load(new FileInputStream(file), keyStorePassword.toCharArray());
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keyStore, "changeit".toCharArray());
+        kmf.init(keyStore, keyStorePassword.toCharArray());
 
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
