@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import biz.paluch.logging.gelf.RedisIntegrationTestHelper;
 import org.apache.log4j.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +29,9 @@ import biz.paluch.logging.gelf.standalone.DefaultGelfSenderConfiguration;
  * @author Mark Paluch
  * @since 27.09.13 08:25
  */
-class GelfLogHandlerRedisIntegrationTests {
+class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestHelper {
 
-    private Jedis jedis;
+//    private Jedis jedis;
 
     @BeforeEach
     void before() {
@@ -40,7 +41,7 @@ class GelfLogHandlerRedisIntegrationTests {
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
 
-        jedis = new Jedis("localhost", 6479);
+//        jedis = new Jedis("localhost", 6479);
         jedis.flushDB();
         jedis.flushAll();
     }
