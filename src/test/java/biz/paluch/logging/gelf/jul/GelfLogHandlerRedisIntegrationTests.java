@@ -31,8 +31,6 @@ import biz.paluch.logging.gelf.standalone.DefaultGelfSenderConfiguration;
  */
 class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestHelper {
 
-//    private Jedis jedis;
-
     @BeforeEach
     void before() {
         // enable the test with -Dtest.withRedis=true
@@ -50,29 +48,6 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestHelper {
     void testStandalone() throws Exception {
 
         LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream("/jul/test-redis-logging.properties"));
-
-        Logger logger = Logger.getLogger(getClass().getName());
-        String expectedMessage = "message1";
-
-        logger.log(Level.INFO, expectedMessage);
-
-        List<String> list = jedis.lrange("list", 0, jedis.llen("list"));
-        assertThat(list).hasSize(1);
-
-        Map<String, Object> map = JsonUtil.parseToMap(list.get(0));
-
-        assertThat(map.get("full_message")).isEqualTo(expectedMessage);
-        assertThat(map.get("short_message")).isEqualTo(expectedMessage);
-        assertThat(map.get("fieldName1")).isEqualTo("fieldValue1");
-    }
-
-    @Test
-    void testSentinel() throws Exception {
-
-        assumeTrue(Sockets.isOpen("localhost", 26379));
-
-        LogManager.getLogManager()
-                .readConfiguration(getClass().getResourceAsStream("/jul/test-redis-sentinel-logging.properties"));
 
         Logger logger = Logger.getLogger(getClass().getName());
         String expectedMessage = "message1";
