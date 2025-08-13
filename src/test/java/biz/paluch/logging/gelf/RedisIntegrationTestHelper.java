@@ -2,44 +2,73 @@ package biz.paluch.logging.gelf;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 import redis.clients.jedis.Jedis;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RedisIntegrationTestHelper {
 
-    // Redis Container (Redis 2.8 wie im Makefile)
-    public static GenericContainer<?> redisContainer;
+    public static GenericContainer<?> redisLocalMasterTestcontainer;
 
     public static Jedis jedis;
 
+    public static int redisLocalMasterPort = 6479;
+    public static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
+
     @BeforeAll
     static void beforeAll() {
+        createRedisMasterTestcontainer();
+        startRedisMasterTestcontainer();
 
-        List<String> portBindings = new ArrayList<>();
-        portBindings.add("6479:6479");
-        redisContainer = new GenericContainer<>(DockerImageName.parse("redis:2.8"))
-                .withExposedPorts(6479)
+    }
 
-                .withCommand("redis-server", "--port", "6479",
+    static void startRedisMasterTestcontainer() {
+        redisLocalMasterTestcontainer.start();
+    }
+
+    static void createRedisMasterTestcontainer() {
+        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:2.8"));
+
+        final List<String> portBindings = new ArrayList<>();
+        portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
+        redisLocalMasterTestcontainer
+                .withExposedPorts(redisLocalMasterPort)
+
+                .withCommand("redis-server", "--port", redisLocalMasterPortAsString,
                         "--bind", "0.0.0.0",
                         "--save", "",
                         "--appendonly", "no",
-                        "--daemonize", "no");
+                        "--daemonize", "no")
+                .withStartupTimeout(Duration.ofSeconds(30));
 
-        redisContainer.setPortBindings(portBindings);
-        redisContainer.start();
+        redisLocalMasterTestcontainer.setPortBindings(portBindings);
 
-        String redisHost = redisContainer.getHost();
-        Integer redisPort = redisContainer.getMappedPort(6479);
+    }
+
+    @BeforeEach
+    void beforeEachTest() {
+        jedis = createAndGetJedis();
+    }
+
+    static Jedis createAndGetJedis() {
+        if (!redisLocalMasterTestcontainer.isRunning()) {
+            throw new IllegalStateException("Redis master is not running");
+        }
+        final String redisHost = redisLocalMasterTestcontainer.getHost();
+        final int redisPort = redisLocalMasterTestcontainer.getMappedPort(redisLocalMasterPort);
 
 
         jedis = new Jedis(redisHost, redisPort);
         jedis.flushDB();
         jedis.flushAll();
+
+        return jedis;
     }
 
     @AfterAll
@@ -47,8 +76,8 @@ public class RedisIntegrationTestHelper {
         if (jedis != null) {
             jedis.close();
         }
-        if (redisContainer != null) {
-            redisContainer.stop();
+        if (redisLocalMasterTestcontainer != null) {
+            redisLocalMasterTestcontainer.stop();
         }
     }
 
