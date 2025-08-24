@@ -3,6 +3,7 @@ package biz.paluch.logging.gelf.intern.sender;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
@@ -13,6 +14,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import biz.paluch.logging.gelf.test.helper.IntegrationTestSslCertHelper;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 /**
  * @author Alexander Katanov
  * @author Mark Paluch
+ * @author TKtiki
+ * @author duoduobingbing
  */
 class GelfTCPSSLSenderConnectIntegrationTests {
 
@@ -44,13 +49,15 @@ class GelfTCPSSLSenderConnectIntegrationTests {
     @BeforeAll
     static void setupClass() throws Exception {
 
-        File file = new File("work/keystore.jks");
-        assumeTrue(file.exists());
+        final String keyStorePassword = "changeit";
+        final byte[] keyStoreBytes = IntegrationTestSslCertHelper.generateKeystore(keyStorePassword);
 
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(new FileInputStream(file), "changeit".toCharArray());
+        KeyStore keyStore = KeyStore.getInstance("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
+        try(ByteArrayInputStream bais = new ByteArrayInputStream(keyStoreBytes)) {
+            keyStore.load(bais, keyStorePassword.toCharArray());
+        }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keyStore, "changeit".toCharArray());
+        kmf.init(keyStore, keyStorePassword.toCharArray());
 
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
