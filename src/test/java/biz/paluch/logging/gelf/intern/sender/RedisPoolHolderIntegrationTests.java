@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.net.URI;
 
+import biz.paluch.logging.gelf.RedisIntegrationTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ import biz.paluch.logging.gelf.Sockets;
  *
  * @author Mark Paluch
  */
-class RedisPoolHolderIntegrationTests {
+class RedisPoolHolderIntegrationTests extends RedisIntegrationTestHelper {
 
     @BeforeEach
     void setUp() {
