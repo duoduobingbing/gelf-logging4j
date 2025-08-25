@@ -1,6 +1,9 @@
 package biz.paluch.logging.gelf.jul;
 
-import biz.paluch.logging.gelf.*;
+import biz.paluch.logging.gelf.GelfTestSender;
+import biz.paluch.logging.gelf.JsonUtil;
+import biz.paluch.logging.gelf.RedisSentinelIntegrationTestHelper;
+import biz.paluch.logging.gelf.Sockets;
 import org.apache.log4j.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
