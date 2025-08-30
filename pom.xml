@@ -85,6 +85,8 @@
         <maven.jacoco.version>0.8.7</maven.jacoco.version>
         <kafka-clients.version>2.8.0</kafka-clients.version>
         <kafka-junit.version>4.2.0</kafka-junit.version>
+
+        <bouncycastle.version>1.81</bouncycastle.version>
     </properties>
 
     <developers>
@@ -468,6 +470,20 @@
             <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-cli</artifactId>
             <version>10.0.0.Beta2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
             <scope>test</scope>
         </dependency>
 
