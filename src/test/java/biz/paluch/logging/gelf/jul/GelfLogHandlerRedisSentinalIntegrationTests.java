@@ -2,7 +2,7 @@ package biz.paluch.logging.gelf.jul;
 
 import biz.paluch.logging.gelf.GelfTestSender;
 import biz.paluch.logging.gelf.JsonUtil;
-import biz.paluch.logging.gelf.RedisSentinelIntegrationTestHelper;
+import biz.paluch.logging.gelf.RedisSentinelIntegrationTestBase;
 import biz.paluch.logging.gelf.Sockets;
 import org.apache.log4j.MDC;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +17,13 @@ import java.util.logging.Logger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-public class GelfLogHandlerRedisSentinalIntegrationTests extends RedisSentinelIntegrationTestHelper {
+public class GelfLogHandlerRedisSentinalIntegrationTests extends RedisSentinelIntegrationTestBase {
 
 
     @BeforeEach
     void before() {
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestHelper.redisLocalMasterPort));
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestHelper.redisLocalSentinelPort));
+        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalMasterPort));
+        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalSentinelPort));
 
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");

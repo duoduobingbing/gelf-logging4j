@@ -2,21 +2,18 @@ package biz.paluch.logging.gelf;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
-import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
-public class RedisSentinelIntegrationTestHelper extends RedisIntegrationTestHelper{
+public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
     public static GenericContainer<?> redisLocalSentinel;
 
@@ -31,9 +28,9 @@ public class RedisSentinelIntegrationTestHelper extends RedisIntegrationTestHelp
 
     @BeforeAll
     static void beforeAll() {
-        RedisIntegrationTestHelper.createRedisMasterTestcontainer();
+        RedisIntegrationTestBase.createRedisMasterTestcontainer();
         redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
-        RedisIntegrationTestHelper.startRedisMasterTestcontainer();
+        RedisIntegrationTestBase.startRedisMasterTestcontainer();
 
         final String sentinelConf =
                 """
@@ -56,7 +53,7 @@ public class RedisSentinelIntegrationTestHelper extends RedisIntegrationTestHelp
         }
 
 
-        redisLocalSentinel = new GenericContainer<>("redis:2.8")
+        redisLocalSentinel = new GenericContainer<>("redis:8.2")
                 .withExposedPorts(redisLocalSentinelPort)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")

@@ -4,15 +4,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import redis.clients.jedis.Jedis;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedisIntegrationTestHelper {
+@Testcontainers
+public class RedisIntegrationTestBase {
 
     public static GenericContainer<?> redisLocalMasterTestcontainer;
 
@@ -33,7 +34,7 @@ public class RedisIntegrationTestHelper {
     }
 
     static void createRedisMasterTestcontainer() {
-        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:2.8"));
+        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:8.2"));
 
         final List<String> portBindings = new ArrayList<>();
         portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
