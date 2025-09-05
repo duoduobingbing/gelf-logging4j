@@ -169,7 +169,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
@@ -193,7 +193,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <includes>
                                 <include>**/*IntegrationTests.java</include>
                                 <include>**/*IntegrationTest.java</include>
