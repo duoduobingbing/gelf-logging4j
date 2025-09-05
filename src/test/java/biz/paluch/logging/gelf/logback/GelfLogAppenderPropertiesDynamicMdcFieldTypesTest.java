@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Thomas Herzog
+ * @author duoduobingbing
  * @since 29.04.19 18:00
  */
 class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
@@ -39,8 +40,9 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
     private LoggerContext loggerContext = null;
 
     @BeforeEach
-    private void beforeEach() throws Exception {
+    public void beforeEach() throws Exception {
         loggerContext = new ch.qos.logback.classic.LoggerContext();
+        loggerContext.setMDCAdapter(MDC.getMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(loggerContext);
 

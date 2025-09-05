@@ -18,9 +18,11 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import com.github.charithe.kafka.EphemeralKafkaBroker;
 import com.github.charithe.kafka.KafkaHelper;
 import com.google.common.collect.Lists;
+import org.slf4j.MDC;
 
 /**
  * @author Rifat Döver
+ * @author duoduobingbing
  */
 @ExtendWith({ MockitoExtension.class })
 class GelfLogbackAppenderKafkaIntegrationTests {
@@ -35,6 +37,7 @@ class GelfLogbackAppenderKafkaIntegrationTests {
         broker.start().get(30, TimeUnit.SECONDS);
 
         LoggerContext lc = new LoggerContext();
+        lc.setMDCAdapter(MDC.getMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
 
         configurator.setContext(lc);

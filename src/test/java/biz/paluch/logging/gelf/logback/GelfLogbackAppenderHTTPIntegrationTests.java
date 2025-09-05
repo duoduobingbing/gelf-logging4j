@@ -18,6 +18,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 
 /**
  * @author Mark Paluch
+ * @author duoduobingbing
  */
 class GelfLogbackAppenderHTTPIntegrationTests {
 
@@ -28,6 +29,7 @@ class GelfLogbackAppenderHTTPIntegrationTests {
     @BeforeEach
     void before() throws Exception {
         lc = new LoggerContext();
+        lc.setMDCAdapter(MDC.getMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
 

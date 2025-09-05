@@ -13,36 +13,49 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * @author tktiki
+ * @author duoduobingbing
+ */
 public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
-    public static GenericContainer<?> redisLocalSentinel;
+    protected static GenericContainer<?> redisLocalSentinel;
 
 
-    public static int redisLocalSentinelPort = 26379;
+    protected static int redisLocalSentinelPort = 26379;
     private static final String redisLocalSentinelPortAsString = String.valueOf(redisLocalSentinelPort);
 
     private static Network network = Network.newNetwork();
-    public static String redisLocalSentinelAlias = "redis-local-sentinel";
-    public static String redisLocalMasterAlias = "redis-local-master";
+    protected static String redisLocalSentinelAlias = "redis-local-sentinel";
+    protected static String redisLocalMasterAlias = "redis-local-master";
 
 
     @BeforeAll
     static void beforeAll() {
-        RedisIntegrationTestBase.createRedisMasterTestcontainer();
+        if (RedisIntegrationTestBase.redisLocalMasterTestcontainer.isRunning()) {
+            //Because this is always running AFTER RedisIntegrationTestBase.beforeAll(..), but we need these to be in the same network, stop the already started
+            //one, attach the network and try again
+            RedisIntegrationTestBase.redisLocalMasterTestcontainer.stop();
+        }
+
         redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
-        RedisIntegrationTestBase.startRedisMasterTestcontainer();
+        redisLocalMasterTestcontainer.start();
+
+        final String logs = redisLocalMasterTestcontainer.getLogs();
+        System.out.println(logs);
+
 
         final String sentinelConf =
                 """
-                port %s
-                bind 0.0.0.0
-                sentinel monitor mymaster 127.0.0.1 %s 1
-                sentinel announce-ip 127.0.0.1
-                sentinel announce-port %s
-                sentinel down-after-milliseconds mymaster 2000
-                sentinel failover-timeout mymaster 120000
-                sentinel parallel-syncs mymaster 1
-                """.formatted(redisLocalSentinelPortAsString, redisLocalMasterPortAsString, redisLocalMasterPortAsString);
+                        port %s
+                        bind 0.0.0.0
+                        sentinel monitor mymaster 127.0.0.1 %s 1
+                        sentinel announce-ip 127.0.0.1
+                        sentinel announce-port %s
+                        sentinel down-after-milliseconds mymaster 2000
+                        sentinel failover-timeout mymaster 120000
+                        sentinel parallel-syncs mymaster 1
+                        """.formatted(redisLocalSentinelPortAsString, redisLocalMasterPortAsString, redisLocalMasterPortAsString);
 
         final Path tempFile;
         try {
@@ -54,15 +67,21 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
 
         redisLocalSentinel = new GenericContainer<>("redis:8.2")
-                .withExposedPorts(redisLocalSentinelPort)
+                .dependsOn(RedisIntegrationTestBase.redisLocalMasterTestcontainer)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")
+                .withEnv("SKIP_DROP_PRIVS", "1")
                 .withStartupTimeout(Duration.ofSeconds(30))
+                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8String())))
                 .withCopyFileToContainer(MountableFile.forHostPath(tempFile), "/etc/sentinel.conf");
 
 
+        redisLocalSentinel.setExposedPorts(List.of(redisLocalSentinelPort));
         redisLocalSentinel.setPortBindings(List.of(redisLocalSentinelPortAsString + ":" + redisLocalSentinelPortAsString));
+
         redisLocalSentinel.start();
+
+
     }
 
     @AfterAll
@@ -70,7 +89,7 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
         if (redisLocalSentinel != null) {
             redisLocalSentinel.stop();
         }
-        if (network != null){
+        if (network != null) {
             network.close();
         }
     }

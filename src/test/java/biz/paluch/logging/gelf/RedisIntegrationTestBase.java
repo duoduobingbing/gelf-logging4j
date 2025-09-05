@@ -12,35 +12,38 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author tktiki
+ * @author duoduobingbing
+ */
 @Testcontainers
 public class RedisIntegrationTestBase {
 
-    public static GenericContainer<?> redisLocalMasterTestcontainer;
+    protected static GenericContainer<?> redisLocalMasterTestcontainer;
 
-    public static Jedis jedis;
+    protected static Jedis jedis;
 
-    public static int redisLocalMasterPort = 6479;
-    public static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
+    protected static int redisLocalMasterPort = 6479;
+    protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
 
     @BeforeAll
     static void beforeAll() {
         createRedisMasterTestcontainer();
         startRedisMasterTestcontainer();
-
     }
 
-    static void startRedisMasterTestcontainer() {
+    protected static void startRedisMasterTestcontainer() {
         redisLocalMasterTestcontainer.start();
     }
 
-    static void createRedisMasterTestcontainer() {
+    protected static void createRedisMasterTestcontainer() {
         redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:8.2"));
 
         final List<String> portBindings = new ArrayList<>();
         portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
         redisLocalMasterTestcontainer
                 .withExposedPorts(redisLocalMasterPort)
-
+                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8String())))
                 .withCommand("redis-server", "--port", redisLocalMasterPortAsString,
                         "--bind", "0.0.0.0",
                         "--save", "",

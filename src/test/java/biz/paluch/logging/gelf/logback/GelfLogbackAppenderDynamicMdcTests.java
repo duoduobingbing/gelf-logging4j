@@ -19,6 +19,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 /**
  * @author <a href="mailto:tobiassebastian.kaefer@1und1.de">Tobias Kaefer</a>
  * @author Jörn Horstmann
+ * @author duoduobingbing
  * @since 2013-10-07
  */
 class GelfLogbackAppenderDynamicMdcTests {
@@ -37,6 +38,7 @@ class GelfLogbackAppenderDynamicMdcTests {
     @BeforeEach
     void before() throws Exception {
         lc = new LoggerContext();
+        lc.setMDCAdapter(MDC.getMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
 

@@ -17,6 +17,7 @@ import biz.paluch.logging.gelf.Sockets;
  * Integration tests for {@link RedisPoolHolder}.
  *
  * @author Mark Paluch
+ * @author tktiki
  */
 class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
 

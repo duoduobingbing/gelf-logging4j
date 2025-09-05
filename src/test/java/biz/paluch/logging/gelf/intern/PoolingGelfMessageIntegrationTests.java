@@ -7,19 +7,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.jboss.as.protocol.StreamUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import biz.paluch.logging.StackTraceFilter;
-import org.junit.jupiter.api.function.Executable;
 
+/**
+ * @author Mark Paluch
+ * @author duoduobingbing
+ */
 class PoolingGelfMessageIntegrationTests {
 
     private static final String FACILITY = "facility";

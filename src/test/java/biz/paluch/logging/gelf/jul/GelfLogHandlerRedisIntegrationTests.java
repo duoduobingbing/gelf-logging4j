@@ -26,6 +26,7 @@ import biz.paluch.logging.gelf.standalone.DefaultGelfSenderConfiguration;
 
 /**
  * @author Mark Paluch
+ * @author tktiki
  * @since 27.09.13 08:25
  */
 class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
@@ -38,7 +39,6 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
 
-//        jedis = new Jedis("localhost", 6479);
         jedis.flushDB();
         jedis.flushAll();
     }
