@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 
-@Testcontainers
 public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
     public static GenericContainer<?> redisLocalSentinel;
@@ -30,9 +28,9 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
     @BeforeAll
     static void beforeAll() {
-//        RedisIntegrationTestBase.createRedisMasterTestcontainer();
+        RedisIntegrationTestBase.createRedisMasterTestcontainer();
         redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
-//        RedisIntegrationTestBase.startRedisMasterTestcontainer();
+        RedisIntegrationTestBase.startRedisMasterTestcontainer();
 
         final String sentinelConf =
                 """
@@ -55,7 +53,7 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
         }
 
 
-        redisLocalSentinel = new GenericContainer<>("redis:2.8")
+        redisLocalSentinel = new GenericContainer<>("redis:8.2")
                 .withExposedPorts(redisLocalSentinelPort)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")

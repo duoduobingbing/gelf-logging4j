@@ -34,7 +34,7 @@ public class RedisIntegrationTestBase {
     }
 
     static void createRedisMasterTestcontainer() {
-        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:2.8"));
+        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:8.2"));
 
         final List<String> portBindings = new ArrayList<>();
         portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
