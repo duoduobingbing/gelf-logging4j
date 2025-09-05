@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * @author tktiki
  * @author duoduobingbing
  */
-public class GelfLogHandlerRedisSentinalIntegrationTests extends RedisSentinelIntegrationTestBase {
+public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIntegrationTestBase {
 
 
     @BeforeEach
