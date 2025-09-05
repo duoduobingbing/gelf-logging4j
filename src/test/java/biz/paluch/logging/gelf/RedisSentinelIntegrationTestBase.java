@@ -41,9 +41,6 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
         redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
         redisLocalMasterTestcontainer.start();
 
-        final String logs = redisLocalMasterTestcontainer.getLogs();
-        System.out.println(logs);
-
 
         final String sentinelConf =
                 """
