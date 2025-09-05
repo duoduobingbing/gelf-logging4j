@@ -1,3 +1,5 @@
+<!DOCTYPE configuration>
+
 <configuration>
     <contextName>test</contextName>
     <jmxConfigurator/>
