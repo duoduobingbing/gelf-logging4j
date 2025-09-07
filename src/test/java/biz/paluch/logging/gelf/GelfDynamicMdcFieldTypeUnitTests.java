@@ -1,61 +1,41 @@
 package biz.paluch.logging.gelf;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import biz.paluch.logging.gelf.log4j2.GelfDynamicMdcFieldType;
+import biz.paluch.logging.gelf.test.helper.TestAssertions.JUnitAssertions;
+import biz.paluch.logging.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 /**
  * @author Thomas Herzog
+ * @author duoduobingbing
  */
-@RunWith(JUnit4.class)
-public class GelfDynamicMdcFieldTypeUnitTests {
+class GelfDynamicMdcFieldTypeUnitTests {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public static Stream<Arguments> testWithInvalidValues() {
+        return Stream.of(
+                Arguments.argumentSet("regex is null", null, "String"),
+                Arguments.argumentSet("type is null", ".*", null),
+                Arguments.argumentSet("invalid regex", "*", "String")
+        );
+    }
 
-    @Test
-    public void testWithNullRegex() {
-        // -- Given --
-        String regex = null;
-        String type = "String";
-
-        // -- Then --
-        expectedException.expect(IllegalArgumentException.class);
+    @ParameterizedTest
+    @MethodSource
+    void testWithInvalidValues(String regex, String type) {
 
         // -- When --
-        GelfDynamicMdcFieldType.createField(regex, type);
-    }
-
-    @Test
-    public void testWithNullType() {
-        // -- Given --
-        String regex = ".*";
-        String type = null;
+        Executable executable = () -> GelfDynamicMdcFieldType.createField(regex, type);
 
         // -- Then --
-        expectedException.expect(IllegalArgumentException.class);
-
-        // -- When --
-        GelfDynamicMdcFieldType.createField(regex, type);
+        JUnitAssertions.assertThrows(IllegalArgumentException.class, executable);
     }
 
-    @Test
-    public void testWithInvalidRegex() {
-        // -- Given --
-        String regex = "*";
-        String type = "String";
-
-        // -- Then --
-        expectedException.expect(IllegalArgumentException.class);
-
-        GelfDynamicMdcFieldType.createField(regex, type);
-    }
 
     @Test
     public void testWithValidRegexAndType() {
@@ -67,8 +47,8 @@ public class GelfDynamicMdcFieldTypeUnitTests {
         GelfDynamicMdcFieldType fieldType = GelfDynamicMdcFieldType.createField(regex, type);
 
         // -- Then --
-        assertThat(fieldType).isNotNull();
-        assertThat(fieldType.getPattern().pattern()).isEqualTo(regex);
-        assertThat(fieldType.getType()).isEqualTo(type);
+        AssertJAssertions.assertThat(fieldType).isNotNull();
+        AssertJAssertions.assertThat(fieldType.getPattern().pattern()).isEqualTo(regex);
+        AssertJAssertions.assertThat(fieldType.getType()).isEqualTo(type);
     }
 }
