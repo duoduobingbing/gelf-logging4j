@@ -2,9 +2,12 @@ package biz.paluch.logging.gelf;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisSentinelPool;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author tktiki
@@ -19,7 +23,7 @@ import java.util.List;
  */
 public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
-    protected static GenericContainer<?> redisLocalSentinel;
+    protected static GenericContainer<?> redisLocalSentinelTestcontainer;
 
 
     protected static int redisLocalSentinelPort = 26379;
@@ -63,7 +67,7 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
         }
 
 
-        redisLocalSentinel = new GenericContainer<>("redis:8.2")
+        redisLocalSentinelTestcontainer = new GenericContainer<>("redis:8.2")
                 .dependsOn(RedisIntegrationTestBase.redisLocalMasterTestcontainer)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")
@@ -73,18 +77,17 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
                 .withCopyFileToContainer(MountableFile.forHostPath(tempFile), "/etc/sentinel.conf");
 
 
-        redisLocalSentinel.setExposedPorts(List.of(redisLocalSentinelPort));
-        redisLocalSentinel.setPortBindings(List.of(redisLocalSentinelPortAsString + ":" + redisLocalSentinelPortAsString));
+        redisLocalSentinelTestcontainer.setExposedPorts(List.of(redisLocalSentinelPort));
+        redisLocalSentinelTestcontainer.setPortBindings(List.of(redisLocalSentinelPortAsString + ":" + redisLocalSentinelPortAsString));
 
-        redisLocalSentinel.start();
-
+        redisLocalSentinelTestcontainer.start();
 
     }
 
     @AfterAll
     static void stopRedisSentinel() {
-        if (redisLocalSentinel != null) {
-            redisLocalSentinel.stop();
+        if (redisLocalSentinelTestcontainer != null) {
+            redisLocalSentinelTestcontainer.stop();
         }
         if (network != null) {
             network.close();

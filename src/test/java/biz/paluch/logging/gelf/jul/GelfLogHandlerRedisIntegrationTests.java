@@ -39,8 +39,8 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
 
-        jedis.flushDB();
-        jedis.flushAll();
+        jedisMaster.flushDB();
+        jedisMaster.flushAll();
     }
 
     @Test
@@ -53,7 +53,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
 
         logger.log(Level.INFO, expectedMessage);
 
-        List<String> list = jedis.lrange("list", 0, jedis.llen("list"));
+        List<String> list = jedisMaster.lrange("list", 0, jedisMaster.llen("list"));
         assertThat(list).hasSize(1);
 
         Map<String, Object> map = JsonUtil.parseToMap(list.get(0));

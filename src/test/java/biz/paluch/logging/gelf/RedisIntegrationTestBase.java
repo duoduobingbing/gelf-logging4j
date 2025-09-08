@@ -21,7 +21,7 @@ public class RedisIntegrationTestBase {
 
     protected static GenericContainer<?> redisLocalMasterTestcontainer;
 
-    protected static Jedis jedis;
+    protected static Jedis jedisMaster;
 
     protected static int redisLocalMasterPort = 6479;
     protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
@@ -57,7 +57,7 @@ public class RedisIntegrationTestBase {
 
     @BeforeEach
     void beforeEachTest() {
-        jedis = createAndGetJedis();
+        jedisMaster = createAndGetJedis();
     }
 
     static Jedis createAndGetJedis() {
@@ -68,17 +68,17 @@ public class RedisIntegrationTestBase {
         final int redisPort = redisLocalMasterTestcontainer.getMappedPort(redisLocalMasterPort);
 
 
-        jedis = new Jedis(redisHost, redisPort);
-        jedis.flushDB();
-        jedis.flushAll();
+        final Jedis jedisM = new Jedis(redisHost, redisPort);
+        jedisM.flushDB();
+        jedisM.flushAll();
 
-        return jedis;
+        return jedisM;
     }
 
     @AfterAll
     static void afterAll() {
-        if (jedis != null) {
-            jedis.close();
+        if (jedisMaster != null) {
+            jedisMaster.close();
         }
         if (redisLocalMasterTestcontainer != null) {
             redisLocalMasterTestcontainer.stop();
