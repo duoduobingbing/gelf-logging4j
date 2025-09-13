@@ -16,6 +16,6 @@ If you report a bug, please ensure to specify the following:
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of [The MIT License (MIT)] (http://opensource.org/licenses/MIT).
+By contributing your code, you agree to license your contribution under the terms of [The MIT License (MIT)](http://opensource.org/licenses/MIT).
 
 All files are released with the MIT license.
