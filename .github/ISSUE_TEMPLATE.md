@@ -7,8 +7,8 @@ logs.
 -->
 Make sure that:
 
-- [ ] You have read the [contribution guidelines](https://github.com/mp911de/logstash-gelf/blob/master/.github/CONTRIBUTING.md).
-- [ ] You specify the logstash-gelf version and environment so it's obvious which version is affected
+- [ ] You have read the [contribution guidelines](https://github.com/duoduobingbing/gelf-logging4j/blob/master/.github/CONTRIBUTING.md).
+- [ ] You specify the logging-gelf4j version and environment so it's obvious which version is affected
 - [ ] You provide a reproducible test case (either descriptive of as JUnit test) if it's a bug or the expected behavior differs from the actual behavior.
 
  <!--

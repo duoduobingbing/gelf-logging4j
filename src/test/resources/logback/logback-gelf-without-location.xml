@@ -5,11 +5,11 @@
     <contextName>test</contextName>
     <jmxConfigurator/>
 
-    <appender name="GELF" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
+    <appender name="GELF" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <graylogHost>test:localhost</graylogHost>
         <graylogPort>12201</graylogPort>
         <version>1.1</version>
-        <facility>logstash-gelf</facility>
+        <facility>gelf-logging4j</facility>
         <extractStackTrace>true</extractStackTrace>
         <filterStackTrace>false</filterStackTrace>
         <includeLocation>false</includeLocation>

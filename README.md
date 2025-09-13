@@ -1,23 +1,20 @@
-# logstash-gelf
+# gelf-logging4j
               
 
-**This project is now archived, after a decade of maintenance, with 36 releases and several occasional contributors. The project is feature complete, and we see little issue traffic. With me being the sole maintainer, it is about time to turn off the lights here and move on to free up time for other duties. K, thx, good bye.**
+**Fork of the popular now sunset [logstash-gelf](https://github.com/mp911de/logstash-gelf) by the amazing [mp911de](https://github.com/mp911de)**
 
-[![Join the chat at https://gitter.im/mp911de/logstash-gelf](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mp911de/logstash-gelf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/biz.paluch.logging/logstash-gelf/badge.svg)](https://maven-badges.herokuapp.com/maven-central/biz.paluch.logging/logstash-gelf)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.duoduobingbing/gelf-logging4j/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.duoduobingbing/gelf-logging4j)
 
-Provides logging to logstash using the Graylog Extended Logging Format ([GELF](http://www.graylog2.org/resources/gelf/specification) 1.0 and 1.1) for using with:
+Provides logging functionality using the Graylog Extended Logging Format ([GELF](http://www.graylog2.org/resources/gelf/specification) 1.0 and 1.1) for using with:
 
 * [Java Util Logging](#java-util-logging-gelf-configuration)
-* [Glassfish/Payara](#glassfishpayara-configuration)
 * [log4j 2.x](#log4j2-gelf-configuration)
-* [WildFly](#wildfly-configuration)
-* [Thorntail (WildFly Swarm 2.x)](#thorntail-wildfly-swarm-2x-configuration)
 * [Logback](#logback-gelf-configuration)
 
-`logstash-gelf` requires as of version 1.14.0 Java 7 or higher. Version 1.13.x and older require Java 6.
-See also http://logging.paluch.biz/ or http://www.graylog2.org/resources/gelf/specification for further documentation.
+`gelf-logging4j` requires as of version 2.0.0 Java 21 or higher. 
+If you require an older Java version, please use the original `logstash-gelf`.
+See also [our docs](https://github.com/duoduobingbing/gelf-logging4j/tree/master/docs) or [the Graylog GELF specification](http://www.graylog2.org/resources/gelf/specification) for further documentation.
 
 
 Including it in your project
@@ -26,47 +23,15 @@ Including it in your project
 Maven:
 ```xml
 <dependency>
-    <groupId>biz.paluch.logging</groupId>
-    <artifactId>logstash-gelf</artifactId>
+    <groupId>io.github.duoduobingbing</groupId>
+    <artifactId>gelf-logging4j</artifactId>
     <version>x.y.z</version>
 </dependency>
 ```
     
-Direct download from [Maven Central](http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.12.0/logstash-gelf-1.12.0.jar)    
+Direct download from [Maven Central](http://search.maven.org/remotecontent?filepath=io/github/duoduobingbing/gelf-logging4j/2.0.0/gelf-logging4j-2.0.0.jar)    
 
 
-JBoss AS/WildFly Module Download:
-
-```xml
-<dependency>
-    <groupId>biz.paluch.logging</groupId>
-    <artifactId>logstash-gelf</artifactId>
-    <version>x.y.z</version>
-    <classifier>logging-module</classifier>
-</dependency>
-```
-
-Direct download from [Maven Central](http://search.maven.org/remotecontent?filepath=biz/paluch/logging/logstash-gelf/1.12.0/logstash-gelf-1.12.0-logging-module.zip)
-
-Using snapshot builds:
-
-```xml
-<dependency>
-    <groupId>biz.paluch.logging</groupId>
-    <artifactId>logstash-gelf</artifactId>
-    <version>x.y.z-SNAPSHOT</version>
-</dependency>
-
-<repositories>
-    <repository>
-        <id>sonatype-nexus-snapshots</id>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-</repositories>
-```
 
 <a name="jul"/>
 
@@ -75,86 +40,25 @@ Using snapshot builds:
 **Properties**
 
 ```properties
-handlers = biz.paluch.logging.gelf.jul.GelfLogHandler, java.util.logging.ConsoleHandler
+handlers = jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler, java.util.logging.ConsoleHandler
 
-.handlers = biz.paluch.logging.gelf.jul.GelfLogHandler, java.util.logging.ConsoleHandler
+.handlers = jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler, java.util.logging.ConsoleHandler
 .level = INFO
 
-biz.paluch.logging.gelf.jul.GelfLogHandler.host=udp:localhost
-biz.paluch.logging.gelf.jul.GelfLogHandler.port=12201
-biz.paluch.logging.gelf.jul.GelfLogHandler.version=1.1
-biz.paluch.logging.gelf.jul.GelfLogHandler.facility=java-test
-biz.paluch.logging.gelf.jul.GelfLogHandler.extractStackTrace=true
-biz.paluch.logging.gelf.jul.GelfLogHandler.filterStackTrace=true
-biz.paluch.logging.gelf.jul.GelfLogHandler.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
-biz.paluch.logging.gelf.jul.GelfLogHandler.maximumMessageSize=8192
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.host=udp:localhost
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.port=12201
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.version=1.1
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.facility=java-test
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.extractStackTrace=true
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.filterStackTrace=true
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.maximumMessageSize=8192
 
 # This are static fields
-biz.paluch.logging.gelf.jul.GelfLogHandler.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
 # Optional: Specify field types
-biz.paluch.logging.gelf.jul.GelfLogHandler.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
-biz.paluch.logging.gelf.jul.GelfLogHandler.level=INFO
-```
-
-<a name="payara"/>
-
-## Glassfish/Payara configuration
-Install the library with its dependencies (see download above) in Glassfish. Place it below the `$GFHOME/glassfish/domains/$YOURDOMAIN/lib/ext/` path, then add the [Java Util Logging](#jul) to your `logging.properties` file.
-
-**Properties**<br/>
-
-```properties
-log4j.appender.gelf=biz.paluch.logging.gelf.log4j.GelfLogAppender
-log4j.appender.gelf.Threshold=INFO
-log4j.appender.gelf.Host=udp:localhost
-log4j.appender.gelf.Port=12201
-log4j.appender.gelf.Version=1.1
-log4j.appender.gelf.Facility=java-test
-log4j.appender.gelf.ExtractStackTrace=true
-log4j.appender.gelf.FilterStackTrace=true
-log4j.appender.gelf.MdcProfiling=true
-log4j.appender.gelf.TimestampPattern=yyyy-MM-dd HH:mm:ss,SSS
-log4j.appender.gelf.MaximumMessageSize=8192
-
-# This are static fields
-log4j.appender.gelf.AdditionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
-# Optional: Specify field types
-log4j.appender.gelf.AdditionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
-
-# This are fields using MDC
-log4j.appender.gelf.MdcFields=mdcField1,mdcField2
-log4j.appender.gelf.DynamicMdcFields=mdc.*,(mdc|MDC)fields
-log4j.appender.gelf.DynamicMdcFieldTypes=my_field.*=String,business\..*\.field=double
-log4j.appender.gelf.IncludeFullMdc=true
-```
-
-
-**XML**
-
-```xml
-<appender name="gelf" class="biz.paluch.logging.gelf.log4j.GelfLogAppender">
-    <param name="Threshold" value="INFO" />
-    <param name="Host" value="udp:localhost" />
-    <param name="Port" value="12201" />
-    <param name="Version" value="1.1" />
-    <param name="Facility" value="java-test" />
-    <param name="ExtractStackTrace" value="true" />
-    <param name="FilterStackTrace" value="true" />
-    <param name="MdcProfiling" value="true" />
-    <param name="TimestampPattern" value="yyyy-MM-dd HH:mm:ss,SSS" />
-    <param name="MaximumMessageSize" value="8192" />
-    
-    <!-- This are static fields -->
-    <param name="AdditionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
-    <!-- Optional: Specify field types -->
-    <param name="AdditionalFieldTypes" value="fieldName1=String,fieldName2=Double,fieldName3=Long" />
-    
-    <!-- This are fields using MDC -->
-    <param name="MdcFields" value="mdcField1,mdcField2" />
-    <param name="DynamicMdcFields" value="mdc.*,(mdc|MDC)fields" />
-    <param name="DynamicMdcFieldTypes" value="my_field.*=String,business\..*\.field=double" />
-    <param name="IncludeFullMdc" value="true" />
-</appender>
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
+jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.level=INFO
 ```
 
 <a name="log4j2"/>
@@ -273,135 +177,6 @@ appender.gelf:
           pattern: "%line"
 ```
 
-<a name="jbossas7"/>
-
-JBoss AS7 configuration
------------------------
-Include the library as module (see download above), then add following lines to your configuration:
-
-**standalone.xml**
-
-```xml
-<custom-handler name="GelfLogger" class="biz.paluch.logging.gelf.jboss7.JBoss7GelfLogHandler" module="biz.paluch.logging">
-    <level name="INFO" />
-    <properties>
-        <property name="host" value="udp:localhost" />
-        <property name="port" value="12201" />
-        <property name="version" value="1.1" />
-        <property name="facility" value="java-test" />
-        <property name="extractStackTrace" value="true" />
-        <property name="filterStackTrace" value="true" />
-        <property name="mdcProfiling" value="true" />
-        <property name="timestampPattern" value="yyyy-MM-dd HH:mm:ss,SSS" />
-        <property name="maximumMessageSize" value="8192" />
-        
-        <!-- This are static fields -->
-        <property name="additionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
-        <!-- Optional: Specify field types -->
-        <property name="additionalFieldTypes" value="fieldName1=String,fieldName2=Double,fieldName3=Long" />
-        
-        <!-- This are fields using MDC -->
-        <property name="mdcFields" value="mdcField1,mdcField2" />
-        <property name="dynamicMdcFields" value="mdc.*,(mdc|MDC)fields" />
-        <property name="dynamicMdcFieldTypes" value="my_field.*=String,business\..*\.field=double" />
-        <property name="includeFullMdc" value="true" />
-    </properties>
-</custom-handler>
-
-...
-
-<root-logger>
-    <level name="INFO"/>
-    <handlers>
-        <handler name="FILE"/>
-        <handler name="CONSOLE"/>
-        <handler name="GelfLogger"/>
-    </handlers>
-</root-logger>
-```
-
-<a name="wildfly"/>
-
-WildFly configuration
---------------------------------------------
-Include the library as module (see download above). Place it below the `$JBOSS_HOME/modules/system/layers/base` path, then add following lines to your configuration:
-
-standalone.xml
-```xml
-<custom-handler name="GelfLogger" class="biz.paluch.logging.gelf.wildfly.WildFlyGelfLogHandler" module="biz.paluch.logging">
-    <level name="INFO" />
-    <properties>
-        <property name="host" value="udp:localhost" />
-        <property name="port" value="12201" />
-        <property name="version" value="1.1" />
-        <property name="facility" value="java-test" />
-        <property name="extractStackTrace" value="true" />
-        <property name="filterStackTrace" value="true" />
-        <property name="mdcProfiling" value="true" />
-        <property name="timestampPattern" value="yyyy-MM-dd HH:mm:ss,SSS" />
-        <property name="maximumMessageSize" value="8192" />
-        
-        <!-- This are static fields -->
-        <property name="additionalFields" value="fieldName1=fieldValue1,fieldName2=fieldValue2" />
-        <!-- Optional: Specify field types -->
-        <property name="additionalFieldTypes" value="fieldName1=String,fieldName2=Double,fieldName3=Long" />
-        
-        <!-- This are fields using MDC -->
-        <property name="mdcFields" value="mdcField1,mdcField2" />
-        <property name="dynamicMdcFields" value="mdc.*,(mdc|MDC)fields" />
-        <property name="dynamicMdcFieldTypes" value="my_field.*=String,business\..*\.field=double" />
-        <property name="includeFullMdc" value="true" />
-    </properties>
-</custom-handler>
-
-...
-
-<root-logger>
-    <level name="INFO"/>
-    <handlers>
-        <handler name="FILE"/>
-        <handler name="CONSOLE"/>
-        <handler name="GelfLogger"/>
-    </handlers>
-</root-logger>
-```
-
-<a name="thorntail"/>
-
-Thorntail (WildFly Swarm 2.x) configuration
---------------------------------------------
-Include `module-thorntail.xml` from the logging module zip (see download above). Place it below the `src/main/resources/modules/biz/paluch/logging/main` path as `module.xml`, then add following lines to your `project-stages.yml`:
-
-`project-stages.yml`:
-```yaml
-swarm:
-  logging:
-    custom-handlers:
-      GelfLogger:
-        attribute-class: biz.paluch.logging.gelf.wildfly.WildFlyGelfLogHandler
-        module: biz.paluch.logging
-        properties:
-            host: "udp:localhost"
-            port: 12201
-            version: "1.0"
-            facility: "java-test"
-            extractStackTrace: true
-            filterStackTrace: true
-            includeLocation: true
-            mdcProfiling: true
-            timestampPattern: "yyyy-MM-dd HH:mm:ss,SSS"
-            maximumMessageSize: 8192
-            additionalFields: "fieldName1=fieldValue1,fieldName2=fieldValue2"
-            additionalFieldTypes: "my_field.*=String,business\..*\.field=double"
-            MdcFields: "mdcField1,mdcField2"
-            dynamicMdcFields: "mdc.*,(mdc|MDC)fields"
-            includeFullMdc: true
-    root-logger:
-      level: INFO
-      handlers:
-      - GelfLogger
-```
-
 <a name="logback"/>
 
 Logback GELF configuration
@@ -415,7 +190,7 @@ logback.xml Example:
     <contextName>test</contextName>
     <jmxConfigurator/>
 
-    <appender name="gelf" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
+    <appender name="gelf" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <host>udp:localhost</host>
         <port>12201</port>
         <version>1.1</version>
@@ -425,12 +200,12 @@ logback.xml Example:
         <mdcProfiling>true</mdcProfiling>
         <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
         <maximumMessageSize>8192</maximumMessageSize>
-        
+
         <!-- This are static fields -->
         <additionalFields>fieldName1=fieldValue1,fieldName2=fieldValue2</additionalFields>
         <!-- Optional: Specify field types -->
         <additionalFieldTypes>fieldName1=String,fieldName2=Double,fieldName3=Long</additionalFieldTypes>
-        
+
         <!-- This are fields using MDC -->
         <mdcFields>mdcField1,mdcField2</mdcFields>
         <dynamicMdcFields>mdc.*,(mdc|MDC)fields</dynamicMdcFields>
@@ -442,7 +217,7 @@ logback.xml Example:
     </appender>
 
     <root level="DEBUG">
-        <appender-ref ref="gelf" />
+        <appender-ref ref="gelf"/>
     </root>
 </configuration>
 ```
@@ -455,4 +230,4 @@ License
 Contributing
 ------------
 Github is for social coding: if you want to write code, I encourage contributions through pull requests from forks of this repository. 
-Create Github tickets for bugs and new features and comment on the ones that you are interested in and take a look into [CONTRIBUTING.md](https://github.com/mp911de/logstash-gelf/blob/main/.github/CONTRIBUTING.md)
+Create Github tickets for bugs and new features and comment on the ones that you are interested in and take a look into [CONTRIBUTING.md](https://github.com/duoduobingbing/gelf-logging4j/blob/main/.github/CONTRIBUTING.md)
