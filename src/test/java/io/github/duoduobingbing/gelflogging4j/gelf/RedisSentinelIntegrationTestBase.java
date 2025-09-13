@@ -17,7 +17,7 @@ import java.util.List;
  * @author tktiki
  * @author duoduobingbing
  */
-public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
+public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegrationTestBase {
 
     protected static GenericContainer<?> redisLocalSentinelTestcontainer;
 
@@ -32,12 +32,6 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
     @BeforeAll
     static void beforeAll() {
-        if (RedisIntegrationTestBase.redisLocalMasterTestcontainer.isRunning()) {
-            //Because this is always running AFTER RedisIntegrationTestBase.beforeAll(..), but we need these to be in the same network, stop the already started
-            //one, attach the network and try again
-            RedisIntegrationTestBase.redisLocalMasterTestcontainer.stop();
-        }
-
         redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
         redisLocalMasterTestcontainer.start();
 
@@ -64,7 +58,7 @@ public class RedisSentinelIntegrationTestBase extends RedisIntegrationTestBase {
 
 
         redisLocalSentinelTestcontainer = new GenericContainer<>("redis:8.2")
-                .dependsOn(RedisIntegrationTestBase.redisLocalMasterTestcontainer)
+                .dependsOn(RedisNonStartingIntegrationTestBase.redisLocalMasterTestcontainer)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")
                 .withEnv("SKIP_DROP_PRIVS", "1")

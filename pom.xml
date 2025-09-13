@@ -74,8 +74,8 @@
         <test.withRedis>false</test.withRedis>
 
         <!-- Versions -->
-        <log4j.version>1.2.17</log4j.version>
-        <log4j2.version>2.17.1</log4j2.version>
+<!--        <log4j.version>1.2.17</log4j.version>-->
+        <log4j2.version>2.25.1</log4j2.version>
         <junit5.version>5.13.4</junit5.version>
         <assertj.version>3.22.0</assertj.version>
         <mockito.version>4.2.0</mockito.version>
@@ -85,7 +85,6 @@
         <slf4j-api.version>2.0.17</slf4j-api.version>
         <logback-classic.version>1.5.18</logback-classic.version>
         <org.jboss.logmanager.version>1.5.2.Final</org.jboss.logmanager.version>
-        <arquillian.version>1.5.0.Final</arquillian.version>
 
 <!--        <site-plugin.version>3.10.0</site-plugin.version>-->
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
@@ -138,9 +137,6 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>false</filtering>
-                <excludes>
-                    <exclude>arquillian.xml</exclude>
-                </excludes>
             </testResource>
         </testResources>
 
@@ -306,13 +302,12 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Imports compatible versions for each Arquillian module -->
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${arquillian.version}</version>
-                <type>pom</type>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
                 <scope>import</scope>
+                <type>pom</type>
             </dependency>
 
             <dependency>
@@ -344,12 +339,12 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>log4j</groupId>-->
+<!--            <artifactId>log4j</artifactId>-->
+<!--            <version>${log4j.version}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
 
         <!-- log4j2 START -->
 
@@ -369,11 +364,18 @@
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <artifactId>log4j-core-test</artifactId>
             <version>${log4j2.version}</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-core</artifactId>-->
+<!--            <version>${log4j2.version}</version>-->
+<!--            <type>test-jar</type>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.lmax</groupId>
@@ -496,30 +498,30 @@
         </dependency>
 
         <!-- Arquillian integration test -->
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jboss.arquillian.junit</groupId>-->
+<!--            <artifactId>arquillian-junit-container</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jboss.shrinkwrap.resolver</groupId>-->
+<!--            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-            <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jboss.shrinkwrap.descriptors</groupId>-->
+<!--            <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-cli</artifactId>
-            <version>10.0.0.Beta2</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.wildfly.core</groupId>-->
+<!--            <artifactId>wildfly-cli</artifactId>-->
+<!--            <version>10.0.0.Beta2</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -548,6 +550,12 @@
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.18.0</version>
         </dependency>
 
 <!--        <dependency>-->

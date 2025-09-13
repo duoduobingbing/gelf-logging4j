@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -11,7 +12,12 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisIntegrationTestBase;
-import org.apache.log4j.MDC;
+import io.github.duoduobingbing.gelflogging4j.gelf.RedisNonStartingIntegrationTestBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.GelfREDISSender;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.TestRedisGelfSenderProvider;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.JUnitAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -23,6 +29,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.RedisGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
+import org.slf4j.MDC;
 
 /**
  * @author Mark Paluch
@@ -63,19 +70,33 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         assertThat(map.get("fieldName1")).isEqualTo("fieldValue1");
     }
 
+    public static class SavingTestRedisGelfSenderProvider extends TestRedisGelfSenderProvider {
+
+        Integer lastResolvedPort;
+        URI lastResolvedHost;
+
+        @Override
+        protected GelfREDISSender<?> createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
+            this.lastResolvedHost = hostUri;
+            this.lastResolvedPort = port;
+            return super.createSenderInternal(hostUri, port, errorReporter);
+        }
+    }
+
     @Test
-    void testMinimalRedisUri() throws Exception {
-
-        assumeTrue(Sockets.isOpen("localhost", 6379));
-
+    void testMinimalRedisUriIsUsingDefaultPort() throws Exception {
+        int redisDefaultPort = 6379;
         String uri = "redis://localhost/#list";
 
-        RedisGelfSenderProvider provider = new RedisGelfSenderProvider();
+        SavingTestRedisGelfSenderProvider provider = new SavingTestRedisGelfSenderProvider();
         DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
         configuration.setHost(uri);
-        GelfSender gelfSender = provider.create(configuration);
+        try (GelfSender gelfSender = provider.create(configuration)) {
+            JUnitAssertions.assertNotNull(gelfSender);
+        }
 
-        gelfSender.sendMessage(new GelfMessage());
+        AssertJAssertions.assertThat(provider.lastResolvedHost).isEqualTo(URI.create(uri));
+        AssertJAssertions.assertThat(provider.lastResolvedPort).isEqualTo(redisDefaultPort);
     }
 
     @Test

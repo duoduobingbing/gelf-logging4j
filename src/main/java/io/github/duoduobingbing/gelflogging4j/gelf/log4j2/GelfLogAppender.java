@@ -24,6 +24,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.AppenderLoggingException;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.*;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.layout.PatternLayout;
@@ -205,8 +206,7 @@ public class GelfLogAppender extends AbstractAppender {
     private final ErrorReporter errorReporter;
 
     public GelfLogAppender(String name, Filter filter, MdcGelfMessageAssembler gelfMessageAssembler, boolean ignoreExceptions) {
-
-        super(name, filter, null, ignoreExceptions);
+        super(name, filter, null, ignoreExceptions, Property.EMPTY_ARRAY);
         this.gelfMessageAssembler = gelfMessageAssembler;
 
         ErrorReporter errorReporter = getErrorReporter(ignoreExceptions);

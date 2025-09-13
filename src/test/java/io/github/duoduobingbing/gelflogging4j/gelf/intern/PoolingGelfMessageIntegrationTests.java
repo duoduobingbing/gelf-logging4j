@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.jboss.as.protocol.StreamUtils;
+
 import org.junit.jupiter.api.Test;
 
 import io.github.duoduobingbing.gelflogging4j.StackTraceFilter;
@@ -51,7 +51,7 @@ class PoolingGelfMessageIntegrationTests {
                 GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(bytes));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()
         ) {
-            StreamUtils.copyStream(gzipInputStream, baos);
+            gzipInputStream.transferTo(baos);
             result = baos.toString(StandardCharsets.UTF_8);
         }
         return result;

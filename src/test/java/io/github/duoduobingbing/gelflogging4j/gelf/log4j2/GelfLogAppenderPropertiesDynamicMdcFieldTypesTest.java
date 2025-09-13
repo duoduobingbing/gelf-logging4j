@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Thomas Herzog
+ * @author duoduobingbing
  * @since 29.04.19 18:00
  */
 class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
@@ -42,7 +43,7 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
     private LoggerContext loggerContext;
 
     @BeforeEach
-    private void beforeEach() throws Exception {
+    public void beforeEach() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-dynamic-mdcfieldtypes.xml");
         PropertiesUtil.getProperties().reload();
         loggerContext = (LoggerContext) LogManager.getContext(false);

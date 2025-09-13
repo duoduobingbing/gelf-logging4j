@@ -26,6 +26,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.netty.NettyLocalServer;
 
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Mark Paluch

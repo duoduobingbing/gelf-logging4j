@@ -9,14 +9,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,7 @@ class GelfTCPSenderIntegrationTests {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private final Queue<Socket> sockets = new LinkedBlockingQueue<>();
+    private final AtomicBoolean socketReady = new AtomicBoolean(false);
     private volatile ServerSocket serverSocket;
     private volatile boolean loopActive = true;
     private volatile boolean readFromServerSocket = true;
@@ -67,17 +70,21 @@ class GelfTCPSenderIntegrationTests {
                         InputStream inputStream = socket.getInputStream();
 
                         while (!socket.isClosed()) {
+                            socketReady.set(true);
                             if (readFromServerSocket) {
-                                IOUtils.copy(inputStream, out);
+                                inputStream.transferTo(out);
                             }
                             Thread.sleep(1);
 
                             if (latch.getCount() == 0) {
                                 socket.close();
+                                socketReady.set(false);
                             }
                         }
+                        socketReady.set(false);
 
                     } catch (IOException e) {
+                        System.out.println("ReadIOException: " + e.getMessage());
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -130,6 +137,7 @@ class GelfTCPSenderIntegrationTests {
         SmallBufferTCPSender sender = new SmallBufferTCPSender("localhost", PORT, 1000, 1000, new ErrorReporter() {
             @Override
             public void reportError(String message, Exception e) {
+                System.out.println(message + ": " + e.getClass().getName() + ": " + e.getMessage());
             }
         });
 
@@ -153,6 +161,7 @@ class GelfTCPSenderIntegrationTests {
         SmallBufferTCPSender sender = new SmallBufferTCPSender("localhost", PORT, 1000, 1000, new ErrorReporter() {
             @Override
             public void reportError(String message, Exception e) {
+                System.out.println(message + ": " + e.getClass().getName() + ": " + e.getMessage());
             }
         });
 
@@ -167,6 +176,9 @@ class GelfTCPSenderIntegrationTests {
         assertThat(sender.sendMessage(gelfMessage)).isFalse();
 
         serverSocket = new ServerSocket(PORT);
+
+        TimingHelper.waitUntil(() -> !serverSocket.isClosed(), 1L, ChronoUnit.SECONDS);
+        TimingHelper.waitUntil(socketReady::get, 1L, ChronoUnit.SECONDS);
 
         assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
@@ -191,6 +203,8 @@ class GelfTCPSenderIntegrationTests {
         GelfMessage gelfMessage = new GelfMessage("hello", StringUtils.repeat("hello", 100000), PORT, "7");
 
         sender.sendMessage(gelfMessage);
+
+        TimingHelper.waitUntil(() -> !errors.isEmpty(), 3, ChronoUnit.SECONDS);
 
         assertThat(errors).hasSize(1);
         assertThat(errors).containsOnly("Cannot write buffer to channel, no progress in writing");

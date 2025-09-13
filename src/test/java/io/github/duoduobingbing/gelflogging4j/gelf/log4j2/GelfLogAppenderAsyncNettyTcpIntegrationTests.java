@@ -100,7 +100,7 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
 
         TimingHelper.waitUntil(
                 () -> !server.getJsonValues().isEmpty(),
-                2,
+                5,
                 ChronoUnit.SECONDS
         );
 

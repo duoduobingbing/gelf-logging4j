@@ -2,8 +2,14 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.Properties;
 
+import com.github.charithe.kafka.EphemeralKafkaBroker;
+import com.github.charithe.kafka.KafkaHelper;
+import com.github.charithe.kafka.KafkaJunitExtension;
+import com.github.charithe.kafka.KafkaJunitExtensionConfig;
+import com.github.charithe.kafka.StartupMode;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -16,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 
-import com.github.charithe.kafka.*;
 import com.google.common.collect.Lists;
 
 /**
@@ -51,7 +56,7 @@ class KafkaGelfSenderIntegrationTest {
 
         KafkaConsumer<String, String> consumer = kafkaHelper.createStringConsumer();
         consumer.subscribe(Lists.newArrayList(LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(10000);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
 
         assertThat(records).isNotNull();
         assertThat(records.isEmpty()).isFalse();
