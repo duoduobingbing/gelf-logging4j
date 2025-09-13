@@ -3,10 +3,11 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +23,12 @@ class JsonWriterUnitTests {
     @BeforeEach
     void before() throws Exception {
 
-        byte[] bytes = IOUtils.toByteArray(getClass().getResourceAsStream("/utf8.txt"));
-        content = new String(bytes, "UTF-8");
+        byte[] bytes;
+        try(InputStream stream = getClass().getResourceAsStream("/utf8.txt")) {
+            bytes = stream.readAllBytes();
+        }
+
+        content = new String(bytes, StandardCharsets.UTF_8);
     }
 
     @Test

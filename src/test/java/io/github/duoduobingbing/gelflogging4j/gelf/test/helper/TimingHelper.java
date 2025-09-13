@@ -12,8 +12,8 @@ public class TimingHelper {
 
     public static void waitUntil(Supplier<Boolean> condition, long timeOutValue, ChronoUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            long deadline = System.currentTimeMillis() + Duration.of(timeOutValue, timeUnit).toMillis();
-            while (System.currentTimeMillis() < deadline + 100) {
+            long deadline = System.currentTimeMillis() + Duration.of(timeOutValue, timeUnit).toMillis() + 100;
+            while (System.currentTimeMillis() < deadline) {
                 if (condition.get()) {
                     return;
                 }

@@ -1,9 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +12,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 
 /**
  * @author Rifat Döver
+ * @author duoduobingbing
  */
 @ExtendWith({ MockitoExtension.class })
 class GelfLogAppenderKafkaIntegrationTests {
@@ -56,9 +58,9 @@ class GelfLogAppenderKafkaIntegrationTests {
         consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
         ConsumerRecords<String, String> records = consumer.poll(10000);
 
-        assertThat(records).isNotNull();
-        assertThat(records.isEmpty()).isFalse();
-        assertThat(records.count()).isEqualTo(1);
+        AssertJAssertions.assertThat(records).isNotNull();
+        AssertJAssertions.assertThat(records.isEmpty()).isFalse();
+        AssertJAssertions.assertThat(records.count()).isEqualTo(1);
 
         broker.stop();
     }

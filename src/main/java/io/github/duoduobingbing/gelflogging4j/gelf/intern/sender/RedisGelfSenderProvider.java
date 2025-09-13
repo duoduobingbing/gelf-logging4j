@@ -3,6 +3,7 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 import java.io.IOException;
 import java.net.URI;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.util.Pool;
@@ -47,7 +48,12 @@ public class RedisGelfSenderProvider implements GelfSenderProvider {
             throw new IllegalArgumentException("Redis URI must specify host");
         }
 
+
+        return createSenderInternal(hostUri, port, configuration.getErrorReporter());
+    }
+
+    GelfREDISSender<?> createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
         Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(hostUri, port);
-        return new GelfREDISSender<>(pool, hostUri.getFragment(), configuration.getErrorReporter());
+        return new GelfREDISSender<>(pool, hostUri.getFragment(), errorReporter);
     }
 }

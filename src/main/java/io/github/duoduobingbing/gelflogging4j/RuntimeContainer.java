@@ -20,7 +20,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 /**
  * Static Details about the runtime container: Hostname (simple/fqdn), Address and timestamp of the first access (time when the
  * application was loaded).
- * 
+ *
  * @author Mark Paluch
  */
 public class RuntimeContainer {
@@ -60,6 +60,7 @@ public class RuntimeContainer {
 
     /**
      * Initialize only once.
+     *
      * @param errorReporter the error reporter
      */
     public static void initialize(ErrorReporter errorReporter) {
@@ -72,14 +73,16 @@ public class RuntimeContainer {
 
     /**
      * Whether the container has already been initialized performing a hostname lookup
+     *
      * @return true if already initialized
      */
-    public static boolean isInitialized(){
+    public static boolean isInitialized() {
         return initialized;
     }
 
     /**
      * Triggers the hostname lookup.
+     *
      * @param errorReporter the error reporter
      */
     public static void lookupHostname(ErrorReporter errorReporter) {
@@ -87,36 +90,39 @@ public class RuntimeContainer {
         String myFQDNHostName = getProperty(PROPERTY_LOGSTASH_GELF_FQDN_HOSTNAME, "unknown");
         String myAddress = "";
 
-        if (!Boolean.parseBoolean(getProperty(PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "false"))) {
+        if (Boolean.parseBoolean(getProperty(PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "false"))) {
+            FQDN_HOSTNAME = myFQDNHostName;
+            HOSTNAME = myHostName;
+            ADDRESS = myAddress;
+            return;
+        }
 
-            try {
+        try {
+            String resolutionOrder = getProperty(PROPERTY_LOGSTASH_GELF_HOSTNAME_RESOLUTION_ORDER,
+                    RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK);
 
-                String resolutionOrder = getProperty(PROPERTY_LOGSTASH_GELF_HOSTNAME_RESOLUTION_ORDER,
-                        RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK);
+            InetAddress inetAddress = null;
+            if (resolutionOrder.equals(RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK)) {
+                inetAddress = getInetAddressWithHostname();
+            }
 
-                InetAddress inetAddress = null;
-                if (resolutionOrder.equals(RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK)) {
+            if (resolutionOrder.equals(RESOLUTION_ORDER_LOCALHOST_NETWORK_FALLBACK)) {
+                if (isQualified(InetAddress.getLocalHost())) {
+                    inetAddress = InetAddress.getLocalHost();
+                } else {
                     inetAddress = getInetAddressWithHostname();
                 }
-
-                if (resolutionOrder.equals(RESOLUTION_ORDER_LOCALHOST_NETWORK_FALLBACK)) {
-                    if (isQualified(InetAddress.getLocalHost())) {
-                        inetAddress = InetAddress.getLocalHost();
-                    } else {
-                        inetAddress = getInetAddressWithHostname();
-                    }
-                }
-
-                if (inetAddress == null) {
-                    inetAddress = InetAddress.getLocalHost();
-                }
-
-                myHostName = getHostname(inetAddress, false);
-                myFQDNHostName = getHostname(inetAddress, true);
-                myAddress = inetAddress.getHostAddress();
-            } catch (IOException e) {
-                errorReporter.reportError("Cannot resolve hostname", e);
             }
+
+            if (inetAddress == null) {
+                inetAddress = InetAddress.getLocalHost();
+            }
+
+            myHostName = getHostname(inetAddress, false);
+            myFQDNHostName = getHostname(inetAddress, true);
+            myAddress = inetAddress.getHostAddress();
+        } catch (IOException e) {
+            errorReporter.reportError("Cannot resolve hostname", e);
         }
 
         FQDN_HOSTNAME = myFQDNHostName;

@@ -15,7 +15,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Random;
 
-import org.apache.commons.lang.RandomStringUtils;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PortHelper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -140,6 +141,10 @@ class GelfTCPSenderUnitTests {
     void shouldSendDataToClosedPort() throws Exception {
 
         int port = randomPort();
+
+        if(!PortHelper.isPortAvailable(port)) {
+            port = PortHelper.findAvailableTcpPort();
+        }
 
         ServerSocketChannel listener = ServerSocketChannel.open();
         listener.socket().bind(new InetSocketAddress(port));

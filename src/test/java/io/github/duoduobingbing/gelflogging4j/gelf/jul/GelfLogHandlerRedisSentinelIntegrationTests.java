@@ -4,9 +4,9 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisSentinelIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.Sockets;
-import org.apache.log4j.MDC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 
 import java.util.List;
 import java.util.Map;

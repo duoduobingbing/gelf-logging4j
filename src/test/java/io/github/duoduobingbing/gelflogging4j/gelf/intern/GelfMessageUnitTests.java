@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.jboss.as.protocol.StreamUtils;
 import org.junit.jupiter.api.Test;
 
 import io.github.duoduobingbing.gelflogging4j.StackTraceFilter;
@@ -138,7 +137,7 @@ class GelfMessageUnitTests {
 
             GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(newBytes));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            StreamUtils.copyStream(gzipInputStream, baos);
+            gzipInputStream.transferTo(baos);
             assertThat(Arrays.equals(newBytes, oldBytes)).isTrue();
         }
     }
