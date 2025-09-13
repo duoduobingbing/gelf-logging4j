@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -13,6 +16,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.IntegrationTestSslCertHelper;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,11 +25,6 @@ import org.junit.jupiter.api.Test;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.netty.NettyLocalServer;
-
-import com.google.code.tempusfugit.temporal.Condition;
-import com.google.code.tempusfugit.temporal.Duration;
-import com.google.code.tempusfugit.temporal.Timeout;
-import com.google.code.tempusfugit.temporal.WaitFor;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -124,12 +123,7 @@ class GelfTCPSSLSenderConnectIntegrationTests {
         thread1.join();
         thread2.join();
 
-        WaitFor.waitOrTimeout(new Condition() {
-            @Override
-            public boolean isSatisfied() {
-                return server.getJsonValues().size() == 2;
-            }
-        }, Timeout.timeout(Duration.seconds(5)));
+        TimingHelper.waitUntil(() -> server.getJsonValues().size() == 2, 5, ChronoUnit.SECONDS);
 
         assertThat(server.getJsonValues()).isNotEmpty();
         assertThat(server.getJsonValues()).hasSize(2);

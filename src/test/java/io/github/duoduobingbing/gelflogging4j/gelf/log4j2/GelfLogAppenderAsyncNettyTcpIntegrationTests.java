@@ -2,10 +2,13 @@ package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -21,11 +24,6 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.netty.NettyLocalServer;
-
-import com.google.code.tempusfugit.temporal.Condition;
-import com.google.code.tempusfugit.temporal.Duration;
-import com.google.code.tempusfugit.temporal.Timeout;
-import com.google.code.tempusfugit.temporal.WaitFor;
 
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -98,13 +96,15 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
         assertThat(jsonValue.get("_fieldName2")).isEqualTo("fieldValue2");
     }
 
-    private void waitForGelf() throws InterruptedException, TimeoutException {
-        WaitFor.waitOrTimeout(new Condition() {
-            @Override
-            public boolean isSatisfied() {
-                return !server.getJsonValues().isEmpty();
-            }
-        }, Timeout.timeout(Duration.seconds(2)));
+    private void waitForGelf() throws InterruptedException, TimeoutException, ExecutionException {
+
+        TimingHelper.waitUntil(
+                () -> !server.getJsonValues().isEmpty(),
+                2,
+                ChronoUnit.SECONDS
+        );
+
+
     }
 
 }
