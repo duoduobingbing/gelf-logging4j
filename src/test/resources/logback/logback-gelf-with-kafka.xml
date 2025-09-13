@@ -10,11 +10,11 @@
             </pattern>
         </encoder>
     </appender>
-    <appender name="gelf" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
+    <appender name="gelf" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <host>kafka://localhost#log-topic</host>
         <port>19092</port>
         <version>1.1</version>
-        <facility>logstash-gelf</facility>
+        <facility>gelf-logging4j</facility>
         <extractStackTrace>true</extractStackTrace>
         <filterStackTrace>true</filterStackTrace>
         <mdcProfiling>false</mdcProfiling>

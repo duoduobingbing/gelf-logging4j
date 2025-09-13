@@ -8,24 +8,24 @@
 <!--        <version>9</version>-->
 <!--    </parent>-->
 
-    <groupId>biz.paluch.logging</groupId>
+    <groupId>io.github.duoduobingbing</groupId>
     <version>2.0.0-SNAPSHOT</version>
-    <artifactId>logstash-gelf</artifactId>
+    <artifactId>gelf-logging4j</artifactId>
 
-    <name>logstash logging connectors</name>
-    <url>https://github.com/mp911de/logstash-gelf/</url>
+    <name>gelf logging connectors</name>
+    <url>https://github.com/duoduobingbing/gelf-logging4j</url>
     <inceptionYear>2013</inceptionYear>
 
     <scm>
-        <connection>scm:git://github.com/mp911de/logstash-gelf.git</connection>
-        <developerConnection>scm:git:git@github.com:mp911de/logstash-gelf.git</developerConnection>
-        <url>http://github.com/mp911de/logstash-gelf/</url>
+        <connection>scm:git://github.com/duoduobingbing/gelf-logging4j.git</connection>
+        <developerConnection>scm:git:git@github.com:duoduobingbing/gelf-logging4j.git</developerConnection>
+        <url>http://github.com/duoduobingbing/gelf-logging4j/</url>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/mp911de/logstash-gelf/issues</url>
+        <url>http://github.com/duoduobingbing/gelf-logging4j/issues</url>
     </issueManagement>
 
     <licenses>
@@ -37,18 +37,38 @@
     </licenses>
 
     <distributionManagement>
-        <site>
-            <id>site</id>
-            <url>scm:git:git@github.com:mp911de/logging.paluch.biz.git</url>
-        </site>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus Staging</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>public-jboss</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+        </repository>
+    </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
-        <logstash-gelf-release-version>1.15.1</logstash-gelf-release-version>
 
         <github.site.upload.skip>true</github.site.upload.skip>
         <test.withRedis>false</test.withRedis>
@@ -67,7 +87,7 @@
         <org.jboss.logmanager.version>1.5.2.Final</org.jboss.logmanager.version>
         <arquillian.version>1.5.0.Final</arquillian.version>
 
-        <site-plugin.version>3.10.0</site-plugin.version>
+<!--        <site-plugin.version>3.10.0</site-plugin.version>-->
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
@@ -92,19 +112,19 @@
 
     <developers>
         <developer>
+            <name>duoduobingbing</name>
+            <url>https://github.com/duoduobingbing</url>
+        </developer>
+        <developer>
             <email>mpaluch@paluch.biz</email>
             <name>Mark Paluch</name>
             <timezone>Europe/Berlin</timezone>
             <url>http://www.paluch.biz</url>
+            <properties>
+                <info>original developer of logstash-gelf, not involved in gelf-logging4j</info>
+            </properties>
         </developer>
     </developers>
-
-    <repositories>
-        <repository>
-            <id>public-jboss</id>
-            <url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
-        </repository>
-    </repositories>
 
     <build>
         <resources>
@@ -219,26 +239,26 @@
                 <version>${maven-resources-plugin.version}</version>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${site-plugin.version}</version>
-                <configuration>
-                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>${doxia-module-markdown.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>${maven-scm-provider-gitexe.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-site-plugin</artifactId>-->
+<!--                <version>${site-plugin.version}</version>-->
+<!--                <configuration>-->
+<!--                    <relativizeDecorationLinks>false</relativizeDecorationLinks>-->
+<!--                </configuration>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.apache.maven.doxia</groupId>-->
+<!--                        <artifactId>doxia-module-markdown</artifactId>-->
+<!--                        <version>${doxia-module-markdown.version}</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.apache.maven.scm</groupId>-->
+<!--                        <artifactId>maven-scm-provider-gitexe</artifactId>-->
+<!--                        <version>${maven-scm-provider-gitexe.version}</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

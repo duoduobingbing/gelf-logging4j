@@ -1,16 +1,16 @@
-# Contributing to logstash-gelf
+# Contributing to `gelf-logging4j`
 
 If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request.
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
-Formatting settings are provided for Eclipse in https://github.com/mp911de/logstash-gelf/blob/master/as7formatter.xml
+Formatting settings are provided for Eclipse in https://github.com/duoduobingbing/gelf-logging4j/blob/master/as7formatter.xml
 
 ## Bugreports
 
 If you report a bug, please ensure to specify the following:
 
-* logstash-gelf version (e.g. 1.6.0)
-* Contextual information (what were you trying to do using logstash-gelf)
+* `gelf-logging4j` version (e.g. 1.6.0)
+* Contextual information (what were you trying to do using `gelf-logging4j`)
 * Simplest possible steps to reproduce
    * JUnit tests to reproduce are great but not obligatory
 
