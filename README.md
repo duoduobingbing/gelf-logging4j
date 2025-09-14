@@ -40,25 +40,25 @@ Direct download from [Maven Central](http://search.maven.org/remotecontent?filep
 **Properties**
 
 ```properties
-handlers = jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler, java.util.logging.ConsoleHandler
+handlers = io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler, java.util.logging.ConsoleHandler
 
-.handlers = jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler, java.util.logging.ConsoleHandler
+.handlers = io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler, java.util.logging.ConsoleHandler
 .level = INFO
 
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.host=udp:localhost
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.port=12201
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.version=1.1
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.facility=java-test
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.extractStackTrace=true
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.filterStackTrace=true
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.maximumMessageSize=8192
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.host=udp:localhost
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.port=12201
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.version=1.1
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.facility=java-test
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.extractStackTrace=true
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.filterStackTrace=true
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.maximumMessageSize=8192
 
 # This are static fields
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
 # Optional: Specify field types
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
-jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfLogHandler.level=INFO
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
+io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.level=INFO
 ```
 
 <a name="log4j2"/>
