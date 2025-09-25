@@ -146,6 +146,8 @@ class GelfTCPSenderIntegrationTests {
 
         assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
+        TimingHelper.waitUntil(() -> socketReady.get(),2L,ChronoUnit.SECONDS);
+
         sockets.poll().close();
 
         assertThat(sender.sendMessage(gelfMessage)).isTrue();
@@ -169,6 +171,8 @@ class GelfTCPSenderIntegrationTests {
         ByteBuffer byteBuffer = gelfMessage.toTCPBuffer();
 
         assertThat(sender.sendMessage(gelfMessage)).isTrue();
+
+        TimingHelper.waitUntil(() -> socketReady.get(),2L,ChronoUnit.SECONDS);
 
         sockets.poll().close();
         serverSocket.close();

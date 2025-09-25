@@ -1,6 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
@@ -56,7 +57,7 @@ class GelfLogAppenderKafkaIntegrationTests {
 
         KafkaConsumer<String, String> consumer = helper.createStringConsumer();
         consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(10000);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
 
         AssertJAssertions.assertThat(records).isNotNull();
         AssertJAssertions.assertThat(records.isEmpty()).isFalse();
