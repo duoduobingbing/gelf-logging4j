@@ -3,6 +3,7 @@ package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -52,7 +53,7 @@ class GelfLogbackAppenderKafkaIntegrationTests {
 
         KafkaConsumer<String, String> consumer = helper.createStringConsumer();
         consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(10000);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
         assertThat(records).isNotNull();
         assertThat(records.isEmpty()).isFalse();
         assertThat(records.count()).isEqualTo(1);

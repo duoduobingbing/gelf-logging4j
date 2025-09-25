@@ -2,6 +2,7 @@ package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -40,7 +41,7 @@ class GelfLogHandlerKafkaIntegrationTests {
 
         KafkaConsumer<String, String> consumer = helper.createStringConsumer();
         consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(10000);
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
         assertThat(records).isNotNull();
         assertThat(records.isEmpty()).isFalse();
         assertThat(records.count()).isEqualTo(1);
