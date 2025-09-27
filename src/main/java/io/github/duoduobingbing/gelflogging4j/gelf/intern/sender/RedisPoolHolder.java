@@ -54,11 +54,11 @@ class RedisPoolHolder {
 
                 Pool<Jedis> pool = standalonePools.get(cleanConnectionString);
 
-                if (!(pool instanceof IDestroyWrapper withDestructable)) {
-                    throw new IllegalStateException("pool does not implement IWithDestructable -> " + pool.getClass().getName());
+                if (!(pool instanceof IWithDestroyWrapper poolWithDestroyWrapper)) {
+                    throw new IllegalStateException("%s should implement %s but does not".formatted(pool.getClass().getName(), IWithDestroyWrapper.class.getName()));
                 }
 
-                withDestructable.incrementRefCnt();
+                poolWithDestroyWrapper.incrementRefCnt();
                 return pool;
             }
 
@@ -73,8 +73,8 @@ class RedisPoolHolder {
                             )
             );
 
-            if (!(jedisPool instanceof IDestroyWrapper withDestructable)) {
-                throw new IllegalStateException("Should implement IWithDestructable but does not: " + jedisPool.getClass());
+            if (!(jedisPool instanceof IWithDestroyWrapper)) {
+                throw new IllegalStateException("%s should implement %s but does not".formatted(jedisPool.getClass().getName(), IWithDestroyWrapper.class.getName()));
             }
 
             standalonePools.put(cleanConnectionString, jedisPool);
@@ -86,8 +86,9 @@ class RedisPoolHolder {
     /**
      * Singleton for administration of commonly used jedis pools
      *
-     * @author https://github.com/Batigoal/logstash-gelf.git
+     * @author <a href="https://github.com/Batigoal/logstash-gelf">Batigoal</a>
      * @author Mark Paluch
+     * @author duoduobingbing
      */
     private enum JedisPoolFactory {
 
@@ -100,13 +101,14 @@ class RedisPoolHolder {
             /**
              * Create a Jedis Pool for standalone Redis Operations.
              *
-             * @param hostURI
-             * @param configuredPort
-             * @param timeoutMs
+             * @param hostURI hostURI
+             * @param configuredPort configuredPort
+             * @param timeoutMs timeoutMs
+             * @param destroyWrapperSupplier {@link java.util.function.Function} that receives the original destroy method (e.g. {@code redisPool.destroy()}) call as {@link java.lang.Runnable} constructing the @{link {@link MutexSynchronizedDestroyWrapper}}
              * @return Pool of Jedis
              */
             @Override
-            public redis.clients.jedis.util.Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destructableSupplier) {
+            public Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier) {
 
                 String password = (hostURI.getUserInfo() != null) ? hostURI.getUserInfo().split(":", 2)[1] : null;
                 int database = Protocol.DEFAULT_DATABASE;
@@ -115,7 +117,7 @@ class RedisPoolHolder {
                 }
 
                 int port = hostURI.getPort() > 0 ? hostURI.getPort() : configuredPort;
-                return new JedisPoolWithClosing(new JedisPoolConfig(), hostURI.getHost(), port, timeoutMs, password, database, destructableSupplier);
+                return new JedisPoolWithWithDestroyHook(new JedisPoolConfig(), hostURI.getHost(), port, timeoutMs, password, database, destroyWrapperSupplier);
             }
 
         },
@@ -131,13 +133,14 @@ class RedisPoolHolder {
             /**
              * Create a Jedis Pool for sentinel Redis Operations.
              *
-             * @param hostURI
-             * @param configuredPort
-             * @param timeoutMs
+             * @param hostURI hostURI
+             * @param configuredPort configuredPort
+             * @param timeoutMs timeoutMs
+             * @param destroyWrapperSupplier {@link java.util.function.Function} that receives the original destroy method (e.g. {@code redisPool.destroy()}) call as {@link java.lang.Runnable} constructing the @{link {@link MutexSynchronizedDestroyWrapper}}
              * @return Pool of Jedis
              */
             @Override
-            public redis.clients.jedis.util.Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destructableSupplier) {
+            public Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier) {
 
                 Set<String> sentinels = getSentinels(hostURI);
                 String masterName = getMasterName(hostURI);
@@ -151,7 +154,7 @@ class RedisPoolHolder {
                     database = Integer.parseInt(hostURI.getPath().split("/", 2)[1]);
                 }
 
-                return new JedisSentinelPoolWithClosing(masterName, sentinels, new JedisPoolConfig(), timeoutMs, password, database, destructableSupplier);
+                return new JedisSentinelPoolWithWithDestroyHook(masterName, sentinels, new JedisPoolConfig(), timeoutMs, password, database, destroyWrapperSupplier);
             }
 
             protected String getMasterName(URI hostURI) {
@@ -191,13 +194,13 @@ class RedisPoolHolder {
 
         public abstract String getScheme();
 
-        abstract redis.clients.jedis.util.Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destructableSupplier);
+        abstract Pool<Jedis> createPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier);
 
-        public static redis.clients.jedis.util.Pool<Jedis> createJedisPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destructableSupplier) {
+        public static Pool<Jedis> createJedisPool(URI hostURI, int configuredPort, int timeoutMs, Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier) {
 
             for (JedisPoolFactory provider : JedisPoolFactory.values()) {
                 if (provider.getScheme().equals(hostURI.getScheme())) {
-                    return provider.createPool(hostURI, configuredPort, timeoutMs, destructableSupplier);
+                    return provider.createPool(hostURI, configuredPort, timeoutMs, destroyWrapperSupplier);
                 }
 
             }
@@ -207,21 +210,21 @@ class RedisPoolHolder {
 
     }
 
-    private static class JedisPoolWithClosing extends JedisPool implements IDestroyWrapper {
+    private static class JedisPoolWithWithDestroyHook extends JedisPool implements IWithDestroyWrapper {
 
         private final MutexSynchronizedDestroyWrapper mutexSynchronizedDestroyWrapper;
 
-        public JedisPoolWithClosing(
+        public JedisPoolWithWithDestroyHook(
                 GenericObjectPoolConfig<Jedis> poolConfig,
                 String host,
                 int port,
                 int timeout,
                 String password,
                 int database,
-                Function<Runnable, MutexSynchronizedDestroyWrapper> supplier
+                Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier
         ) {
             super(poolConfig, host, port, timeout, password, database);
-            this.mutexSynchronizedDestroyWrapper = supplier.apply(super::destroy);
+            this.mutexSynchronizedDestroyWrapper = destroyWrapperSupplier.apply(super::destroy);
         }
 
         @Override
@@ -237,19 +240,19 @@ class RedisPoolHolder {
     }
 
 
-    private static class JedisSentinelPoolWithClosing extends JedisSentinelPool implements IDestroyWrapper {
+    private static class JedisSentinelPoolWithWithDestroyHook extends JedisSentinelPool implements IWithDestroyWrapper {
 
-        public JedisSentinelPoolWithClosing(
+        public JedisSentinelPoolWithWithDestroyHook(
                 String masterName,
                 Set<String> sentinels,
                 GenericObjectPoolConfig<Jedis> poolConfig,
                 int timeout,
                 String password,
                 int database,
-                Function<Runnable, MutexSynchronizedDestroyWrapper> supplier
+                Function<Runnable, MutexSynchronizedDestroyWrapper> destroyWrapperSupplier
         ) {
             super(masterName, sentinels, poolConfig, timeout, timeout, password, database);
-            this.mutexSynchronizedDestroyWrapper = supplier.apply(super::destroy);
+            this.mutexSynchronizedDestroyWrapper = destroyWrapperSupplier.apply(super::destroy);
         }
 
         private final MutexSynchronizedDestroyWrapper mutexSynchronizedDestroyWrapper;
@@ -266,7 +269,7 @@ class RedisPoolHolder {
 
     }
 
-    interface IDestroyWrapper {
+    interface IWithDestroyWrapper {
 
         public void incrementRefCnt();
     }
