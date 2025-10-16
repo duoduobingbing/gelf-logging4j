@@ -221,6 +221,7 @@
                         <!-- Process sources using `PluginProcessor` to generate `Log4j2Plugins.dat` -->
                         <processor>org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</processor>
                         <!-- Process sources using `GraalVmProcessor` to generate a GraalVM reachability metadata file -->
+                        <!-- disabled for now because it generates a warning with testCompile, see https://github.com/duoduobingbing/gelf-logging4j/pull/18 for details -->
 <!--                        <processor>org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor</processor>-->
                     </annotationProcessors>
                 </configuration>
