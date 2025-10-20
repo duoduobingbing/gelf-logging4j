@@ -15,6 +15,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          fingerprint: ${{ secrets.GPG_FINGERPRINT }}
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v5
         with:
