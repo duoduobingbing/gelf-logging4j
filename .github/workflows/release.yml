@@ -15,6 +15,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          # get it via gpg --list-secret-keys --keyid-format long --with-keygrip --with-subkey-fingerprints
           fingerprint: ${{ secrets.GPG_FINGERPRINT }}
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v5
@@ -29,7 +30,7 @@ jobs:
         run: |
           gpg -K
       - name: Publish package
-        run: mvn -P release -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }} -DskipTests=true --batch deploy
+        run: mvn -P release -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }} -DskipTests=true --batch-mode deploy
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_TOKEN_USERID }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_SECRET }}
