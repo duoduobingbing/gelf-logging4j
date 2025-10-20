@@ -1,0 +1,28 @@
+name: Publish package to the Maven Central Repository
+on:
+  workflow_dispatch
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+      # another option to having this handled by setup java would be to use https://github.com/crazy-max/ghaction-import-gpg beforehand
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          server-id: central # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME  # env variable for username in deploy
+          server-password: MAVEN_PASSWORD # env variable for token in deploy
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Publish package
+        run: mvn -P release -DskipTests=true --batch-mode deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_TOKEN_USERID }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_SECRET }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
