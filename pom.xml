@@ -12,9 +12,10 @@
     <version>2.0.0</version>
     <artifactId>gelf-logging4j</artifactId>
 
-    <name>gelf logging connectors</name>
+    <name>gelf-logging4j</name>
     <url>https://github.com/duoduobingbing/gelf-logging4j</url>
     <inceptionYear>2013</inceptionYear>
+    <description>Gelf connectors for popular Java logging framworks like Log4j2 and Logback</description>
 
     <scm>
         <connection>scm:git://github.com/duoduobingbing/gelf-logging4j.git</connection>
@@ -678,6 +679,37 @@
 
     <profiles>
         <profile>
+            <id>sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                            <useAgent>false</useAgent>
+                            <passphraseEnvName>MAVEN_GPG_PASSPHRASE</passphraseEnvName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
             <id>release</id>
             <distributionManagement>
                 <snapshotRepository>
@@ -715,22 +747,24 @@
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <checksums>all</checksums>
-                            <deploymentName>${groupId}-${artifactId}-${version}</deploymentName>
+                            <deploymentName>${project.groupId}:${project.artifactId}:${project.version}</deploymentName>
                         </configuration>
                     </plugin>
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.4</version>
+                        <version>3.2.8</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <!-- Prevent gpg from using pinentry programs -->
+<!--                             Prevent gpg from using pinentry programs-->
                             <gpgArguments>
-                                <arg>--batch</arg>
+<!--                                <arg>&#45;&#45;batch</arg>-->
                                 <arg>--pinentry-mode</arg>
                                 <arg>loopback</arg>
                             </gpgArguments>
+                            <useAgent>false</useAgent>
+                            <passphraseEnvName>MAVEN_GPG_PASSPHRASE</passphraseEnvName>
                         </configuration>
                         <executions>
                             <execution>
