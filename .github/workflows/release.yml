@@ -13,9 +13,8 @@ jobs:
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_B64 }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-          fingerprint: ${{ secrets.GPG_FINGERPRINT }}
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v5
         with:
