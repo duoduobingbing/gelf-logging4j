@@ -13,6 +13,7 @@ jobs:
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
+          trust_level: 5
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
           # get it via gpg --list-secret-keys --keyid-format long --with-keygrip --with-subkey-fingerprints
@@ -31,7 +32,7 @@ jobs:
         run: |
           gpg -K
       - name: Publish package
-        run: mvn -P release -Dgpg.keyname=${{ secrets.GPG_FINGERPRINT }} -Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }} -DskipTests=true --batch-mode deploy
+        run: mvn -P sign -Dgpg.keyname=${{ secrets.GPG_FINGERPRINT }} "-Dgpg.passphrase=${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}" -DskipTests=true --batch-mode verify
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_TOKEN_USERID }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_SECRET }}
