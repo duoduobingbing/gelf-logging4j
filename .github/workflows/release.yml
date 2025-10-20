@@ -32,7 +32,8 @@ jobs:
         run: |
           gpg -K
       - name: Publish package
-        run: mvn -P sign -Dgpg.keyname=${{ secrets.GPG_FINGERPRINT }} -DskipTests=true --batch-mode verify
+        # -Dgpg.keyname=${{ secrets.GPG_FINGERPRINT }}
+        run: mvn -P sign -DskipTests=true --batch-mode verify
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_TOKEN_USERID }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_SECRET }}
