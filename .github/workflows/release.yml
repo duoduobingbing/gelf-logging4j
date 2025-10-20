@@ -20,6 +20,15 @@ jobs:
           server-password: MAVEN_PASSWORD # env variable for token in deploy
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Check if secret exists
+        run: |
+          if [[ -z "${{ secrets.GPG_PRIVATE_KEY_RAW }}" ]]; then
+            echo "Secret does not exist"
+          else
+            echo "Secret exists"
+      - name: check gpg
+        run: |
+          gpg -K
       - name: Publish package
         run: mvn -P release -DskipTests=true --batch-mode deploy
         env:
