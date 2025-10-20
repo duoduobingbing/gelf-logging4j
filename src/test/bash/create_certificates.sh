@@ -25,7 +25,7 @@ openssl req -config ${DIR}/openssl.cnf \
       -new -x509 -days 7300 -sha256 -extensions v3_ca \
       -out ${CA_DIR}/certs/ca.cert.pem \
       -passin pass:changeit \
-      -subj "/C=NN/ST=Unknown/L=Unknown/O=logstash-gelf/CN=CA Certificate"
+      -subj "/C=NN/ST=Unknown/L=Unknown/O=gelf-logging4j/CN=CA Certificate"
 
 echo "[INFO] Prepare CA database"
 echo 1000 > ${CA_DIR}/serial
@@ -48,7 +48,7 @@ openssl req -config ${DIR}/openssl.cnf \
       -key ${CA_DIR}/private/localhost.key.pem \
       -passin pass:changeit \
       -new -sha256 -out ${CA_DIR}/csr/localhost.csr.pem \
-      -subj "/C=NN/ST=Unknown/L=Unknown/O=logstash-gelf/CN=localhost"
+      -subj "/C=NN/ST=Unknown/L=Unknown/O=gelf-logging4j/CN=localhost"
 
 echo "[INFO] Signing certificate request"
 openssl ca -config ${DIR}/openssl.cnf \
@@ -66,7 +66,7 @@ openssl pkcs12 -export \
       -passin pass:changeit \
       -passout pass:changeit \
       -certfile ${CA_DIR}/certs/ca.cert.pem \
-      -name "logstash-gelf" \
+      -name "gelf-logging4j" \
       -out ${CA_DIR}/private/localhost.p12
 
 ${JAVA_HOME}/bin/keytool -importcert -keystore ${KEYSTORE_FILE} -file ${CA_DIR}/certs/ca.cert.pem -noprompt -storepass changeit

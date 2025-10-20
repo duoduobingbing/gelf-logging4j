@@ -5,7 +5,7 @@
     <contextName>test</contextName>
     <jmxConfigurator />
 
-    <appender name="GELF" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
+    <appender name="GELF" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <graylogHost>test:localhost</graylogHost>
         <graylogPort>12201</graylogPort>
         <additionalFields>
