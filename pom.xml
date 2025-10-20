@@ -715,7 +715,7 @@
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <checksums>all</checksums>
-                            <deploymentName>${groupId}-${artifactId}-${version}</deploymentName>
+                            <deploymentName>${project.groupId}-${project.artifactId}-${project.version}</deploymentName>
                         </configuration>
                     </plugin>
 
@@ -725,12 +725,12 @@
                         <version>3.2.8</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <!-- Prevent gpg from using pinentry programs -->
-<!--                            <gpgArguments>-->
+<!--                             Prevent gpg from using pinentry programs-->
+                            <gpgArguments>
 <!--                                <arg>&#45;&#45;batch</arg>-->
-<!--                                <arg>&#45;&#45;pinentry-mode</arg>-->
-<!--                                <arg>loopback</arg>-->
-<!--                            </gpgArguments>-->
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
                         </configuration>
                         <executions>
                             <execution>
