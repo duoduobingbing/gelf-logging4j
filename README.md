@@ -4,7 +4,7 @@
 **Fork of the popular now sunset [logstash-gelf](https://github.com/mp911de/logstash-gelf) by the amazing [mp911de](https://github.com/mp911de)**
 
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.duoduobingbing/gelf-logging4j/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.duoduobingbing/gelf-logging4j)
+[![Maven Central](https://maven-badges.sml.io/maven-central/io.github.duoduobingbing/gelf-logging4j/badge.svg)](https://maven-badges.sml.io/maven-central/io.github.duoduobingbing/gelf-logging4j)
 
 Provides logging functionality using the Graylog Extended Logging Format ([GELF](http://www.graylog2.org/resources/gelf/specification) 1.0 and 1.1) for using with:
 
@@ -25,11 +25,11 @@ Maven:
 <dependency>
     <groupId>io.github.duoduobingbing</groupId>
     <artifactId>gelf-logging4j</artifactId>
-    <version>x.y.z</version>
+    <version>2.0.0</version>
 </dependency>
 ```
     
-Direct download from [Maven Central](http://search.maven.org/remotecontent?filepath=io/github/duoduobingbing/gelf-logging4j/2.0.0/gelf-logging4j-2.0.0.jar)    
+Direct download from [Maven Central](https://central.sonatype.com/artifact/io.github.duoduobingbing/gelf-logging4j/versions)    
 
 
 
