@@ -119,7 +119,9 @@ public class DefaultGelfSenderProvider implements GelfSenderProvider {
         public GelfSender create(GelfSenderConfiguration configuration, String host, int port) throws IOException {
 
             int defaultTimeoutMs = (int) TimeUnit.MILLISECONDS.convert(2, TimeUnit.SECONDS);
-            URL url = new URL(host);
+
+            URI uri = URI.create(host);
+            URL url = uri.toURL();
 
             return new GelfHTTPSender(url, defaultTimeoutMs, defaultTimeoutMs, configuration.getErrorReporter());
         }

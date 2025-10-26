@@ -177,7 +177,7 @@ class GelfTCPSenderUnitTests {
         gelfMessage.setHost("host");
 
         for (int i = 0; i < 100; i++) {
-            gelfMessage.addField(RandomStringUtils.random(1024), RandomStringUtils.random(1024));
+            gelfMessage.addField(RandomStringUtils.secure().next(1024), RandomStringUtils.secure().next(1024));
         }
 
         tcpSender.sendMessage(gelfMessage);
@@ -198,8 +198,7 @@ class GelfTCPSenderUnitTests {
 
         ByteBuffer buffer;
 
-        NoopGelfTCPSender(String host, int port, int connectTimeoutMs, int readTimeoutMs, ErrorReporter errorReporter)
-                throws IOException {
+        NoopGelfTCPSender(String host, int port, int connectTimeoutMs, int readTimeoutMs, ErrorReporter errorReporter) throws IOException {
             super(host, port, connectTimeoutMs, readTimeoutMs, errorReporter);
         }
 

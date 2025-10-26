@@ -7,7 +7,6 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,7 @@ class GelfLogAppenderSystemPropertiesTests {
     @BeforeAll
     static void setupClass() {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-systemproperties.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
 
     }
@@ -40,7 +39,7 @@ class GelfLogAppenderSystemPropertiesTests {
     @AfterAll
     static void afterClass() throws Exception {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
     }
 
@@ -55,7 +54,7 @@ class GelfLogAppenderSystemPropertiesTests {
     void setup() {
         GelfTestSender.getMessages().clear();
         ThreadContext.clearAll();
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
     }
 
@@ -67,7 +66,7 @@ class GelfLogAppenderSystemPropertiesTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         assertThat(gelfMessage.getField("propertyField1")).isEqualTo(System.getProperty("user.language"));
         assertThat(gelfMessage.getField("propertyField2")).isEqualTo("${sys:myproperty}");
@@ -87,7 +86,7 @@ class GelfLogAppenderSystemPropertiesTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         assertThat(gelfMessage.getField("propertyField1")).isEqualTo(System.getProperty("user.language"));
         assertThat(gelfMessage.getField("propertyField2")).isEqualTo(PROPERTY1_VALUE);

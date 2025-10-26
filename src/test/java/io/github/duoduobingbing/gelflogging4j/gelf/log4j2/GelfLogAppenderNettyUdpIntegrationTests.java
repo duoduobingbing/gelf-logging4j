@@ -10,19 +10,16 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
@@ -45,7 +42,7 @@ class GelfLogAppenderNettyUdpIntegrationTests {
     @BeforeAll
     static void setupClass() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-netty-udp.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
         server.run();
@@ -60,7 +57,7 @@ class GelfLogAppenderNettyUdpIntegrationTests {
     @AfterAll
     static void afterClass() throws Exception {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
         server.close();
     }
@@ -74,6 +71,7 @@ class GelfLogAppenderNettyUdpIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testSimpleInfo() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
@@ -82,10 +80,10 @@ class GelfLogAppenderNettyUdpIntegrationTests {
 
         waitForGelf();
 
-        List jsonValues = server.getJsonValues();
+        List<?> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.getFirst();
 
         assertThat(jsonValue.get(GelfMessage.FIELD_HOST)).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
         assertThat(jsonValue.get("_server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);
@@ -116,13 +114,7 @@ class GelfLogAppenderNettyUdpIntegrationTests {
 
         logger.info("");
 
-        assertThrows(TimeoutException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                waitForGelf();
-            }
-        });
+        assertThrows(TimeoutException.class, this::waitForGelf);
 
     }
 
@@ -131,6 +123,7 @@ class GelfLogAppenderNettyUdpIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testVeryLargeMessage() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
@@ -143,10 +136,10 @@ class GelfLogAppenderNettyUdpIntegrationTests {
         logger.info(builder.toString());
         waitForGelf();
 
-        List jsonValues = server.getJsonValues();
+        List<?> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.getFirst();
 
         assertThat(jsonValue.get("_server.addr")).isEqualTo(RuntimeContainer.ADDRESS);
 

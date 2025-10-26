@@ -6,6 +6,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 
 /**
  * @author Mark Paluch
@@ -14,7 +15,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyLocalServer {
 
     private int port = 19392;
-    private EventLoopGroup group = new NioEventLoopGroup();
+    private EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
     private GelfInboundHandler handler = new GelfInboundHandler();
     private Class<? extends Channel> channelClass;
 
@@ -33,11 +34,12 @@ public class NettyLocalServer {
         });
     }
 
+    @SuppressWarnings({"unchecked"})
     public void run(ChannelInitializer<Channel> initializer) throws Exception {
         if (ServerChannel.class.isAssignableFrom(channelClass)) {
             ServerBootstrap b = new ServerBootstrap();
             b.group(group);
-            b.channel((Class) channelClass).childHandler(initializer).childOption(ChannelOption.RCVBUF_ALLOCATOR,
+            b.channel((Class<? extends ServerChannel>) channelClass).childHandler(initializer).childOption(ChannelOption.RECVBUF_ALLOCATOR,
                     new AdaptiveRecvByteBufAllocator(8192, 8192, Integer.MAX_VALUE));
 
             // Bind and start to accept incoming connections.

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ class GelfHTTPSenderIntegrationTests {
         server = new NettyLocalHTTPServer();
         server.run();
 
-        sender = new GelfHTTPSender(new URL("http://127.0.0.1:19393"), 1000, 1000, new ErrorReporter() {
+        sender = new GelfHTTPSender(URI.create("http://127.0.0.1:19393").toURL(), 1000, 1000, new ErrorReporter() {
 
             @Override
             public void reportError(String message, Exception e) {
@@ -79,7 +80,7 @@ class GelfHTTPSenderIntegrationTests {
         List<Object> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> messageJson = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> messageJson = (Map<String, Object>) jsonValues.getFirst();
         assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
         assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
         assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
@@ -101,7 +102,7 @@ class GelfHTTPSenderIntegrationTests {
         List<Object> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> messageJson = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> messageJson = (Map<String, Object>) jsonValues.getFirst();
         assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
         assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
         assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
@@ -136,7 +137,7 @@ class GelfHTTPSenderIntegrationTests {
         server.setReturnStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 
         String uri = "http://127.0.0.1:19393";
-        GelfHTTPSender sender = new GelfHTTPSender(new URL(uri), 1000, 1000, errorReporter);
+        GelfHTTPSender sender = new GelfHTTPSender(URI.create(uri).toURL(), 1000, 1000, errorReporter);
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 
@@ -150,7 +151,7 @@ class GelfHTTPSenderIntegrationTests {
         server.setReturnStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 
         String uri = "http://foo:(.*bar)@127.0.0.1:19394"; // unreachable host, and a regex
-        GelfHTTPSender sender = new GelfHTTPSender(new URL(uri), 1000, 1000, errorReporter);
+        GelfHTTPSender sender = new GelfHTTPSender(URI.create(uri).toURL(), 1000, 1000, errorReporter);
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 

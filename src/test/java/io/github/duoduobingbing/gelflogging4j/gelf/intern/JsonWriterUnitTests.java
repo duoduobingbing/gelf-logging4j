@@ -8,10 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Mark Paluch
@@ -24,11 +26,19 @@ class JsonWriterUnitTests {
     void before() throws Exception {
 
         byte[] bytes;
-        try(InputStream stream = getClass().getResourceAsStream("/utf8.txt")) {
+        try (InputStream stream = getClass().getResourceAsStream("/utf8.txt")) {
             bytes = stream.readAllBytes();
         }
 
         content = new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    private JsonMapper getJsonMapper() {
+        return JsonMapper
+                .builder(
+                        JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
+                )
+                .build();
     }
 
     @Test
@@ -40,8 +50,8 @@ class JsonWriterUnitTests {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         JsonWriter.toJSONString(OutputAccessor.from(buffer), map);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map parsedByJackson = objectMapper.readValue(buffer.toByteArray(), Map.class);
+        JsonMapper jsonMapper = getJsonMapper();
+        Map<?, ?> parsedByJackson = jsonMapper.readValue(buffer.toByteArray(), Map.class);
         assertThat(parsedByJackson).isEqualTo(map);
     }
 
@@ -51,11 +61,14 @@ class JsonWriterUnitTests {
         Map<String, String> map = new HashMap<>();
         map.put("key", content);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map parsedByJackson = objectMapper.readValue(objectMapper.writeValueAsBytes(map), Map.class);
+        JsonMapper jsonMapper = getJsonMapper();
+        Map<?, ?> parsedByJackson = jsonMapper.readValue(jsonMapper.writeValueAsBytes(map), Map.class);
 
         assertThat(parsedByJackson).isEqualTo(map);
     }
+
+    static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP_REF = new TypeReference<Map<String, Object>>() {
+    };
 
     @Test
     void testTypeEncoding() throws Exception {
@@ -79,8 +92,8 @@ class JsonWriterUnitTests {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         JsonWriter.toJSONString(OutputAccessor.from(buffer), map);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map parsedByJackson = objectMapper.readValue(buffer.toByteArray(), Map.class);
+        JsonMapper jsonMapper = getJsonMapper();
+        Map<String, Object> parsedByJackson = jsonMapper.readValue(buffer.toByteArray(), STRING_OBJECT_MAP_REF);
         assertThat(parsedByJackson).isEqualTo(expected);
     }
 }

@@ -3,6 +3,7 @@ package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.DynamicMdcMessageField;
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfUtil;
@@ -19,6 +20,7 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 
 /**
  * @author <a href="mailto:tobiassebastian.kaefer@1und1.de">Tobias Kaefer</a>
+ * @author duoduobingbing
  * @since 2013-10-08
  */
 class LogbackLogEvent implements LogEvent {
@@ -162,8 +164,8 @@ class LogbackLogEvent implements LogEvent {
             case LoggerName:
                 return loggingEvent.getLoggerName();
             case Marker:
-                if (loggingEvent.getMarker() != null && !"".equals(loggingEvent.getMarker().toString())) {
-                    return loggingEvent.getMarker().toString();
+                if(loggingEvent.getMarkerList() != null && !loggingEvent.getMarkerList().isEmpty()) {
+                    return loggingEvent.getMarkerList().stream().map(Object::toString).collect(Collectors.joining(","));
                 }
                 return null;
         }

@@ -38,7 +38,7 @@ class GelfLogAppenderDynamicMdcTests {
     @BeforeAll
     static void setupClass() {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-dynamic-mdc.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
     }
@@ -46,7 +46,7 @@ class GelfLogAppenderDynamicMdcTests {
     @AfterAll
     static void afterClass() throws Exception {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
     }
 
@@ -64,7 +64,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         String myMdc = gelfMessage.getField(MDC_MY_MDC);
         assertThat(myMdc).isNull();
@@ -81,7 +81,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         assertThat(gelfMessage.getField(MDC_MY_MDC)).isEqualTo(VALUE_1);
         assertThat(gelfMessage.getField(MY_MDC_WITH_SUFFIX1)).isEqualTo(VALUE_2);
@@ -98,7 +98,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         assertThat(gelfMessage.getField(SOME_FIELD)).isEqualTo("included");
         assertThat(gelfMessage.getField(SOME_OTHER_FIELD)).isNull();
@@ -117,7 +117,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
         Map<String, Object> jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject.get("myMdcs")).isEqualTo("String");
@@ -136,7 +136,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        gelfMessage = GelfTestSender.getMessages().get(0);
+        gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject.get("myMdcl")).isEqualTo(1);
@@ -152,7 +152,7 @@ class GelfLogAppenderDynamicMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        gelfMessage = GelfTestSender.getMessages().get(0);
+        gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject.get("myMdcl")).isNull();

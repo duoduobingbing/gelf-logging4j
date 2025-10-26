@@ -16,7 +16,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
  * @author Mark Paluch
  * @since 1.5
  */
-public class GelfREDISSender<T> implements GelfSender {
+public class GelfREDISSender implements GelfSender {
 
     private final Pool<Jedis> jedisPool;
     private final ErrorReporter errorReporter;

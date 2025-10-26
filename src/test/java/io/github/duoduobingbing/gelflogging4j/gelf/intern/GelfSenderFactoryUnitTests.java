@@ -1,12 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -15,11 +11,13 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageAssembler;
@@ -30,6 +28,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageAssembler;
  * @author Mark Paluch
  */
 @ExtendWith(MockitoExtension.class)
+
 class GelfSenderFactoryUnitTests {
 
     private static final String THE_HOST = "thehost";
@@ -50,7 +49,7 @@ class GelfSenderFactoryUnitTests {
     void before() throws Exception {
         GelfSenderFactory.addGelfSenderProvider(senderProvider);
 
-        when(assembler.getHost()).thenReturn(THE_HOST);
+        Mockito.when(assembler.getHost()).thenReturn(THE_HOST);
     }
 
     @AfterEach
@@ -62,11 +61,11 @@ class GelfSenderFactoryUnitTests {
     @Test
     void testCreateSender() throws Exception {
 
-        when(assembler.getHost()).thenReturn(THE_HOST);
+        Mockito.when(assembler.getHost()).thenReturn(THE_HOST);
         mockSupports();
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenReturn(sender);
+        Mockito.when(senderProvider.create(any(GelfSenderConfiguration.class))).thenReturn(sender);
 
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
 
         assertThat(result).isSameAs(sender);
     }
@@ -74,31 +73,31 @@ class GelfSenderFactoryUnitTests {
     @Test
     void testCreateSenderFailUdp() throws Exception {
 
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
         assertThat(result).isNotNull();
-        verify(errorReporter).reportError(anyString(), ArgumentMatchers.<Exception> any());
+        Mockito.verify(errorReporter).reportError(anyString(), ArgumentMatchers.<Exception> any());
     }
 
     @Test
     void testCreateSenderFailTcp() throws Exception {
 
-        reset(assembler);
-        when(assembler.getHost()).thenReturn("tcp:" + THE_HOST);
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        Mockito.reset(assembler);
+        Mockito.when(assembler.getHost()).thenReturn("tcp:" + THE_HOST);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
         assertThat(result).isNotNull();
-        verify(errorReporter).reportError(anyString(), ArgumentMatchers.<Exception> any());
+        Mockito.verify(errorReporter).reportError(anyString(), ArgumentMatchers.<Exception> any());
     }
 
     @Test
     void testCreateSenderFailUnknownHostException() throws Exception {
 
         mockSupports();
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new UnknownHostException());
+        Mockito.when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new UnknownHostException());
 
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
         assertThat(result).isNull();
 
-        verify(errorReporter).reportError(anyString(), any(UnknownHostException.class));
+        Mockito.verify(errorReporter).reportError(anyString(), any(UnknownHostException.class));
 
     }
 
@@ -106,12 +105,12 @@ class GelfSenderFactoryUnitTests {
     void testCreateSenderFailSocketException() throws Exception {
 
         mockSupports();
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new SocketException());
+        Mockito.when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new SocketException());
 
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
         assertThat(result).isNull();
 
-        verify(errorReporter).reportError(anyString(), any(SocketException.class));
+        Mockito.verify(errorReporter).reportError(anyString(), any(SocketException.class));
 
     }
 
@@ -119,12 +118,12 @@ class GelfSenderFactoryUnitTests {
     void testCreateSenderFailIOException() throws Exception {
 
         mockSupports();
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new IOException());
+        Mockito.when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new IOException());
 
-        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.EMPTY_MAP);
+        GelfSender result = GelfSenderFactory.createSender(assembler, errorReporter, Collections.emptyMap());
         assertThat(result).isNull();
 
-        verify(errorReporter).reportError(anyString(), any(IOException.class));
+        Mockito.verify(errorReporter).reportError(anyString(), any(IOException.class));
 
     }
 
@@ -132,17 +131,12 @@ class GelfSenderFactoryUnitTests {
     void testCreateSenderFailNPE() throws Exception {
 
         mockSupports();
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new NullPointerException());
+        Mockito.when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new NullPointerException());
 
-        try {
-            GelfSenderFactory.createSender(assembler, errorReporter, new HashMap<String, Object>());
-            fail("Missing NullPointerException");
-        } catch (Exception e) {
-            assertThat(e).isInstanceOf(NullPointerException.class);
-        }
+        Assertions.assertThrows(NullPointerException.class, () -> GelfSenderFactory.createSender(assembler, errorReporter, new HashMap<String, Object>()));
     }
 
     private void mockSupports() {
-        when(senderProvider.supports(THE_HOST)).thenReturn(true);
+        Mockito.when(senderProvider.supports(THE_HOST)).thenReturn(true);
     }
 }

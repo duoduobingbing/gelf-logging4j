@@ -1,12 +1,18 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageBuilder.newInstance;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.Date;
 
 import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 import io.github.duoduobingbing.gelflogging4j.StackTraceFilter;
@@ -37,8 +43,13 @@ public class GelfMessageAssembler implements HostAndPortProvider {
     private static final int MAX_SHORT_MESSAGE_LENGTH = 250;
     private static final int MAX_PORT_NUMBER = 65535;
     private static final int MAX_MESSAGE_SIZE = Integer.MAX_VALUE;
-    private static final Set<NamedLogField> SOURCE_FIELDS = EnumSet.of(NamedLogField.SourceClassName,
-            NamedLogField.SourceSimpleClassName, NamedLogField.SourceMethodName, NamedLogField.SourceLineNumber);
+
+    private static final Set<NamedLogField> SOURCE_FIELDS = EnumSet.of(
+            NamedLogField.SourceClassName,
+            NamedLogField.SourceSimpleClassName,
+            NamedLogField.SourceMethodName,
+            NamedLogField.SourceLineNumber
+    );
 
     private String host;
     private String version = GelfMessage.GELF_VERSION;
@@ -61,14 +72,7 @@ public class GelfMessageAssembler implements HostAndPortProvider {
     public GelfMessageAssembler() {
 
         if (PoolingGelfMessageBuilder.usePooling()) {
-
-            builders = new ThreadLocal<PoolingGelfMessageBuilder>() {
-
-                @Override
-                protected PoolingGelfMessageBuilder initialValue() {
-                    return PoolingGelfMessageBuilder.newInstance();
-                }
-            };
+            builders = ThreadLocal.withInitial(PoolingGelfMessageBuilder::newInstance);
         } else {
             builders = null;
         }
@@ -134,7 +138,7 @@ public class GelfMessageAssembler implements HostAndPortProvider {
      */
     public GelfMessage createGelfMessage(LogEvent logEvent) {
 
-        GelfMessageBuilder builder = builders != null ? builders.get().recycle() : newInstance();
+        GelfMessageBuilder builder = builders != null ? builders.get().recycle() : GelfMessageBuilder.newInstance();
 
         Throwable throwable = logEvent.getThrowable();
         String message = logEvent.getMessage();
