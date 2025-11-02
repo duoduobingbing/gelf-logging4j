@@ -1,5 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
@@ -22,7 +23,8 @@ public class TestHandler extends Handler {
         Formatter f;
         if (formatterClassName != null) {
             try {
-                f = (Formatter) Class.forName(formatterClassName).newInstance();
+                Constructor<?> formatterConstructor = Class.forName(formatterClassName).getDeclaredConstructor();
+                f = (Formatter) formatterConstructor.newInstance();
             } catch (Exception e) {
                 f = new SimpleFormatter();
             }

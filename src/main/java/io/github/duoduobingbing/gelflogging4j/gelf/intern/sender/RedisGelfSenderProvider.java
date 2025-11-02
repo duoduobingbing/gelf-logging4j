@@ -40,7 +40,7 @@ public class RedisGelfSenderProvider implements GelfSenderProvider {
             port = Protocol.DEFAULT_PORT;
         }
 
-        if (hostUri.getFragment() == null || hostUri.getFragment().trim().equals("")) {
+        if (hostUri.getFragment() == null || hostUri.getFragment().trim().isEmpty()) {
             throw new IllegalArgumentException("Redis URI must specify fragment");
         }
 
@@ -52,8 +52,8 @@ public class RedisGelfSenderProvider implements GelfSenderProvider {
         return createSenderInternal(hostUri, port, configuration.getErrorReporter());
     }
 
-    GelfREDISSender<?> createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
+    GelfREDISSender createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
         Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(hostUri, port);
-        return new GelfREDISSender<>(pool, hostUri.getFragment(), errorReporter);
+        return new GelfREDISSender(pool, hostUri.getFragment(), errorReporter);
     }
 }

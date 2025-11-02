@@ -11,9 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,7 +32,7 @@ class GelfLogAppenderKafkaIntegrationTests {
     @AfterEach
     void tearDown() {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         ((LoggerContext) LogManager.getContext(false)).reconfigure();
     }
 
@@ -42,27 +40,28 @@ class GelfLogAppenderKafkaIntegrationTests {
     void testKafkaSender() throws Exception {
 
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-gelf-with-kafka.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
 
         EphemeralKafkaBroker broker = EphemeralKafkaBroker.create(9092);
         KafkaHelper helper = KafkaHelper.createFor(broker);
         broker.start().get(30, TimeUnit.SECONDS);
 
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.error("Log from kafka");
 
-        KafkaConsumer<String, String> consumer = helper.createStringConsumer();
-        consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
+        try(KafkaConsumer<String, String> consumer = helper.createStringConsumer()) {
+            consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
 
-        AssertJAssertions.assertThat(records).isNotNull();
-        AssertJAssertions.assertThat(records.isEmpty()).isFalse();
-        AssertJAssertions.assertThat(records.count()).isEqualTo(1);
+            AssertJAssertions.assertThat(records).isNotNull();
+            AssertJAssertions.assertThat(records.isEmpty()).isFalse();
+            AssertJAssertions.assertThat(records.count()).isEqualTo(1);
 
-        broker.stop();
+            broker.stop();
+        }
     }
 }

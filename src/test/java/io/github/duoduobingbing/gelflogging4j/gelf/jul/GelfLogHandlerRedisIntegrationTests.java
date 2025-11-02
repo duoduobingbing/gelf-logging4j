@@ -12,7 +12,6 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisIntegrationTestBase;
-import io.github.duoduobingbing.gelflogging4j.gelf.RedisNonStartingIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.GelfREDISSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.TestRedisGelfSenderProvider;
@@ -76,7 +75,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         URI lastResolvedHost;
 
         @Override
-        protected GelfREDISSender<?> createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
+        protected GelfREDISSender createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
             this.lastResolvedHost = hostUri;
             this.lastResolvedPort = port;
             return super.createSenderInternal(hostUri, port, errorReporter);

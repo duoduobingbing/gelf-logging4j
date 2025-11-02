@@ -4,12 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,6 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Thomas Herzog
@@ -45,12 +45,15 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
     @BeforeEach
     public void beforeEach() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-dynamic-mdcfieldtypes.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
 
         GelfTestSender.getMessages().clear();
     }
+
+    private static final TypeReference<HashMap<String, Object>> STRING_OBJECT_HASHMAP_TYPE_REF = new TypeReference<HashMap<String, Object>>() {
+    };
 
     @Test
     void testWithRegexMatch() throws Exception {
@@ -66,12 +69,16 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
         // -- When --
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         // -- Then --
         String json = gelfMessage.toJson();
-        HashMap<String, Object> result = new ObjectMapper().configure(DeserializationFeature.USE_LONG_FOR_INTS, true)
-                .readValue(json, HashMap.class);
+
+        HashMap<String, Object> result = JsonMapper
+                .builder()
+                .enable(DeserializationFeature.USE_LONG_FOR_INTS).build()
+                .readValue(json, STRING_OBJECT_HASHMAP_TYPE_REF);
+
         assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNotNull().isEqualTo(LONG_VALUE_1);
         assertThat(result.get("_" + MY_MDC_LONG_VALUE_2)).isNotNull().isEqualTo(LONG_VALUE_2);
         assertThat(result.get("_" + MY_MDC_DOUBLE_VALUE_1)).isNotNull().isEqualTo(DOUBLE_VALUE_1);
@@ -93,8 +100,12 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
 
         // -- Then --
         String json = gelfMessage.toJson();
-        HashMap<String, Object> result = new ObjectMapper().configure(DeserializationFeature.USE_LONG_FOR_INTS, true)
-                .readValue(json, HashMap.class);
+
+        HashMap<String, Object> result = JsonMapper
+                .builder()
+                .enable(DeserializationFeature.USE_LONG_FOR_INTS).build()
+                .readValue(json, STRING_OBJECT_HASHMAP_TYPE_REF);
+
         assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNull();
     }
 }

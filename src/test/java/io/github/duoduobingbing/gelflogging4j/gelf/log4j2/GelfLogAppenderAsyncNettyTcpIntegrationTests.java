@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +40,7 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
     @BeforeAll
     static void setupClass() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-async-netty-tcp.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
         server.run();
@@ -50,7 +49,7 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
     @AfterAll
     static void afterClass() throws Exception {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
         server.close();
     }
@@ -63,6 +62,7 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testWithLocation() throws Exception {
 
         Logger logger = loggerContext.getLogger("async.location");
@@ -71,10 +71,10 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
 
         waitForGelf();
 
-        List jsonValues = server.getJsonValues();
+        List<?> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.getFirst();
 
         assertThat(jsonValue.get(GelfMessage.FIELD_HOST)).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
         assertThat(jsonValue.get("_server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);

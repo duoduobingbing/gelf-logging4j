@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,6 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.netty.NettyLocalServer;
 
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Mark Paluch
@@ -42,7 +40,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
     @BeforeAll
     static void setupClass() throws Exception {
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-empty-facility-netty-udp.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
         server.run();
@@ -51,7 +49,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
     @AfterAll
     static void afterClass() throws Exception {
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
         server.close();
     }
@@ -65,6 +63,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testSimpleInfo() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
@@ -73,7 +72,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
 
         waitForGelf();
 
-        List jsonValues = server.getJsonValues();
+        List<?> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
@@ -105,6 +104,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testVeryLargeMessage() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
@@ -117,7 +117,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
         logger.info(builder.toString());
         waitForGelf();
 
-        List jsonValues = server.getJsonValues();
+        List<?> jsonValues = server.getJsonValues();
         assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);

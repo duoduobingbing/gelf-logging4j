@@ -43,7 +43,7 @@ class GelfLogAppenderNonStringMdcTests {
         Class<?> customThreadMapClass = TestingMutableThreadContextMap.class;
         System.setProperty("log4j2.threadContextMap", customThreadMapClass.getName());
         System.setProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2/log4j2-dynamic-mdc.xml");
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
 
         loggerContext = (LoggerContext) LogManager.getContext(false);
         loggerContext.reconfigure();
@@ -72,7 +72,7 @@ class GelfLogAppenderNonStringMdcTests {
     static void afterClass() throws Exception {
         System.clearProperty("log4j2.threadContextMap");
         System.clearProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
-        PropertiesUtil.getProperties().reload();
+        //PropertiesUtil.getProperties().reload(); is now a no-op.
         loggerContext.reconfigure();
 
         Provider currentProvider = ProviderUtil.getProvider();
@@ -107,7 +107,7 @@ class GelfLogAppenderNonStringMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
         Map<String, Object> jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject).containsEntry("myMdcs", "String");
@@ -126,7 +126,7 @@ class GelfLogAppenderNonStringMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        gelfMessage = GelfTestSender.getMessages().get(0);
+        gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject).containsEntry("myMdcl", 1);
@@ -142,7 +142,7 @@ class GelfLogAppenderNonStringMdcTests {
         logger.info(LOG_MESSAGE);
         assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        gelfMessage = GelfTestSender.getMessages().get(0);
+        gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
         assertThat(jsonObject).doesNotContainKey("myMdcl");

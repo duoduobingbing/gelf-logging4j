@@ -49,6 +49,7 @@ class GelfLogbackAppenderHTTPIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testHttpSender() {
 
         Logger testLogger = lc.getLogger("testLogger");
@@ -61,7 +62,7 @@ class GelfLogbackAppenderHTTPIntegrationTests {
         assertThat(uri).isEqualTo("/foo/bar");
         assertThat(jsonValues).hasSize(1);
 
-        Map<String, Object> jsonObject = (Map<String, Object>) jsonValues.get(0);
+        Map<String, Object> jsonObject = (Map<String, Object>) jsonValues.getFirst();
         assertThat(jsonObject.get("short_message")).isEqualTo("Hi there");
     }
 }

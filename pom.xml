@@ -81,7 +81,7 @@
         <junit5.version>5.13.4</junit5.version>
         <assertj.version>3.27.6</assertj.version>
         <mockito.version>5.20.0</mockito.version>
-        <jackson.version>2.20.0</jackson.version>
+        <jackson.version>3.0.1</jackson.version>
         <jedis.version>6.2.0</jedis.version>
         <commons-pool2.version>2.12.1</commons-pool2.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
@@ -212,6 +212,7 @@
                     <release>${maven.compiler.release}</release>
 <!--                    <release>${java.version}</release>-->
                     <compilerArgs>
+                        <arg>-Xlint:deprecation,unchecked</arg>
                         <!-- Provide the project coordinates to `GraalVmProcessor`: -->
 <!--                        <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>-->
 <!--                        <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>-->
@@ -519,10 +520,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
-            <scope>test</scope>
         </dependency>
 
 

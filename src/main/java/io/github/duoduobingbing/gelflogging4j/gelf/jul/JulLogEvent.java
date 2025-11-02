@@ -103,21 +103,21 @@ public class JulLogEvent implements LogEvent {
 
     private String getThreadName(LogRecord record) {
 
-        String cacheKey = "" + record.getThreadID();
+        String cacheKey = "" + record.getLongThreadID();
         if (threadNameCache.containsKey(cacheKey)) {
             return threadNameCache.get(cacheKey);
         }
 
-        long threadId = record.getThreadID();
+        long threadId = record.getLongThreadID();
         String threadName = cacheKey;
 
         Thread currentThread = Thread.currentThread();
-        if (record.getThreadID() == currentThread.getId()) {
+        if (record.getLongThreadID() == currentThread.threadId()) {
             threadName = currentThread.getName();
         } else {
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
             for (Thread thread : threadSet) {
-                if (thread.getId() == threadId) {
+                if (thread.threadId() == threadId) {
                     threadName = thread.getName();
                     break;
                 }

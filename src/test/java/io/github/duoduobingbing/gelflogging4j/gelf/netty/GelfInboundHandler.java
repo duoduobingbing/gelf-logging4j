@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamReadFeature;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -26,7 +28,14 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
     private final Map<ChunkId, List<Chunk>> chunks = new HashMap<>();
     private final List<Object> values = new ArrayList<>();
     private ByteArrayOutputStream intermediate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final JsonMapper jsonMapper = JsonMapper.builder(
+            JsonFactory
+                    .builder()
+                    .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                    .build()
+    )
+            .build();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -36,8 +45,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
             boolean requireNullEnd = false;
             ByteBuf buffer = null;
 
-            if (msg instanceof DatagramPacket) {
-                DatagramPacket packet = (DatagramPacket) msg;
+            if (msg instanceof DatagramPacket packet) {
                 buffer = packet.content();
             } else if (msg instanceof ByteBuf) {
                 buffer = (ByteBuf) msg;
@@ -49,20 +57,20 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
                 buffer.readBytes(temporaryBuffer, buffer.readableBytes());
             }
 
-            byte bytes[] = temporaryBuffer.toByteArray();
+            byte[] bytes = temporaryBuffer.toByteArray();
             if (bytes.length > 2) {
                 // if chunked 0x1e, 0x0f ,8 bytes id, number, size
                 // if gzip 0x1f 0x8b
 
                 if (startsWith(bytes, GELF_CHUNKED_ID)) {
 
-                    byte id[] = new byte[8];
+                    byte[] id = new byte[8];
                     System.arraycopy(bytes, 2, id, 0, 8);
                     byte number = bytes[10];
                     byte count = bytes[11];
                     ChunkId chunkId = new ChunkId(id, count);
 
-                    byte message[] = new byte[bytes.length - 12];
+                    byte[] message = new byte[bytes.length - 12];
                     System.arraycopy(bytes, 12, message, 0, message.length);
 
                     synchronized (chunks) {
@@ -109,7 +117,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
 
-                Object parse = objectMapper.readValue(is, Map.class);
+                Object parse = jsonMapper.readValue(is, Map.class);
                 synchronized (values) {
                     values.add(parse);
                 }
@@ -156,7 +164,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private class Chunk implements Comparable<Chunk> {
+    private static class Chunk implements Comparable<Chunk> {
         private byte[] bytes;
         private int seq;
 
@@ -171,7 +179,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private class ChunkId {
+    private static class ChunkId {
 
         private byte[] id;
         private byte count;
@@ -186,11 +194,9 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof ChunkId)) {
+            if (!(o instanceof ChunkId chunkId)) {
                 return false;
             }
-
-            ChunkId chunkId = (ChunkId) o;
 
             if (count != chunkId.count) {
                 return false;
