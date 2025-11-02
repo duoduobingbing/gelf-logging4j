@@ -15,6 +15,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 @Testcontainers
 public class KafkaIntegrationTestBase {
@@ -28,7 +29,12 @@ public class KafkaIntegrationTestBase {
     }
 
     protected static KafkaProducer<byte[], byte[]> createKafkaProducer(String bootstrapServers) {
+        return createKafkaProducer(bootstrapServers,(properties -> {}) /* no-op modification */);
+    }
+
+    protected static KafkaProducer<byte[], byte[]> createKafkaProducer(String bootstrapServers, Consumer<Properties> propertiesModifier) {
         Objects.requireNonNull(bootstrapServers);
+        Objects.requireNonNull(propertiesModifier);
 
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -36,7 +42,8 @@ public class KafkaIntegrationTestBase {
         producerProps.put(ProducerConfig.BATCH_SIZE_CONFIG, "10");
         producerProps.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-junit");
         producerProps.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "2000");
-        producerProps.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+
+        propertiesModifier.accept(producerProps);
 
         ByteArraySerializer keySerializer = new ByteArraySerializer();
         ByteArraySerializer valueSerializer = new ByteArraySerializer();

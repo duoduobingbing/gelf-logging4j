@@ -47,10 +47,6 @@ class GelfLogbackAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase 
     @Test
     void testKafkaSender() throws Exception {
 
-//        EphemeralKafkaBroker broker = EphemeralKafkaBroker.create(19092);
-//        KafkaHelper helper = KafkaHelper.createFor(broker);
-//        broker.start().get(30, TimeUnit.SECONDS);
-
         LoggerContext lc = new LoggerContext();
         lc.setMDCAdapter(MDC.getMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
