@@ -1,11 +1,13 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
+
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * @author Mark Paluch
@@ -18,17 +20,19 @@ public class JsonUtil {
             )
             .build();
 
+    private static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP_TYPE_REF = new TypeReference<Map<String, Object>>() {
+    };
+
     /**
      * Parse a JSON string to a {@link Map}
      *
      * @param jsonAsString JSON value as {@link String}.
      * @return object as {@link Map}.
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, Object> parseToMap(String jsonAsString) {
         try {
-            return jsonMapper.readValue(jsonAsString, Map.class);
-        } catch (IOException e) {
+            return jsonMapper.readValue(jsonAsString, STRING_OBJECT_MAP_TYPE_REF);
+        } catch (JacksonException e) { //TODO: check if this can be ommited entirely
             throw new IllegalStateException(e);
         }
     }

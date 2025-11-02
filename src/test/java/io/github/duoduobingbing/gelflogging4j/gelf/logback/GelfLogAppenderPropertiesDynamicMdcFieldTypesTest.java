@@ -1,16 +1,16 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URL;
 import java.util.HashMap;

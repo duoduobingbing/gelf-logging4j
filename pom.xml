@@ -105,7 +105,7 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven.jacoco.version>0.8.7</maven.jacoco.version>
         <kafka-clients.version>3.6.0</kafka-clients.version>
-        <kafka-junit.version>4.2.10</kafka-junit.version>
+<!--        <kafka-junit.version>4.2.10</kafka-junit.version>-->
 
         <bouncycastle.version>1.82</bouncycastle.version>
         <testcontainers.version>1.21.3</testcontainers.version>
@@ -543,12 +543,12 @@
         </dependency>
 
         <!-- kafka-junit dependency -->
-        <dependency>
-            <groupId>com.github.charithe</groupId>
-            <artifactId>kafka-junit</artifactId>
-            <version>${kafka-junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.charithe</groupId>-->
+<!--            <artifactId>kafka-junit</artifactId>-->
+<!--            <version>${kafka-junit.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -617,6 +617,13 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-kafka</artifactId>
+            <version>2.0.1</version>
             <scope>test</scope>
         </dependency>
 

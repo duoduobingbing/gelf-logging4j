@@ -1,50 +1,83 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderConfiguration;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
-import com.github.charithe.kafka.KafkaHelper;
-import com.github.charithe.kafka.KafkaJunitExtension;
-import com.github.charithe.kafka.KafkaJunitExtensionConfig;
-import com.github.charithe.kafka.StartupMode;
+import java.util.Map;
 
 /**
  * @author Rifat Döver
  * @since 1.13
  */
-@ExtendWith({ KafkaJunitExtension.class, MockitoExtension.class })
-@KafkaJunitExtensionConfig(startupMode = StartupMode.WAIT_FOR_STARTUP)
-class KafkaGelfSenderProviderIntegrationTest {
+@Testcontainers
+@ExtendWith({MockitoExtension.class})
+class KafkaGelfSenderProviderIntegrationTest extends KafkaIntegrationTestBase {
+
     private static final String TEST_LOG_TOPIC = "log-topic";
-    @Mock
-    GelfSenderConfiguration gelfSenderConfiguration;
+
+    private static final Logger logger = LoggerFactory.getLogger(KafkaGelfSenderProviderIntegrationTest.class);
+
+    @Container
+    ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
+
+    public record OnlyHostTestGelfSenderConfig(String host) implements GelfSenderConfiguration {
+
+        @Override
+        public String getHost(){
+            return this.host;
+        }
+
+        @Override
+        public int getPort() {
+            return 0;
+        }
+
+        @Override
+        public ErrorReporter getErrorReporter() {
+            return null;
+        }
+
+        @Override
+        public Map<String, Object> getSpecificConfigurations() {
+            return Map.of();
+        }
+    }
 
     @Test
-    void testKafkaGelfSenderProvider(KafkaHelper helper) {
+    void testKafkaGelfSenderProvider() {
+
+        String bootstrapServers = kafkaContainer.getBootstrapServers();
 
         StringBuilder builder = new StringBuilder();
         builder.append("kafka://");
-        builder.append(helper.producerConfig().getProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
+        builder.append(bootstrapServers);
         builder.append("?request.timeout.ms=50&acks=all&client.id=kafka-junit&batch.size=10");
         builder.append("#");
         builder.append(TEST_LOG_TOPIC);
 
-        when(gelfSenderConfiguration.getHost()).thenReturn(builder.toString());
+        GelfSenderConfiguration gelfSenderConfiguration = new OnlyHostTestGelfSenderConfig(builder.toString());
         GelfMessage gelfMessage = new GelfMessage("shortMessage", "fullMessage", 12121L, "WARNING");
 
         KafkaGelfSenderProvider provider = new KafkaGelfSenderProvider();
         GelfSender sender = provider.create(gelfSenderConfiguration);
-        assertThat(sender).isNotNull();
+        AssertJAssertions.assertThat(sender).isNotNull();
+
+        boolean success = sender.sendMessage(gelfMessage);
+
+        AssertJAssertions.assertThat(success).isTrue();
+
         sender.close();
     }
 }

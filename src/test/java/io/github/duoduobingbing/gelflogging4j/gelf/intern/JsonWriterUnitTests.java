@@ -8,12 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author Mark Paluch

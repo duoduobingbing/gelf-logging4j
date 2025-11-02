@@ -34,6 +34,8 @@ public final class GelfSenderFactory {
      */
     public static GelfSender createSender(final HostAndPortProvider hostAndPortProvider, final ErrorReporter errorReporter,
             final Map<String, Object> senderSpecificConfigurations) {
+
+        //TODO: make this a record with Supplier<T> instead of causing class pollution with this
         GelfSenderConfiguration senderConfiguration = new GelfSenderConfiguration() {
 
             @Override
