@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -16,8 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 
 /**
  * @author Thomas Herzog

@@ -1,41 +1,51 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.net.URL;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-
-import com.github.charithe.kafka.EphemeralKafkaBroker;
-import com.github.charithe.kafka.KafkaHelper;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports.Binding;
 import com.google.common.collect.Lists;
+import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.net.URL;
+import java.time.Duration;
 
 /**
  * @author Rifat Döver
  * @author duoduobingbing
  */
-@ExtendWith({ MockitoExtension.class })
-class GelfLogbackAppenderKafkaIntegrationTests {
+@Testcontainers
+class GelfLogbackAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase {
 
     private static final String KAFKA_LOG_TOPIC = "log-topic";
 
+    @Container
+    final ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
+            .withCreateContainerCmdModifier(
+                    cmd -> cmd
+                            .getHostConfig()
+                            .withPortBindings(
+                                    new PortBinding(Binding.bindPort(19092), new ExposedPort(9092)) //TODO: make non fixed port
+                            )
+            );
+
     @Test
     void testKafkaSender() throws Exception {
-
-        EphemeralKafkaBroker broker = EphemeralKafkaBroker.create(19092);
-        KafkaHelper helper = KafkaHelper.createFor(broker);
-        broker.start().get(30, TimeUnit.SECONDS);
 
         LoggerContext lc = new LoggerContext();
         lc.setMDCAdapter(MDC.getMDCAdapter());
@@ -49,15 +59,29 @@ class GelfLogbackAppenderKafkaIntegrationTests {
 
         Logger testLogger = lc.getLogger("testLogger");
 
-        testLogger.error("Log from kafka");
+        String logMessage = "Log from kafka";
+        testLogger.error(logMessage);
 
-        KafkaConsumer<String, String> consumer = helper.createStringConsumer();
-        consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
-        assertThat(records).isNotNull();
-        assertThat(records.isEmpty()).isFalse();
-        assertThat(records.count()).isEqualTo(1);
+        try(KafkaConsumer<String, String> consumer = KafkaIntegrationTestBase.createKafkaConsumer(kafkaContainer.getBootstrapServers())) {
+            consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
+            AssertJAssertions.assertThat(records).isNotNull();
+            AssertJAssertions.assertThat(records.isEmpty()).isFalse();
+            AssertJAssertions.assertThat(records.count()).isEqualTo(1);
 
-        broker.stop();
+            String jsonValueAsString = records.iterator().next().value();
+            JsonMapper jsonMapper = getJsonMapper();
+            JsonNode gelfMessageJsonNode = jsonMapper.readTree(jsonValueAsString);
+            String fullMessage = gelfMessageJsonNode.at("/%s".formatted(GelfMessage.FIELD_FULL_MESSAGE)).stringValue();
+            AssertJAssertions.assertThat(fullMessage).isEqualTo(logMessage);
+        }
+    }
+
+    static JsonMapper getJsonMapper() {
+        return JsonMapper
+                .builder(
+                        JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
+                )
+                .build();
     }
 }

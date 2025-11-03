@@ -1,68 +1,77 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Duration;
-import java.util.Properties;
-
-import com.github.charithe.kafka.EphemeralKafkaBroker;
-import com.github.charithe.kafka.KafkaHelper;
-import com.github.charithe.kafka.KafkaJunitExtension;
-import com.github.charithe.kafka.KafkaJunitExtensionConfig;
-import com.github.charithe.kafka.StartupMode;
+import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
-
-import com.google.common.collect.Lists;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author Rifat Döver
+ * @author duoduobingbing
  */
-@ExtendWith({ KafkaJunitExtension.class, MockitoExtension.class })
-@KafkaJunitExtensionConfig(startupMode = StartupMode.WAIT_FOR_STARTUP)
-class KafkaGelfSenderIntegrationTest {
+@Testcontainers
+class KafkaGelfSenderIntegrationTest extends KafkaIntegrationTestBase {
 
     private static final String LOG_TOPIC = "test-log-topic";
 
-    @Mock
-    ErrorReporter errorReporter;
+    private static final Logger logger = LoggerFactory.getLogger(KafkaGelfSenderIntegrationTest.class);
+
     private KafkaGelfSender kafkaGelfSender;
 
+    @Container
+    ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
+
+    public static class TestLoggingErrorReporter implements ErrorReporter {
+
+        @Override
+        public void reportError(String message, Exception e) {
+            logger.error("[TEST-ERROR] " + message, e);
+        }
+    }
+
     @Test
-    void testSend(EphemeralKafkaBroker kafkaBroker) {
+    void testSend() {
 
         GelfMessage gelfMessage = new GelfMessage("shortMessage", "fullMessage", 12121L, "WARNING");
 
-        KafkaHelper kafkaHelper = KafkaHelper.createFor(kafkaBroker);
-        Properties props = kafkaHelper.producerConfig();
-        props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        String bootstrapServers = kafkaContainer.getBootstrapServers();
 
-        KafkaProducer<byte[], byte[]> byteProducer = kafkaHelper.createByteProducer(props);
+        KafkaProducer<byte[], byte[]> byteProducer = createKafkaProducer(bootstrapServers, (properties -> {
+            properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        }));
 
-        kafkaGelfSender = new KafkaGelfSender(byteProducer, LOG_TOPIC, errorReporter);
+        kafkaGelfSender = new KafkaGelfSender(byteProducer, LOG_TOPIC, new TestLoggingErrorReporter());
 
         boolean success = kafkaGelfSender.sendMessage(gelfMessage);
 
-        assertThat(success).isTrue();
+        AssertJAssertions.assertThat(success).isTrue();
 
-        KafkaConsumer<String, String> consumer = kafkaHelper.createStringConsumer();
-        consumer.subscribe(Lists.newArrayList(LOG_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
+        try(KafkaConsumer<String, String> consumer = createKafkaConsumer(bootstrapServers)) {
 
-        assertThat(records).isNotNull();
-        assertThat(records.isEmpty()).isFalse();
-        assertThat(records.count()).isEqualTo(1);
-        assertThat(records.iterator().next().value()).isEqualTo(gelfMessage.toJson());
+            consumer.subscribe(new ArrayList<>(Collections.singleton(LOG_TOPIC)));
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
 
-        kafkaGelfSender.close();
+            AssertJAssertions.assertThat(records).isNotNull();
+            AssertJAssertions.assertThat(records.isEmpty()).isFalse();
+            AssertJAssertions.assertThat(records.count()).isEqualTo(1);
+            AssertJAssertions.assertThat(records.iterator().next().value()).isEqualTo(gelfMessage.toJson());
+
+            kafkaGelfSender.close();
+        }
     }
+
 }
