@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ class KafkaGelfSenderProviderIntegrationTest extends KafkaIntegrationTestBase {
     private static final Logger logger = LoggerFactory.getLogger(KafkaGelfSenderProviderIntegrationTest.class);
 
     @Container
-    ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
+    KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
 
     public record OnlyHostTestGelfSenderConfig(String host) implements GelfSenderConfiguration {
 

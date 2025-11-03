@@ -10,44 +10,47 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Objects;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 @Testcontainers
 public class KafkaIntegrationTestBase {
 
     protected static final Logger logger = LoggerFactory.getLogger(KafkaIntegrationTestBase.class);
 
-    protected static ConfluentKafkaContainer provideKafkaContainer(){
-        return new ConfluentKafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.8"))
-                .withEnv("KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS", "2000")
+    /**
+     * Provides an unstarted Kafka container to be used by other tests
+     * @return KafkaContainer
+     */
+    protected static KafkaContainer provideKafkaContainer(){
+        return new KafkaContainer(DockerImageName.parse("apache/kafka:4.1.0"))
+                .withEnv("KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS", "2000") //increase min timeout so, we can use 2s instead of the default 6s
                 .withLogConsumer((output) -> logger.info(output.getUtf8StringWithoutLineEnding()));
     }
 
-    protected static KafkaProducer<byte[], byte[]> createKafkaProducer(String bootstrapServers) {
-        return createKafkaProducer(bootstrapServers,(properties -> {}) /* no-op modification */);
-    }
-
-    protected static KafkaProducer<byte[], byte[]> createKafkaProducer(String bootstrapServers, Consumer<Properties> propertiesModifier) {
+    /**
+     * Create as String Consumer for Kafka.
+     * Properties are taken from the original charinthe/kafka-junit KafkaHelper
+     * @param bootstrapServers bootstrapServers
+     * @return KafkaProducer
+     */
+    protected static KafkaProducer<byte[], byte[]> createKafkaByteProducer(String bootstrapServers) {
         Objects.requireNonNull(bootstrapServers);
-        Objects.requireNonNull(propertiesModifier);
 
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        producerProps.put(ProducerConfig.ACKS_CONFIG, "1");
+        producerProps.put(ProducerConfig.ACKS_CONFIG, "all");
         producerProps.put(ProducerConfig.BATCH_SIZE_CONFIG, "10");
         producerProps.put(ProducerConfig.CLIENT_ID_CONFIG, "kafka-junit");
         producerProps.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "2000");
 
-        propertiesModifier.accept(producerProps);
-
         ByteArraySerializer keySerializer = new ByteArraySerializer();
         ByteArraySerializer valueSerializer = new ByteArraySerializer();
 
+        //Configure whether the serializer handles keys or values
         keySerializer.configure(PropertiesHelper.propertiesToMap(producerProps), true);
         valueSerializer.configure(PropertiesHelper.propertiesToMap(producerProps), false);
 
@@ -55,7 +58,13 @@ public class KafkaIntegrationTestBase {
         return byteProducer;
     }
 
-    protected static KafkaConsumer<String, String> createKafkaConsumer(String bootstrapServers) {
+    /**
+     * Create as String Consumer for Kafka.
+     * Properties are taken from the original charinthe/kafka-junit KafkaHelper
+     * @param bootstrapServers bootstrapServers
+     * @return KafkaConsumer
+     */
+    protected static KafkaConsumer<String, String> createKafkaStringConsumer(String bootstrapServers) {
         Objects.requireNonNull(bootstrapServers);
 
         Properties consumerProperperties = new Properties();
@@ -72,6 +81,7 @@ public class KafkaIntegrationTestBase {
         StringDeserializer keyDeserializer = new StringDeserializer();
         StringDeserializer valueDeserializer = new StringDeserializer();
 
+        //Configure whether the deserializer handles keys or values
         keyDeserializer.configure(PropertiesHelper.propertiesToMap(consumerProperperties), true);
         valueDeserializer.configure(PropertiesHelper.propertiesToMap(consumerProperperties), false);
 

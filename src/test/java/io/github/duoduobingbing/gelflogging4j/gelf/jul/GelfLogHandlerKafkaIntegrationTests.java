@@ -12,7 +12,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JsonNode;
@@ -33,7 +33,7 @@ class GelfLogHandlerKafkaIntegrationTests extends KafkaIntegrationTestBase {
     private static final String KAFKA_LOG_TOPIC = "kafka-log-topic";
 
     @Container
-    final ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
+    final KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
             .withCreateContainerCmdModifier(
                     cmd -> cmd
                             .getHostConfig()
@@ -53,7 +53,7 @@ class GelfLogHandlerKafkaIntegrationTests extends KafkaIntegrationTestBase {
 
         logger.log(Level.INFO, logMessage);
 
-        try (KafkaConsumer<String, String> consumer = KafkaIntegrationTestBase.createKafkaConsumer(kafkaContainer.getBootstrapServers());) {
+        try (KafkaConsumer<String, String> consumer = KafkaIntegrationTestBase.createKafkaStringConsumer(kafkaContainer.getBootstrapServers());) {
             consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
             AssertJAssertions.assertThat(records).isNotNull();

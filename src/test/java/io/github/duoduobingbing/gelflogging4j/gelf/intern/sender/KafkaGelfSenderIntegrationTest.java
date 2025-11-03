@@ -7,13 +7,12 @@ import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.As
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ class KafkaGelfSenderIntegrationTest extends KafkaIntegrationTestBase {
     private KafkaGelfSender kafkaGelfSender;
 
     @Container
-    ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
+    KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
 
     public static class TestLoggingErrorReporter implements ErrorReporter {
 
@@ -50,9 +49,7 @@ class KafkaGelfSenderIntegrationTest extends KafkaIntegrationTestBase {
 
         String bootstrapServers = kafkaContainer.getBootstrapServers();
 
-        KafkaProducer<byte[], byte[]> byteProducer = createKafkaProducer(bootstrapServers, (properties -> {
-            properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
-        }));
+        KafkaProducer<byte[], byte[]> byteProducer = createKafkaByteProducer(bootstrapServers);
 
         kafkaGelfSender = new KafkaGelfSender(byteProducer, LOG_TOPIC, new TestLoggingErrorReporter());
 
@@ -60,7 +57,7 @@ class KafkaGelfSenderIntegrationTest extends KafkaIntegrationTestBase {
 
         AssertJAssertions.assertThat(success).isTrue();
 
-        try(KafkaConsumer<String, String> consumer = createKafkaConsumer(bootstrapServers)) {
+        try(KafkaConsumer<String, String> consumer = createKafkaStringConsumer(bootstrapServers)) {
 
             consumer.subscribe(new ArrayList<>(Collections.singleton(LOG_TOPIC)));
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));

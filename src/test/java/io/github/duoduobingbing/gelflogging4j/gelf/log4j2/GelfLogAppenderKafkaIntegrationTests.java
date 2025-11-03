@@ -18,7 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JsonNode;
@@ -36,7 +36,7 @@ class GelfLogAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase {
     private static final String KAFKA_LOG_TOPIC = "kafka-log-topic";
 
     @Container
-    final ConfluentKafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
+    final KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
             .withCreateContainerCmdModifier(
                     cmd -> cmd
                             .getHostConfig()
@@ -67,7 +67,7 @@ class GelfLogAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase {
 
         logger.error(logMessage);
 
-        try(KafkaConsumer<String, String> consumer = KafkaIntegrationTestBase.createKafkaConsumer(kafkaContainer.getBootstrapServers())) {
+        try(KafkaConsumer<String, String> consumer = KafkaIntegrationTestBase.createKafkaStringConsumer(kafkaContainer.getBootstrapServers())) {
             consumer.subscribe(Lists.newArrayList(KAFKA_LOG_TOPIC));
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
 
