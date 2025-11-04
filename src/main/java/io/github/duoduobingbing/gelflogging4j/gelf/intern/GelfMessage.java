@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.intern.JsonWriter.writeKeyValueSeparator;
-import static io.github.duoduobingbing.gelflogging4j.gelf.intern.JsonWriter.writeMapEntry;
+import  io.github.duoduobingbing.gelflogging4j.gelf.intern.JsonWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -230,19 +229,19 @@ public class GelfMessage {
             }
 
             if (hasFields) {
-                writeKeyValueSeparator(out);
+                JsonWriter.writeKeyValueSeparator(out);
             }
 
-            writeMapEntry(out, field, value);
+            JsonWriter.writeMapEntry(out, field, value);
 
             return true;
         }
 
         if (hasFields) {
-            writeKeyValueSeparator(out);
+            JsonWriter.writeKeyValueSeparator(out);
         }
 
-        writeMapEntry(out, field, value);
+        JsonWriter.writeMapEntry(out, field, value);
 
         return true;
     }

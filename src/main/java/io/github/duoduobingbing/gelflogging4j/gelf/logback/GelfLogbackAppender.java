@@ -1,6 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField.*;
+import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
 
 import java.util.Collections;
 
@@ -64,7 +64,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.MessagePostprocessingE
  * <li>profiling.requestEnd: End-Time of the Request-End in Date.toString-representation</li>
  * <li>profiling.requestDuration: Duration of the request (e.g. 205ms, 16sec)</li>
  * </ul>
- *
+ * <p>
  * The {@link #append(ILoggingEvent)} method is thread-safe and may be called by different threads at any time.
  *
  * @author <a href="mailto:tobiassebastian.kaefer@1und1.de">Tobias Kaefer</a>
@@ -79,8 +79,19 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
     public GelfLogbackAppender() {
         super();
         gelfMessageAssembler = new MdcGelfMessageAssembler();
-        gelfMessageAssembler.addFields(LogMessageField.getDefaultMapping(Time, Severity, ThreadName, SourceClassName,
-                SourceMethodName, SourceLineNumber, SourceSimpleClassName, LoggerName, Marker));
+        gelfMessageAssembler.addFields(
+                LogMessageField.getDefaultMapping(
+                        NamedLogField.Time,
+                        NamedLogField.Severity,
+                        NamedLogField.ThreadName,
+                        NamedLogField.SourceClassName,
+                        NamedLogField.SourceMethodName,
+                        NamedLogField.SourceLineNumber,
+                        NamedLogField.SourceSimpleClassName,
+                        NamedLogField.LoggerName,
+                        NamedLogField.Marker
+                )
+        );
     }
 
     @Override

@@ -1,8 +1,13 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField.*;
+import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
@@ -57,7 +62,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 public class GelfFormatter extends Formatter {
 
     public static final String MULTI_VALUE_DELIMITTER = ",";
-    public static final Set<LogMessageField.NamedLogField> SUPPORTED_FIELDS;
+    public static final Set<NamedLogField> SUPPORTED_FIELDS;
 
     private final MdcGelfMessageAssembler gelfMessageAssembler = new MdcGelfMessageAssembler();
     private String lineBreak = System.getProperty("line.separator");
@@ -66,14 +71,14 @@ public class GelfFormatter extends Formatter {
     static {
         Set<LogMessageField.NamedLogField> supportedFields = new LinkedHashSet<>();
 
-        supportedFields.add(Time);
-        supportedFields.add(Severity);
-        supportedFields.add(ThreadName);
-        supportedFields.add(SourceClassName);
-        supportedFields.add(SourceMethodName);
-        supportedFields.add(SourceSimpleClassName);
-        supportedFields.add(LoggerName);
-        supportedFields.add(Server);
+        supportedFields.add(NamedLogField.Time);
+        supportedFields.add(NamedLogField.Severity);
+        supportedFields.add(NamedLogField.ThreadName);
+        supportedFields.add(NamedLogField.SourceClassName);
+        supportedFields.add(NamedLogField.SourceMethodName);
+        supportedFields.add(NamedLogField.SourceSimpleClassName);
+        supportedFields.add(NamedLogField.LoggerName);
+        supportedFields.add(NamedLogField.Server);
 
         SUPPORTED_FIELDS = Collections.unmodifiableSet(supportedFields);
     }
@@ -160,7 +165,7 @@ public class GelfFormatter extends Formatter {
     public void setFields(String fieldSpec) {
 
         String[] properties = fieldSpec.split(MULTI_VALUE_DELIMITTER);
-        List<LogMessageField.NamedLogField> fields = new ArrayList<>();
+        List<NamedLogField> fields = new ArrayList<>();
         for (String field : properties) {
 
             LogMessageField.NamedLogField namedLogField = LogMessageField.NamedLogField.byName(field.trim());
@@ -180,7 +185,7 @@ public class GelfFormatter extends Formatter {
         addFields(fields);
     }
 
-    private void addFields(Collection<LogMessageField.NamedLogField> fields) {
+    private void addFields(Collection<NamedLogField> fields) {
         gelfMessageAssembler.addFields(LogMessageField.getDefaultMapping(fields
                 .toArray(new LogMessageField.NamedLogField[fields.size()])));
 

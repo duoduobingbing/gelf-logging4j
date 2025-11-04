@@ -3,7 +3,11 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.DefaultGelfSenderProvider;

@@ -1,7 +1,12 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField.*;
-import static org.apache.logging.log4j.core.layout.PatternLayout.newBuilder;
+import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
+import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
+import org.apache.logging.log4j.core.config.plugins.PluginElement;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -25,9 +30,7 @@ import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.AppenderLoggingException;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Property;
-import org.apache.logging.log4j.core.config.plugins.*;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.Strings;
 
@@ -86,19 +89,19 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
  * <li>Log-Event fields (using <a href="http://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout">Pattern
  * Layout</a>)</li>
  * </ul>
- *
+ * <p>
  * In order to do so, use nested Field elements below the Appender element.
  *
  * <h3>Static Literals</h3> <code>
-      &lt;Field name="fieldName1" literal="your literal value" /&gt;
+ * &lt;Field name="fieldName1" literal="your literal value" /&gt;
  * </code>
  *
  * <h3>MDC Fields</h3> <code>
-    &lt;Field name="fieldName1" mdc="name of the MDC entry" /&gt;
+ * &lt;Field name="fieldName1" mdc="name of the MDC entry" /&gt;
  * </code>
  *
  * <h3>Dynamic MDC Fields</h3> <code>
-     &lt;DynamicMdcFields regex="mdc.*"  /&gt;
+ * &lt;DynamicMdcFields regex="mdc.*"  /&gt;
  * </code>
  *
  *
@@ -111,10 +114,10 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
  * You can use all built-in Pattern Fields:
  * </p>
  * <code>
-    &lt;Field name="simpleClassName" pattern="%C{1}" /&gt;
-    &lt;Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}" /&gt;
-    &lt;Field name="level" pattern="%level" /&gt;
- </code>
+ * &lt;Field name="simpleClassName" pattern="%C{1}" /&gt;
+ * &lt;Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}" /&gt;
+ * &lt;Field name="level" pattern="%level" /&gt;
+ * </code>
  *
  * <p>
  * Additionally, you can add the <strong>host</strong>-Field, which can supply you either the FQDN hostname, the simple hostname
@@ -154,7 +157,7 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
  * {@code DynamicMdcFieldType} rules to declare types with Regex {@link java.util.regex.Pattern}-based rules.
  * <p>
  * <code>
-     &gt;DynamicMdcFieldType regex="business\..*\.field" type="double" /&lt;
+ * &gt;DynamicMdcFieldType regex="business\..*\.field" type="double" /&lt;
  * </code>
  *
  * <a name="mdcProfiling"></a>
@@ -172,7 +175,7 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
  * <li>profiling.requestEnd: End-Time of the Request-End in Date.toString-representation</li>
  * <li>profiling.requestDuration: Duration of the request (e.g. 205ms, 16sec)</li>
  * </ul>
- *
+ * <p>
  * The {@link #append(LogEvent)} method is thread-safe and may be called by different threads at any time.
  *
  * @author Mark Paluch
@@ -189,7 +192,7 @@ public class GelfLogAppender extends AbstractAppender {
         }
     };
 
-    private final ErrorReporter PROPAGATING_ERROR_REPORTER = new ErrorReporter() {
+    private static final ErrorReporter PROPAGATING_ERROR_REPORTER = new ErrorReporter() {
         @Override
         public void reportError(String message, Exception e) {
 
@@ -220,19 +223,19 @@ public class GelfLogAppender extends AbstractAppender {
 
     @PluginFactory
     public static GelfLogAppender createAppender(@PluginConfiguration final Configuration config,
-            @PluginAttribute("name") String name, @PluginElement("Filter") Filter filter,
-            @PluginElement("Field") final GelfLogField[] fields,
-            @PluginElement("DynamicMdcFields") final GelfDynamicMdcLogFields[] dynamicFieldArray,
-            @PluginElement("DynamicMdcFieldTypes") final GelfDynamicMdcFieldType[] dynamicFieldTypeArray,
-            @PluginAttribute("graylogHost") String graylogHost, @PluginAttribute("host") String host,
-            @PluginAttribute("graylogPort") String graylogPort, @PluginAttribute("port") String port,
-            @PluginAttribute("version") String version, @PluginAttribute("extractStackTrace") String extractStackTrace,
-            @PluginAttribute("originHost") String originHost, @PluginAttribute("includeFullMdc") String includeFullMdc,
-            @PluginAttribute("facility") String facility, @PluginAttribute("filterStackTrace") String filterStackTrace,
-            @PluginAttribute("mdcProfiling") String mdcProfiling,
-            @PluginAttribute("maximumMessageSize") String maximumMessageSize,
-            @PluginAttribute("additionalFieldTypes") String additionalFieldTypes,
-            @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) boolean ignoreExceptions) {
+                                                 @PluginAttribute("name") String name, @PluginElement("Filter") Filter filter,
+                                                 @PluginElement("Field") final GelfLogField[] fields,
+                                                 @PluginElement("DynamicMdcFields") final GelfDynamicMdcLogFields[] dynamicFieldArray,
+                                                 @PluginElement("DynamicMdcFieldTypes") final GelfDynamicMdcFieldType[] dynamicFieldTypeArray,
+                                                 @PluginAttribute("graylogHost") String graylogHost, @PluginAttribute("host") String host,
+                                                 @PluginAttribute("graylogPort") String graylogPort, @PluginAttribute("port") String port,
+                                                 @PluginAttribute("version") String version, @PluginAttribute("extractStackTrace") String extractStackTrace,
+                                                 @PluginAttribute("originHost") String originHost, @PluginAttribute("includeFullMdc") String includeFullMdc,
+                                                 @PluginAttribute("facility") String facility, @PluginAttribute("filterStackTrace") String filterStackTrace,
+                                                 @PluginAttribute("mdcProfiling") String mdcProfiling,
+                                                 @PluginAttribute("maximumMessageSize") String maximumMessageSize,
+                                                 @PluginAttribute("additionalFieldTypes") String additionalFieldTypes,
+                                                 @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) boolean ignoreExceptions) {
 
         RuntimeContainer.initialize(ERROR_REPORTER);
 
@@ -269,8 +272,14 @@ public class GelfLogAppender extends AbstractAppender {
         }
 
         if (Strings.isNotEmpty(originHost)) {
-            PatternLayout patternLayout = newBuilder().withPattern(originHost).withConfiguration(config)
-                    .withNoConsoleNoAnsi(false).withAlwaysWriteExceptions(false).build();
+
+            PatternLayout patternLayout = PatternLayout
+                    .newBuilder()
+                    .withPattern(originHost)
+                    .withConfiguration(config)
+                    .withNoConsoleNoAnsi(false)
+                    .withAlwaysWriteExceptions(false)
+                    .build();
 
             mdcGelfMessageAssembler.setOriginHost(patternLayout.toSerializable(new Log4jLogEvent()));
         }
@@ -319,15 +328,29 @@ public class GelfLogAppender extends AbstractAppender {
      * Configure fields (literals, MDC, layout).
      *
      * @param mdcGelfMessageAssembler the assembler
-     * @param fields static field array
-     * @param dynamicFieldArray dynamic field array
+     * @param fields                  static field array
+     * @param dynamicFieldArray       dynamic field array
      */
-    private static void configureFields(MdcGelfMessageAssembler mdcGelfMessageAssembler, GelfLogField[] fields,
-            GelfDynamicMdcLogFields[] dynamicFieldArray) {
+    private static void configureFields(
+            MdcGelfMessageAssembler mdcGelfMessageAssembler,
+            GelfLogField[] fields,
+            GelfDynamicMdcLogFields[] dynamicFieldArray
+    ) {
 
         if (fields == null || fields.length == 0) {
-            mdcGelfMessageAssembler.addFields(LogMessageField.getDefaultMapping(Time, Severity, ThreadName, SourceClassName,
-                    SourceMethodName, SourceLineNumber, SourceSimpleClassName, LoggerName, Marker));
+            mdcGelfMessageAssembler.addFields(
+                    LogMessageField.getDefaultMapping(
+                            NamedLogField.Time,
+                            NamedLogField.Severity,
+                            NamedLogField.ThreadName,
+                            NamedLogField.SourceClassName,
+                            NamedLogField.SourceMethodName,
+                            NamedLogField.SourceLineNumber,
+                            NamedLogField.SourceSimpleClassName,
+                            NamedLogField.LoggerName,
+                            NamedLogField.Marker
+                    )
+            );
             return;
         }
 

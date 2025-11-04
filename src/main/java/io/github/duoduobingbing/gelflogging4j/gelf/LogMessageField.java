@@ -1,10 +1,14 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.getProperty;
+import io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.Map;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.Closer;
 
@@ -18,15 +22,23 @@ public class LogMessageField implements MessageField {
     public static final String VERBOSE_LOGGING_PROPERTY = "gelf-logging4j.LogMessageField.verbose";
 
     private static final String DEFAULT_MAPPING = "default-gelf-fields.properties";
-    private static final boolean VERBOSE_LOGGING = Boolean.parseBoolean(getProperty(VERBOSE_LOGGING_PROPERTY, "false"));
+    private static final boolean VERBOSE_LOGGING = Boolean.parseBoolean(RuntimeContainerProperties.getProperty(VERBOSE_LOGGING_PROPERTY, "false"));
 
     /**
      * Named references to common log event fields.
      */
     public enum NamedLogField {
-        Time("Time"), Severity("Severity"), ThreadName("Thread"), SourceClassName("SourceClassName"), SourceSimpleClassName(
-                "SourceSimpleClassName"), SourceMethodName("SourceMethodName"), SourceLineNumber("SourceLineNumber"), Server(
-                "Server"), LoggerName("LoggerName"), Marker("Marker"), NDC("NDC");
+        Time("Time"),
+        Severity("Severity"),
+        ThreadName("Thread"),
+        SourceClassName("SourceClassName"),
+        SourceSimpleClassName("SourceSimpleClassName"),
+        SourceMethodName("SourceMethodName"),
+        SourceLineNumber("SourceLineNumber"),
+        Server("Server"),
+        LoggerName("LoggerName"),
+        Marker("Marker"),
+        NDC("NDC");
 
         private final String fieldName;
 

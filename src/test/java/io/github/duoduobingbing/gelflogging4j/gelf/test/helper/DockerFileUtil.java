@@ -1,6 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.test.helper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -17,7 +18,7 @@ public class DockerFileUtil {
      * @return image
      */
     public static String parseDockerImageFromClassPathFile(String dockerFilePath) {
-        try (var is = DockerFileUtil.class.getClassLoader().getResourceAsStream(dockerFilePath)) {
+        try (InputStream is = DockerFileUtil.class.getClassLoader().getResourceAsStream(dockerFilePath)) {
             String fileContent = new String(Objects.requireNonNull(is).readAllBytes(), StandardCharsets.UTF_8);
             Matcher m = Pattern.compile("^\\s*FROM\\s*(.+)\\s*", Pattern.MULTILINE).matcher(fileContent);
             if(!m.find()){
