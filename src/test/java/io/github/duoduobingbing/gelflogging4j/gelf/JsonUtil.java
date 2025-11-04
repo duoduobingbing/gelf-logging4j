@@ -14,14 +14,22 @@ import java.util.Map;
  */
 public class JsonUtil {
 
-    private static final JsonMapper jsonMapper = JsonMapper
-            .builder(
-                    JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
-            )
-            .build();
+    private static final JsonMapper jsonMapper = createJsonMapper();
 
     private static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP_TYPE_REF = new TypeReference<Map<String, Object>>() {
     };
+
+    /**
+     * Provides a preconfigured {@link JsonMapper} that has {@link StreamReadFeature#INCLUDE_SOURCE_IN_LOCATION} active.
+     * @return a new preconfigured {@link JsonMapper}
+     */
+    public static JsonMapper createJsonMapper() {
+        return JsonMapper
+                .builder(
+                        JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
+                )
+                .build();
+    }
 
     /**
      * Parse a JSON string to a {@link Map}
@@ -30,10 +38,6 @@ public class JsonUtil {
      * @return object as {@link Map}.
      */
     public static Map<String, Object> parseToMap(String jsonAsString) {
-        try {
-            return jsonMapper.readValue(jsonAsString, STRING_OBJECT_MAP_TYPE_REF);
-        } catch (JacksonException e) { //TODO: check if this can be ommited entirely
-            throw new IllegalStateException(e);
-        }
+        return jsonMapper.readValue(jsonAsString, STRING_OBJECT_MAP_TYPE_REF);
     }
 }

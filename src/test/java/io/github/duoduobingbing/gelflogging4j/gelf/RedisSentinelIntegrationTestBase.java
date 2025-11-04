@@ -1,7 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.DockerFileUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
@@ -21,6 +24,7 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 
     protected static GenericContainer<?> redisLocalSentinelTestcontainer;
 
+    private static final Logger logger = LoggerFactory.getLogger(RedisSentinelIntegrationTestBase.class);
 
     protected static int redisLocalSentinelPort = 26379;
     private static final String redisLocalSentinelPortAsString = String.valueOf(redisLocalSentinelPort);
@@ -56,14 +60,16 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
             throw new RuntimeException(e);
         }
 
+        String redisDockerImage = DockerFileUtil.parseDockerImageFromClassPathFile("docker/Redis.Dockerfile");
+        logger.info("Using redis docker image: {}", redisDockerImage);
 
-        redisLocalSentinelTestcontainer = new GenericContainer<>("redis:8.2")
+        redisLocalSentinelTestcontainer = new GenericContainer<>(redisDockerImage)
                 .dependsOn(RedisNonStartingIntegrationTestBase.redisLocalMasterTestcontainer)
                 .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")
                 .withEnv("SKIP_DROP_PRIVS", "1")
                 .withStartupTimeout(Duration.ofSeconds(30))
-                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8String())))
+                .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
                 .withCopyFileToContainer(MountableFile.forHostPath(tempFile), "/etc/sentinel.conf");
 
 

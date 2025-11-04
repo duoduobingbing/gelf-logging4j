@@ -2,26 +2,22 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
 import java.util.stream.Stream;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderConfiguration;
 
 /**
  * @author Rifat Döver
+ * @author duoduobingbing
  */
 @ExtendWith(MockitoExtension.class)
 class KafkaGelfSenderProviderUnitTest {
-
-    @Mock
-    GelfSenderConfiguration configuration; //TODO: replace the mock with a shared test class
 
     private KafkaGelfSenderProvider kafkaSenderProvider = new KafkaGelfSenderProvider();
 
@@ -54,24 +50,24 @@ class KafkaGelfSenderProviderUnitTest {
     void testValidUri() {
 
         String host = "kafka://localhost:9092,localhost:9093?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2#kafka-log-topic";
-        Mockito.when(configuration.getHost()).thenReturn(host);
+
+        DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
+        configuration.setHost(host);
+
         AssertJAssertions
                 .assertThat(kafkaSenderProvider.create(configuration))
                 .isNotNull();
     }
 
-    @Test
-    void testUnspecifiedTopic() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "kafka://localhost:9092,localhost:9093?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2#",
+            "kafka://localhost:9092,localhost:9093?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2"
+    })
+    void testUnspecifiedTopic(String host) {
 
-        String host = "kafka://localhost:9092,localhost:9093?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2#";
-        Mockito.when(configuration.getHost()).thenReturn(host);
-
-        AssertJAssertions
-                .assertThatThrownBy(() -> kafkaSenderProvider.create(configuration))
-                .hasMessage("Kafka URI must specify log topic as fragment.");
-
-        host = "kafka://localhost:9092,localhost:9093?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2";
-        Mockito.when(configuration.getHost()).thenReturn(host);
+        DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
+        configuration.setHost(host);
 
         AssertJAssertions
                 .assertThatThrownBy(() -> kafkaSenderProvider.create(configuration))
@@ -82,7 +78,9 @@ class KafkaGelfSenderProviderUnitTest {
     void testUnspecifiedBroker() {
 
         String host = "kafka://?acks=1&ssl.keystore.location=/var/private/ssl/kafka.server.keystore.jks&retries=2#";
-        Mockito.when(configuration.getHost()).thenReturn(host);
+
+        DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
+        configuration.setHost(host);
 
         AssertJAssertions
                 .assertThatThrownBy(() -> kafkaSenderProvider.create(configuration))
@@ -92,15 +90,21 @@ class KafkaGelfSenderProviderUnitTest {
     @Test
     void testValidPortNotSpecified() {
         String host = "kafka://localhost#topic";
-        Mockito.when(configuration.getHost()).thenReturn(host);
+
+        DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
+        configuration.setHost(host);
+
         AssertJAssertions.assertThat(kafkaSenderProvider.create(configuration)).isNotNull();
     }
 
     @Test
     void testValidPortSpecifiedInConfig() {
         String host = "kafka://localhost#topic";
-        Mockito.when(configuration.getHost()).thenReturn(host);
-        Mockito.when(configuration.getPort()).thenReturn(9091);
+
+        DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
+        configuration.setHost(host);
+        configuration.setPort(9091);
+
         AssertJAssertions.assertThat(kafkaSenderProvider.create(configuration)).isNotNull();
     }
 }

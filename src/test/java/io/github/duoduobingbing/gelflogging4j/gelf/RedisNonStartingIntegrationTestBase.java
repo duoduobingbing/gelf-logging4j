@@ -1,8 +1,11 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.DockerFileUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -26,6 +29,8 @@ public class RedisNonStartingIntegrationTestBase {
     protected static int redisLocalMasterPort = 6479;
     protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
 
+    protected static final Logger logger = LoggerFactory.getLogger(RedisNonStartingIntegrationTestBase.class);
+
     @BeforeAll
     static void beforeAll() {
         createRedisMasterTestcontainer();
@@ -37,13 +42,15 @@ public class RedisNonStartingIntegrationTestBase {
     }
 
     protected static void createRedisMasterTestcontainer() {
-        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:8.2"));
+        String redisDockerImage = DockerFileUtil.parseDockerImageFromClassPathFile("docker/Redis.Dockerfile");
+        logger.info("Using redis docker image: {}", redisDockerImage);
+        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse(redisDockerImage));
 
         final List<String> portBindings = new ArrayList<>();
         portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
         redisLocalMasterTestcontainer
                 .withExposedPorts(redisLocalMasterPort)
-                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8String())))
+                .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
                 .withCommand("redis-server", "--port", redisLocalMasterPortAsString,
                         "--bind", "0.0.0.0",
                         "--save", "",

@@ -39,7 +39,6 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
 
     @BeforeEach
     void before() {
-        // enable the test with -Dtest.withRedis=true
         assumeTrue(Sockets.isOpen("localhost", 6479));
 
         GelfTestSender.getMessages().clear();
@@ -137,13 +136,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         final DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
         configuration.setHost(uri);
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                new RedisGelfSenderProvider().create(configuration);
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> new RedisGelfSenderProvider().create(configuration));
     }
 
     @Test
@@ -154,13 +147,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         final DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
         configuration.setHost(uri);
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                new RedisGelfSenderProvider().create(configuration);
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> new RedisGelfSenderProvider().create(configuration));
     }
 
     @Test
@@ -171,13 +158,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         final DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
         configuration.setHost(uri);
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                new RedisGelfSenderProvider().create(configuration);
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> new RedisGelfSenderProvider().create(configuration));
     }
 
     @Test

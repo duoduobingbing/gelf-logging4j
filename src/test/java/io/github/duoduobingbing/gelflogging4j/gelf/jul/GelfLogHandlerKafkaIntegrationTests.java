@@ -4,6 +4,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports.Binding;
 import com.google.common.collect.Lists;
+import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
@@ -13,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
-import tools.jackson.core.StreamReadFeature;
-import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -61,19 +60,11 @@ class GelfLogHandlerKafkaIntegrationTests extends KafkaIntegrationTestBase {
             AssertJAssertions.assertThat(records.count()).isEqualTo(1);
 
             String jsonValueAsString = records.iterator().next().value();
-            JsonMapper jsonMapper = getJsonMapper();
+            JsonMapper jsonMapper = JsonUtil.createJsonMapper();
             JsonNode gelfMessageJsonNode = jsonMapper.readTree(jsonValueAsString);
             String fullMessage = gelfMessageJsonNode.at("/%s".formatted(GelfMessage.FIELD_FULL_MESSAGE)).stringValue();
             AssertJAssertions.assertThat(fullMessage).isEqualTo(logMessage);
         }
 
-    }
-
-    static JsonMapper getJsonMapper() {
-        return JsonMapper
-                .builder(
-                        JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
-                )
-                .build();
     }
 }

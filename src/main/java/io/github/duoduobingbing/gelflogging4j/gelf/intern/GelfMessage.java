@@ -137,7 +137,6 @@ public class GelfMessage {
 
         byte[] rs = buffer.toByteArray();
 //        String json = new String(rs, StandardCharsets.UTF_8);
-//        System.out.println("TODO: " + json);
         return rs;
     }
 
