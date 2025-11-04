@@ -1,9 +1,19 @@
 package io.github.duoduobingbing.gelflogging4j;
 
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.getProperty;
+import io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties;
 
-import java.io.*;
-import java.util.*;
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.Closer;
@@ -142,7 +152,7 @@ public class StackTraceFilter {
     public static final String FILTER_SETTINGS = "/" + StackTraceFilter.class.getSimpleName() + ".packages";
 
     private static final String INDENT = "\t";
-    private static final boolean VERBOSE_LOGGING = Boolean.parseBoolean(getProperty(VERBOSE_LOGGING_PROPERTY, "false"));
+    private static final boolean VERBOSE_LOGGING = Boolean.parseBoolean(RuntimeContainerProperties.getProperty(VERBOSE_LOGGING_PROPERTY, "false"));
 
     private static final Pattern AT_PATTERN = Pattern.compile("(" + INDENT + ")+at");
     private static final Pattern SURPRESSED_PATTERN = Pattern.compile("(" + INDENT + ")+Suppressed\\:");
@@ -210,31 +220,7 @@ public class StackTraceFilter {
      * @return String containing the filtered stack trace.
      */
     public static String getFilteredStackTrace(Throwable t) {
-        return getFilteredStackTrace(t, true);
-    }
-
-    /**
-     * Get a filterered stack trace.
-     *
-     * @param t the throwable
-     * @param shouldFilter true in case filtering should be performed. Else stack trace as string will be returned.
-     * @return String containing the stack trace.
-     * @deprecated since 1.11.1. Use {@link #getStackTrace(Throwable, int)} to get the stack trace without filtering or
-     *             {@link #getFilteredStackTrace(Throwable)} to get the filtered the stack trace.
-     */
-    @Deprecated
-    public static String getFilteredStackTrace(Throwable t, boolean shouldFilter) {
-
-        if (shouldFilter) {
-            return getFilteredStackTrace(t, 0);
-        }
-
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        pw.close();
-
-        return sw.getBuffer().toString();
+        return getFilteredStackTrace(t, 0);
     }
 
     /**

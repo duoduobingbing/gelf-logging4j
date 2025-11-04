@@ -31,12 +31,6 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.PoolingGelfMessageBuil
  */
 public class GelfMessageAssembler implements HostAndPortProvider {
 
-    /**
-     * @deprecated see {@link PoolingGelfMessageBuilder#PROPERTY_USE_POOLING}.
-     */
-    @Deprecated
-    public static final String PROPERTY_USE_POOLING = "gelf-logging4j.message.pooling";
-
     public static final String FIELD_MESSAGE_PARAM = "MessageParam";
     public static final String FIELD_STACK_TRACE = "StackTrace";
 
@@ -95,7 +89,7 @@ public class GelfMessageAssembler implements HostAndPortProvider {
             port = propertyProvider.getProperty(PropertyProvider.PROPERTY_GRAYLOG_PORT);
         }
 
-        if (port != null && !"".equals(port)) {
+        if (port != null && !port.isEmpty()) {
             this.port = Integer.parseInt(port);
         }
 
@@ -115,7 +109,7 @@ public class GelfMessageAssembler implements HostAndPortProvider {
         facility = propertyProvider.getProperty(PropertyProvider.PROPERTY_FACILITY);
         String version = propertyProvider.getProperty(PropertyProvider.PROPERTY_VERSION);
 
-        if (version != null && !"".equals(version)) {
+        if (version != null && !version.isEmpty()) {
             this.version = version;
         }
 
@@ -210,8 +204,7 @@ public class GelfMessageAssembler implements HostAndPortProvider {
             return new Values(field.getName(), getValue((StaticMessageField) field));
         }
 
-        if (field instanceof LogMessageField) {
-            LogMessageField logMessageField = (LogMessageField) field;
+        if (field instanceof LogMessageField logMessageField) {
             if (logMessageField.getNamedLogField() == NamedLogField.Time) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(timestampPattern);
                 return new Values(field.getName(), dateFormat.format(new Date(logEvent.getLogTimestamp())));

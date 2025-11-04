@@ -40,16 +40,6 @@ class StackTraceFilterUnitTests {
     @Test
     void filterWholeStackTrace() {
 
-        String filteredStackTrace = StackTraceFilter.getFilteredStackTrace(entryMethod(), true);
-        List<String> lines = Arrays.asList(filteredStackTrace.split(System.getProperty("line.separator")));
-
-        assertThat(lines).contains("\tSuppressed: java.lang.RuntimeException: suppressed");
-        assertThat(lines).contains("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
-    }
-
-    @Test
-    void filterWholeStackTrace_newWay() {
-
         String filteredStackTrace = StackTraceFilter.getFilteredStackTrace(entryMethod());
         List<String> lines = Arrays.asList(filteredStackTrace.split(System.getProperty("line.separator")));
 

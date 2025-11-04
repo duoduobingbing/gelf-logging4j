@@ -142,10 +142,6 @@ class GelfTCPSenderUnitTests {
 
         int port = randomPort();
 
-        if(!PortHelper.isPortAvailable(port)) {
-            port = PortHelper.findAvailableTcpPort();
-        }
-
         ServerSocketChannel listener = ServerSocketChannel.open();
         listener.socket().bind(new InetSocketAddress(port));
 
@@ -191,7 +187,13 @@ class GelfTCPSenderUnitTests {
 
     int randomPort() {
         Random random = new Random();
-        return random.nextInt(50000) + 1024;
+        int port = random.nextInt(50000) + 1024;
+
+        if(!PortHelper.isPortAvailable(port)) {
+            return PortHelper.findAvailableTcpPort();
+        }
+
+        return port;
     }
 
     static class NoopGelfTCPSender extends GelfTCPSender {
