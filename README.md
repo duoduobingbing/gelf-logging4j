@@ -12,9 +12,11 @@ Provides logging functionality using the Graylog Extended Logging Format ([GELF]
 * [log4j 2.x](#log4j2-gelf-configuration)
 * [Logback](#logback-gelf-configuration)
 
-`gelf-logging4j` requires as of version 2.0.0 Java 21 or higher. 
+`gelf-logging4j` requires as of version 2.0.0 Java 21 or higher and at least Maven 3.9.x to build. 
 If you require an older Java version, please use the original `logstash-gelf`.
 See also [our docs](https://github.com/duoduobingbing/gelf-logging4j/tree/master/docs) or [the Graylog GELF specification](http://www.graylog2.org/resources/gelf/specification) for further documentation.
+
+For details on building the project see [BUILDING](https://github.com/duoduobingbing/gelf-logging4j/tree/master/.github/BUILDING.md).
 
 
 Including it in your project
