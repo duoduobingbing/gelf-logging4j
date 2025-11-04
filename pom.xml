@@ -104,7 +104,7 @@
         <maven-scm-provider-gitexe.version>2.0.1</maven-scm-provider-gitexe.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven.jacoco.version>0.8.7</maven.jacoco.version>
-        <kafka-clients.version>3.6.0</kafka-clients.version>
+        <kafka-clients.version>4.1.0</kafka-clients.version>
 <!--        <kafka-junit.version>4.2.10</kafka-junit.version>-->
 
         <bouncycastle.version>1.82</bouncycastle.version>
