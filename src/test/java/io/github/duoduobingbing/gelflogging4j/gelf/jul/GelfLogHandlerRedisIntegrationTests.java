@@ -4,9 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.InputStream;
 import java.net.URI;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -15,11 +20,11 @@ import io.github.duoduobingbing.gelflogging4j.gelf.RedisIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.GelfREDISSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.TestRedisGelfSenderProvider;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.JUnitAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
@@ -39,7 +44,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
 
     @BeforeEach
     void before() {
-        assumeTrue(Sockets.isOpen("localhost", 6479));
+        assumeTrue(Sockets.isOpen("localhost", redisMasterResolvedPort));
 
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
@@ -51,7 +56,15 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
     @Test
     void testStandalone() throws Exception {
 
-        LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream("/jul/test-redis-logging.properties"));
+        InputStream propertiesStream = PropertiesHelper.replacePortInResource(
+                "/jul/test-redis-logging.properties",
+                redisLocalMasterTestcontainer,
+                redisLocalMasterPort,
+                6479
+        );
+
+
+        LogManager.getLogManager().readConfiguration(propertiesStream);
 
         Logger logger = Logger.getLogger(getClass().getName());
         String expectedMessage = "message1";
@@ -100,7 +113,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
     @Test
     void testRedisWithPortUri() throws Exception {
 
-        String uri = "redis://localhost:6479/#list";
+        String uri = "redis://localhost:%d/#list".formatted(redisMasterResolvedPort);
 
         RedisGelfSenderProvider provider = new RedisGelfSenderProvider();
         DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
@@ -119,13 +132,7 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         final DefaultGelfSenderConfiguration configuration = new DefaultGelfSenderConfiguration();
         configuration.setHost(uri);
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                new RedisGelfSenderProvider().create(configuration);
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> new RedisGelfSenderProvider().create(configuration));
     }
 
     @Test
@@ -161,8 +168,26 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         assertThrows(IllegalArgumentException.class, () -> new RedisGelfSenderProvider().create(configuration));
     }
 
+    static class LocalTestWrappingErrorReporter implements ErrorReporter {
+
+        final ErrorReporter errorReporter;
+        final List<Map.Entry<String, Exception>> reportedErrors = new CopyOnWriteArrayList<>();
+
+        public LocalTestWrappingErrorReporter(ErrorReporter errorReporter) {
+            this.errorReporter = errorReporter;
+        }
+
+        @Override
+        public void reportError(String message, Exception e) {
+            errorReporter.reportError(message, e);
+            reportedErrors.add(new SimpleEntry<>(message, e));
+        }
+    }
+
     @Test
     void testRedisNotAvailable() throws Exception {
+
+        //This should fail, because we expect 10.1.5.20:52454 to not have any redis available
 
         LogManager.getLogManager()
                 .readConfiguration(getClass().getResourceAsStream("/jul/test-redis-not-available.properties"));
@@ -170,6 +195,23 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
         Logger logger = Logger.getLogger(getClass().getName());
         String expectedMessage = "message1";
 
+        //Get the handler and switch the errorReporter to something that records the errors
+        Handler[] handlers = logger.getParent().getHandlers();
+        TestErrorRecordingGelfLogHandler gelfLogHandler = Arrays.stream(handlers)
+                .filter(x -> x instanceof TestErrorRecordingGelfLogHandler)
+                .map(x -> (TestErrorRecordingGelfLogHandler) x)
+                .findFirst()
+                .orElseThrow();
+
+
         logger.log(Level.INFO, expectedMessage);
+
+        AssertJAssertions.assertThat(gelfLogHandler.recordedErrors).hasSize(1);
+        AssertJAssertions.assertThat(gelfLogHandler.recordedErrors.getFirst().exception()).hasMessage("Cannot send REDIS data with key URI list");
+
+        //Reset afterwards
+        gelfLogHandler.recordedErrors.clear();
+
+
     }
 }

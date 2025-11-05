@@ -36,26 +36,32 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 
     @BeforeAll
     static void beforeAll() {
-        redisLocalMasterTestcontainer.withNetwork(network).withNetworkAliases(redisLocalMasterAlias);
-        redisLocalMasterTestcontainer.start();
+        GenericContainer<?> masterTestcontainer = redisLocalMasterTestcontainer
+                .withNetwork(network)
+                .withNetworkAliases(redisLocalMasterAlias)
+                .withExposedPorts(redisLocalMasterPort);
 
+        masterTestcontainer.start();
+        redisMasterResolvedPort = masterTestcontainer.getMappedPort(redisLocalMasterPort);
 
         final String sentinelConf =
                 """
-                        port %s
-                        bind 0.0.0.0
-                        sentinel monitor mymaster 127.0.0.1 %s 1
-                        sentinel announce-ip 127.0.0.1
-                        sentinel announce-port %s
-                        sentinel down-after-milliseconds mymaster 2000
-                        sentinel failover-timeout mymaster 120000
-                        sentinel parallel-syncs mymaster 1
-                        """.formatted(redisLocalSentinelPortAsString, redisLocalMasterPortAsString, redisLocalMasterPortAsString);
+                port %s
+                bind 0.0.0.0
+                sentinel monitor mymaster 127.0.0.1 %s 1
+                sentinel announce-ip 127.0.0.1
+                sentinel announce-port %s
+                sentinel down-after-milliseconds mymaster 2000
+                sentinel failover-timeout mymaster 120000
+                sentinel parallel-syncs mymaster 1
+                """.formatted(redisLocalSentinelPortAsString, redisMasterResolvedPort, redisLocalMasterPortAsString);
+
+        System.out.println(sentinelConf);
 
         final Path tempFile;
         try {
             tempFile = Files.createTempFile("sentinel", ".conf");
-            Files.write(tempFile, sentinelConf.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(tempFile, sentinelConf);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -65,8 +71,10 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 
         redisLocalSentinelTestcontainer = new GenericContainer<>(redisDockerImage)
                 .dependsOn(RedisNonStartingIntegrationTestBase.redisLocalMasterTestcontainer)
-                .withNetwork(network).withNetworkAliases(redisLocalSentinelAlias)
+                .withNetwork(network)
+                .withNetworkAliases(redisLocalSentinelAlias)
                 .withCommand("redis-sentinel", "/etc/sentinel.conf")
+//                .withCommand("sh", "-c", "chown redis:redis /etc/sentinel.conf && redis-sentinel /etc/sentinel.conf") //can be used instead of SKIP_DROP_PRIVS=1
                 .withEnv("SKIP_DROP_PRIVS", "1")
                 .withStartupTimeout(Duration.ofSeconds(30))
                 .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
@@ -74,7 +82,8 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 
 
         redisLocalSentinelTestcontainer.setExposedPorts(List.of(redisLocalSentinelPort));
-        redisLocalSentinelTestcontainer.setPortBindings(List.of(redisLocalSentinelPortAsString + ":" + redisLocalSentinelPortAsString));
+        //Enable line below for fixed port - use for test debugging only!
+//        redisLocalSentinelTestcontainer.setPortBindings(List.of(redisLocalSentinelPortAsString + ":" + redisLocalSentinelPortAsString));
 
         redisLocalSentinelTestcontainer.start();
 

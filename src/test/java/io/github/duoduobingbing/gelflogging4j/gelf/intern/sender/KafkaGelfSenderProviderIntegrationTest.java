@@ -1,10 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderConfiguration;
 import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
@@ -15,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
-
-import java.util.Map;
 
 /**
  * @author Rifat Döver

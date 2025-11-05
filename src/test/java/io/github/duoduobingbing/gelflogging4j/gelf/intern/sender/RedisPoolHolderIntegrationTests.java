@@ -23,14 +23,13 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        // enable the test with -Dtest.withRedis=true
-        assumeTrue(Sockets.isOpen("localhost", 6479));
+        assumeTrue(Sockets.isOpen("localhost", redisMasterResolvedPort));
     }
 
     @Test
     void shouldConnectToJedis() {
 
-        Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), 6479);
+        Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
         Jedis resource = pool.getResource();
         assertThat(resource.ping()).isEqualTo("PONG");
@@ -43,8 +42,8 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
     @Test
     void shouldConsiderRefCntBeforeClosingPool() {
 
-        Pool<Jedis> pool1 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), 6479);
-        Pool<Jedis> pool2 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), 6479);
+        Pool<Jedis> pool1 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
+        Pool<Jedis> pool2 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
         assertThat(pool1.isClosed()).isFalse();
         assertThat(pool2.isClosed()).isFalse();
@@ -63,8 +62,8 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
     @Test
     void shouldReturnActivePoolsOnly() {
 
-        RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), 6479).destroy();
-        Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), 6479);
+        RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort).destroy();
+        Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
         assertThat(pool.isClosed()).isFalse();
 

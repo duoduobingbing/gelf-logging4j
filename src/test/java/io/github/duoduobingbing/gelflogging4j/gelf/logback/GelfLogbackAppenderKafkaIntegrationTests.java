@@ -3,13 +3,11 @@ package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports.Binding;
 import com.google.common.collect.Lists;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -21,7 +19,8 @@ import org.testcontainers.kafka.KafkaContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 
 /**
@@ -34,14 +33,15 @@ class GelfLogbackAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase 
     private static final String KAFKA_LOG_TOPIC = "log-topic";
 
     @Container
-    final KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer()
-            .withCreateContainerCmdModifier(
-                    cmd -> cmd
-                            .getHostConfig()
-                            .withPortBindings(
-                                    new PortBinding(Binding.bindPort(19092), new ExposedPort(9092)) //TODO: make non fixed port
-                            )
-            );
+    final KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
+           //Below's code is used for setting a fixed port. Enable below code only for debugging purposes!
+//            .withCreateContainerCmdModifier(
+//                    cmd -> cmd
+//                            .getHostConfig()
+//                            .withPortBindings(
+//                                    new PortBinding(Binding.bindPort(19092), new ExposedPort(9092))
+//                            )
+//            );
 
     @Test
     void testKafkaSender() throws Exception {
@@ -52,9 +52,9 @@ class GelfLogbackAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase 
 
         configurator.setContext(lc);
 
-        URL xmlConfigFile = getClass().getResource("/logback/logback-gelf-with-kafka.xml");
+        InputStream xmlConfigFileStream = getPropertiesWithRealPortReplaced();
 
-        configurator.doConfigure(xmlConfigFile);
+        configurator.doConfigure(xmlConfigFileStream);
 
         Logger testLogger = lc.getLogger("testLogger");
 
@@ -74,5 +74,9 @@ class GelfLogbackAppenderKafkaIntegrationTests extends KafkaIntegrationTestBase 
             String fullMessage = gelfMessageJsonNode.at("/%s".formatted(GelfMessage.FIELD_FULL_MESSAGE)).stringValue();
             AssertJAssertions.assertThat(fullMessage).isEqualTo(logMessage);
         }
+    }
+
+    private InputStream getPropertiesWithRealPortReplaced() throws IOException {
+        return PropertiesHelper.replacePortInResource("/logback/logback-gelf-with-kafka.xml", kafkaContainer, 9092, 19092);
     }
 }

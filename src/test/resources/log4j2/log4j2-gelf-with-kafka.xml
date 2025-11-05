@@ -1,7 +1,6 @@
 <Configuration packages="biz.paluch.logging.gelf.log4j2">
     <Appenders>
-        <!-- Port is not defined taking default 9092-->
-        <Gelf name="gelf" host="kafka://localhost#kafka-log-topic" version="1.1" extractStackTrace="true"
+        <Gelf name="gelf" host="kafka://localhost:9092#kafka-log-topic" version="1.1" extractStackTrace="true"
               filterStackTrace="true" mdcProfiling="true" includeFullMdc="true" maximumMessageSize="8192"
               originHost="%host{fqdn}" additionalFieldTypes="fieldName1=String,fieldName2=Double,fieldName3=Long">
             <Field name="timestamp" pattern="%d{dd MMM yyyy HH:mm:ss,SSS}"/>

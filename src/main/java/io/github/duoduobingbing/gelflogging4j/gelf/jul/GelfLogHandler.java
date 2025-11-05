@@ -56,7 +56,7 @@ public class GelfLogHandler extends Handler implements ErrorReporter {
 
     protected volatile GelfSender gelfSender;
     protected GelfMessageAssembler gelfMessageAssembler;
-    private final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
+    final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
 
     public GelfLogHandler() {
         super();

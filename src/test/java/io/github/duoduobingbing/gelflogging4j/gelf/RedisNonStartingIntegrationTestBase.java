@@ -12,8 +12,6 @@ import org.testcontainers.utility.DockerImageName;
 import redis.clients.jedis.Jedis;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author tktiki
@@ -25,6 +23,8 @@ public class RedisNonStartingIntegrationTestBase {
     protected static GenericContainer<?> redisLocalMasterTestcontainer;
 
     protected static Jedis jedisMaster;
+
+    protected static int redisMasterResolvedPort;
 
     protected static int redisLocalMasterPort = 6479;
     protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
@@ -39,6 +39,7 @@ public class RedisNonStartingIntegrationTestBase {
 
     protected static void startRedisMasterTestcontainer() {
         redisLocalMasterTestcontainer.start();
+        redisMasterResolvedPort = redisLocalMasterTestcontainer.getMappedPort(redisLocalMasterPort);
     }
 
     protected static void createRedisMasterTestcontainer() {
@@ -46,8 +47,8 @@ public class RedisNonStartingIntegrationTestBase {
         logger.info("Using redis docker image: {}", redisDockerImage);
         redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse(redisDockerImage));
 
-        final List<String> portBindings = new ArrayList<>();
-        portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
+
+
         redisLocalMasterTestcontainer
                 .withExposedPorts(redisLocalMasterPort)
                 .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
@@ -58,7 +59,10 @@ public class RedisNonStartingIntegrationTestBase {
                         "--daemonize", "no")
                 .withStartupTimeout(Duration.ofSeconds(30));
 
-        redisLocalMasterTestcontainer.setPortBindings(portBindings);
+        //Use below for fixed port for debugging the tests
+//        final List<String> portBindings = new ArrayList<>();
+//        portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
+//        redisLocalMasterTestcontainer.setPortBindings(portBindings);
 
     }
 

@@ -4,10 +4,12 @@ import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisSentinelIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.Sockets;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,8 +28,8 @@ public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIn
 
     @BeforeEach
     void before() {
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalMasterPort));
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalSentinelPort));
+        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisMasterResolvedPort));
+        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalSentinelTestcontainer.getMappedPort(redisLocalSentinelPort)));
 
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
@@ -35,8 +37,15 @@ public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIn
 
     @Test
     void testSentinel() throws Exception {
+        InputStream propertiesStream = PropertiesHelper.replacePortInResource(
+                "/jul/test-redis-sentinel-logging.properties",
+                redisLocalSentinelTestcontainer,
+                redisLocalSentinelPort,
+                26379
+        );
+
         LogManager.getLogManager()
-                .readConfiguration(getClass().getResourceAsStream("/jul/test-redis-sentinel-logging.properties"));
+                .readConfiguration(propertiesStream);
 
         Logger logger = Logger.getLogger(getClass().getName());
         String expectedMessage = "message1";
