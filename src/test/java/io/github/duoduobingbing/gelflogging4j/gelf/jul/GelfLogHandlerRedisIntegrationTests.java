@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
@@ -23,6 +26,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.TestRedisGelfSe
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.JUnitAssertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +37,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.RedisGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
@@ -187,7 +192,8 @@ class GelfLogHandlerRedisIntegrationTests extends RedisIntegrationTestBase {
     @Test
     void testRedisNotAvailable() throws Exception {
 
-        //This should fail, because we expect 10.1.5.20:52454 to not have any redis available
+        //This should give false, because we expect 10.1.5.20:52454 to not have any redis available
+        Assumptions.assumeFalse(Sockets.isOpen("10.1.5.20", 52454));
 
         LogManager.getLogManager()
                 .readConfiguration(getClass().getResourceAsStream("/jul/test-redis-not-available.properties"));
