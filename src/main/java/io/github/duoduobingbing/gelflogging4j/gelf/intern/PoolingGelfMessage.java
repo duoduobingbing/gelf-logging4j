@@ -40,8 +40,6 @@ class PoolingGelfMessage extends GelfMessage {
 //        byte[] arr = new byte[newBb.remaining()];
 //        newBb.get(arr);
 
-//        System.out.println("TODO: " + (new Object()).hashCode() + ":" + new String(arr));
-
     }
 
     @Override

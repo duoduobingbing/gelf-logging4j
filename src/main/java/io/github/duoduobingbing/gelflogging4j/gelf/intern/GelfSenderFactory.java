@@ -3,7 +3,12 @@ package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.DefaultGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.KafkaGelfSenderProvider;
@@ -16,6 +21,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.RedisGelfSender
  * @author Mark Paluch
  * @author Aleksandar Stojadinovic
  * @author Rifat Döver
+ * @author duoduobingbing
  * @since 26.09.13 15:12
  */
 public final class GelfSenderFactory {
@@ -24,41 +30,55 @@ public final class GelfSenderFactory {
         // no instance allowed
     }
 
+    static record LazyGelfSenderConfiguration(
+            Supplier<String> hostSupplier,
+            Supplier<Integer> portSupplier,
+            Supplier<ErrorReporter> errorReporterSupplier,
+            Supplier<Map<String, Object>> configSupplier
+    )
+            implements GelfSenderConfiguration {
+
+        @Override
+        public String getHost() {
+            return hostSupplier.get();
+        }
+
+        @Override
+        public int getPort() {
+            return portSupplier.get();
+        }
+
+        @Override
+        public ErrorReporter getErrorReporter() {
+            return errorReporterSupplier.get();
+        }
+
+        @Override
+        public Map<String, Object> getSpecificConfigurations() {
+            return configSupplier.get();
+        }
+    }
+
     /**
      * Create a GelfSender based on the configuration.
      *
-     * @param hostAndPortProvider the host and port
-     * @param errorReporter the error reporter
+     * @param hostAndPortProvider          the host and port
+     * @param errorReporter                the error reporter
      * @param senderSpecificConfigurations configuration map
      * @return a new {@link GelfSender} instance
      */
-    public static GelfSender createSender(final HostAndPortProvider hostAndPortProvider, final ErrorReporter errorReporter,
-            final Map<String, Object> senderSpecificConfigurations) {
+    public static GelfSender createSender(
+            final HostAndPortProvider hostAndPortProvider,
+            final ErrorReporter errorReporter,
+            final Map<String, Object> senderSpecificConfigurations
+    ) {
 
-        //TODO: make this a record with Supplier<T> instead of causing class pollution with this
-        GelfSenderConfiguration senderConfiguration = new GelfSenderConfiguration() {
-
-            @Override
-            public int getPort() {
-                return hostAndPortProvider.getPort();
-            }
-
-            @Override
-            public String getHost() {
-                return hostAndPortProvider.getHost();
-            }
-
-            @Override
-            public ErrorReporter getErrorReporter() {
-                return errorReporter;
-            }
-
-            @Override
-            public Map<String, Object> getSpecificConfigurations() {
-                return senderSpecificConfigurations;
-            }
-
-        };
+        final GelfSenderConfiguration senderConfiguration = new LazyGelfSenderConfiguration(
+                hostAndPortProvider::getHost,
+                hostAndPortProvider::getPort,
+                () -> errorReporter,
+                () -> senderSpecificConfigurations
+        );
 
         return createSender(senderConfiguration);
     }
@@ -74,25 +94,29 @@ public final class GelfSenderFactory {
         ErrorReporter errorReporter = senderConfiguration.getErrorReporter();
         if (senderConfiguration.getHost() == null) {
             senderConfiguration.getErrorReporter().reportError("GELF server hostname is empty!", null);
-        } else {
-
-            try {
-                for (GelfSenderProvider provider : SenderProviderHolder.getSenderProvider()) {
-                    if (provider.supports(senderConfiguration.getHost())) {
-                        return provider.create(senderConfiguration);
-                    }
-                }
-                senderConfiguration.getErrorReporter().reportError("No sender found for host " + senderConfiguration.getHost(),
-                        null);
-                return null;
-            } catch (UnknownHostException e) {
-                errorReporter.reportError("Unknown GELF server hostname:" + senderConfiguration.getHost(), e);
-            } catch (SocketException e) {
-                errorReporter.reportError("Socket exception: " + e.getMessage(), e);
-            } catch (IOException e) {
-                errorReporter.reportError("IO exception: " + e.getMessage(), e);
-            }
+            return null;
         }
+
+
+        try {
+            for (GelfSenderProvider provider : SenderProviderHolder.getSenderProvider()) {
+                if (provider.supports(senderConfiguration.getHost())) {
+                    return provider.create(senderConfiguration);
+                }
+            }
+
+            senderConfiguration
+                    .getErrorReporter()
+                    .reportError("No sender found for host " + senderConfiguration.getHost(),null);
+
+        } catch (UnknownHostException e) {
+            errorReporter.reportError("Unknown GELF server hostname:" + senderConfiguration.getHost(), e);
+        } catch (SocketException e) {
+            errorReporter.reportError("Socket exception: " + e.getMessage(), e);
+        } catch (IOException e) {
+            errorReporter.reportError("IO exception: " + e.getMessage(), e);
+        }
+
 
         return null;
     }

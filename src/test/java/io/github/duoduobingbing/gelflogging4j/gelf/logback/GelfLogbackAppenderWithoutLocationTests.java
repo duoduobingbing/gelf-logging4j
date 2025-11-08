@@ -1,9 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URL;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -45,13 +44,13 @@ class GelfLogbackAppenderWithoutLocationTests {
         Logger logger = lc.getLogger(getClass());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("SourceClassName")).isNull();
-        assertThat(gelfMessage.getField("SourceSimpleClassName")).isNull();
-        assertThat(gelfMessage.getField("SourceMethodName")).isNull();
-        assertThat(gelfMessage.getField("SourceLineNumber")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceClassName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceSimpleClassName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceMethodName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceLineNumber")).isNull();
     }
 }

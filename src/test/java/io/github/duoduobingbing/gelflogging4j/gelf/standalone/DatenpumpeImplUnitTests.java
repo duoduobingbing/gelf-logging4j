@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.standalone;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,15 +28,15 @@ class DatenpumpeImplUnitTests {
 
         datenpumpe.submit(bean);
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("value")).isEqualTo("value field");
-        assertThat(gelfMessage.getField("boolean")).isEqualTo("true");
-        assertThat(gelfMessage.getField("object")).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("value")).isEqualTo("value field");
+        AssertJAssertions.assertThat(gelfMessage.getField("boolean")).isEqualTo("true");
+        AssertJAssertions.assertThat(gelfMessage.getField("object")).isNotNull();
 
-        assertThat(gelfMessage.getAdditonalFields()).hasSize(3);
+        AssertJAssertions.assertThat(gelfMessage.getAdditonalFields()).hasSize(3);
 
         datenpumpe.close();
 
@@ -60,7 +59,7 @@ class DatenpumpeImplUnitTests {
 
         datenpumpe.submit(shoppingCart);
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 

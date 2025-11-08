@@ -1,10 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderConfiguration;
+import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
-
-import java.util.Map;
 
 /**
  * @author Rifat Döver
@@ -32,29 +29,6 @@ class KafkaGelfSenderProviderIntegrationTest extends KafkaIntegrationTestBase {
     @Container
     KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();
 
-    public record OnlyHostTestGelfSenderConfig(String host) implements GelfSenderConfiguration {
-
-        @Override
-        public String getHost(){
-            return this.host;
-        }
-
-        @Override
-        public int getPort() {
-            return 0;
-        }
-
-        @Override
-        public ErrorReporter getErrorReporter() {
-            return null;
-        }
-
-        @Override
-        public Map<String, Object> getSpecificConfigurations() {
-            return Map.of();
-        }
-    }
-
     @Test
     void testKafkaGelfSenderProvider() {
 
@@ -67,7 +41,9 @@ class KafkaGelfSenderProviderIntegrationTest extends KafkaIntegrationTestBase {
         builder.append("#");
         builder.append(TEST_LOG_TOPIC);
 
-        GelfSenderConfiguration gelfSenderConfiguration = new OnlyHostTestGelfSenderConfig(builder.toString());
+        DefaultGelfSenderConfiguration gelfSenderConfiguration = new DefaultGelfSenderConfiguration();
+        gelfSenderConfiguration.setHost(builder.toString());
+
         GelfMessage gelfMessage = new GelfMessage("shortMessage", "fullMessage", 12121L, "WARNING");
 
         KafkaGelfSenderProvider provider = new KafkaGelfSenderProvider();

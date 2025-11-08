@@ -1,13 +1,12 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,28 +71,28 @@ class GelfLogAppenderAsyncNettyTcpIntegrationTests {
         waitForGelf();
 
         List<?> jsonValues = server.getJsonValues();
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.getFirst();
 
-        assertThat(jsonValue.get(GelfMessage.FIELD_HOST)).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
-        assertThat(jsonValue.get("_server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);
-        assertThat(jsonValue.get("_server.fqdn")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
-        assertThat(jsonValue.get("_server")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
-        assertThat(jsonValue.get("_server.addr")).isEqualTo(RuntimeContainer.ADDRESS);
+        AssertJAssertions.assertThat(jsonValue.get(GelfMessage.FIELD_HOST)).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(jsonValue.get("_server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);
+        AssertJAssertions.assertThat(jsonValue.get("_server.fqdn")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(jsonValue.get("_server")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(jsonValue.get("_server.addr")).isEqualTo(RuntimeContainer.ADDRESS);
 
-        assertThat(jsonValue.get("_className")).isEqualTo(getClass().getName());
-        assertThat(jsonValue.get("_simpleClassName")).isEqualTo(getClass().getSimpleName());
+        AssertJAssertions.assertThat(jsonValue.get("_className")).isEqualTo(getClass().getName());
+        AssertJAssertions.assertThat(jsonValue.get("_simpleClassName")).isEqualTo(getClass().getSimpleName());
 
-        assertThat(jsonValue.get(GelfMessage.FIELD_FULL_MESSAGE)).isEqualTo(EXPECTED_LOG_MESSAGE);
-        assertThat(jsonValue.get(GelfMessage.FIELD_SHORT_MESSAGE)).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(jsonValue.get(GelfMessage.FIELD_FULL_MESSAGE)).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(jsonValue.get(GelfMessage.FIELD_SHORT_MESSAGE)).isEqualTo(EXPECTED_LOG_MESSAGE);
 
-        assertThat(jsonValue.get("_level")).isEqualTo("INFO");
-        assertThat(jsonValue.get(GelfMessage.FIELD_LEVEL)).isEqualTo("6");
+        AssertJAssertions.assertThat(jsonValue.get("_level")).isEqualTo("INFO");
+        AssertJAssertions.assertThat(jsonValue.get(GelfMessage.FIELD_LEVEL)).isEqualTo("6");
 
-        assertThat(jsonValue.get(GelfMessage.FIELD_FACILITY)).isEqualTo("gelf-logging4j");
-        assertThat(jsonValue.get("_fieldName1")).isEqualTo("fieldValue1");
-        assertThat(jsonValue.get("_fieldName2")).isEqualTo("fieldValue2");
+        AssertJAssertions.assertThat(jsonValue.get(GelfMessage.FIELD_FACILITY)).isEqualTo("gelf-logging4j");
+        AssertJAssertions.assertThat(jsonValue.get("_fieldName1")).isEqualTo("fieldValue1");
+        AssertJAssertions.assertThat(jsonValue.get("_fieldName2")).isEqualTo("fieldValue2");
     }
 
     private void waitForGelf() throws InterruptedException, TimeoutException, ExecutionException {

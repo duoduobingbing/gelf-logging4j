@@ -1,9 +1,13 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField.*;
+import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
 
 import java.util.Collections;
-import java.util.logging.*;
+import java.util.logging.ErrorManager;
+import java.util.logging.Filter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageAssembler;
@@ -43,7 +47,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.MessagePostprocessingE
  * <li>filter (Optional): Class-Name of a Log-Filter, default none</li>
  * <li>additionalField.(number) (Optional): Post additional fields. Eg. .GelfLogHandler.additionalField.0=fieldName=Value</li>
  * </ul>
- *
+ * <p>
  * The {@link #publish(LogRecord)} method is thread-safe and may be called by different threads at any time.
  *
  * @author Mark Paluch
@@ -52,7 +56,7 @@ public class GelfLogHandler extends Handler implements ErrorReporter {
 
     protected volatile GelfSender gelfSender;
     protected GelfMessageAssembler gelfMessageAssembler;
-    private final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
+    final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
 
     public GelfLogHandler() {
         super();
@@ -99,8 +103,17 @@ public class GelfLogHandler extends Handler implements ErrorReporter {
     }
 
     protected void initializeDefaultFields() {
-        gelfMessageAssembler.addFields(LogMessageField.getDefaultMapping(Time, Severity, ThreadName, SourceClassName,
-                SourceMethodName, SourceSimpleClassName, LoggerName));
+        gelfMessageAssembler.addFields(
+                LogMessageField.getDefaultMapping(
+                        NamedLogField.Time,
+                        NamedLogField.Severity,
+                        NamedLogField.ThreadName,
+                        NamedLogField.SourceClassName,
+                        NamedLogField.SourceMethodName,
+                        NamedLogField.SourceSimpleClassName,
+                        NamedLogField.LoggerName
+                )
+        );
     }
 
     protected GelfMessageAssembler createGelfMessageAssembler() {

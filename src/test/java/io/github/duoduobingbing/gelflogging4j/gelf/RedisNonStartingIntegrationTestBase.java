@@ -1,16 +1,17 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.DockerFileUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import redis.clients.jedis.Jedis;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author tktiki
@@ -23,8 +24,12 @@ public class RedisNonStartingIntegrationTestBase {
 
     protected static Jedis jedisMaster;
 
-    protected static int redisLocalMasterPort = 6479;
+    protected static int redisMasterResolvedPort;
+
+    protected static final int redisLocalMasterPort = 6479;
     protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
+
+    protected static final Logger logger = LoggerFactory.getLogger(RedisNonStartingIntegrationTestBase.class);
 
     @BeforeAll
     static void beforeAll() {
@@ -34,16 +39,19 @@ public class RedisNonStartingIntegrationTestBase {
 
     protected static void startRedisMasterTestcontainer() {
         redisLocalMasterTestcontainer.start();
+        redisMasterResolvedPort = redisLocalMasterTestcontainer.getMappedPort(redisLocalMasterPort);
     }
 
     protected static void createRedisMasterTestcontainer() {
-        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse("redis:8.2"));
+        String redisDockerImage = DockerFileUtil.parseDockerImageFromClassPathFile("docker/Redis.Dockerfile");
+        logger.info("Using redis docker image: {}", redisDockerImage);
+        redisLocalMasterTestcontainer = new GenericContainer<>(DockerImageName.parse(redisDockerImage));
 
-        final List<String> portBindings = new ArrayList<>();
-        portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
+
+
         redisLocalMasterTestcontainer
                 .withExposedPorts(redisLocalMasterPort)
-                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8String())))
+                .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
                 .withCommand("redis-server", "--port", redisLocalMasterPortAsString,
                         "--bind", "0.0.0.0",
                         "--save", "",
@@ -51,7 +59,10 @@ public class RedisNonStartingIntegrationTestBase {
                         "--daemonize", "no")
                 .withStartupTimeout(Duration.ofSeconds(30));
 
-        redisLocalMasterTestcontainer.setPortBindings(portBindings);
+        //Use below for fixed port for debugging the tests
+//        final List<String> portBindings = new ArrayList<>();
+//        portBindings.add(redisLocalMasterPortAsString + ":" + redisLocalMasterPortAsString);
+//        redisLocalMasterTestcontainer.setPortBindings(portBindings);
 
     }
 

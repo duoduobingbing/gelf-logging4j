@@ -1,12 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j;
 
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_FQDN_HOSTNAME;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_HOSTNAME;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_HOSTNAME_RESOLUTION_ORDER;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.RESOLUTION_ORDER_LOCALHOST_NETWORK_FALLBACK;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK;
-import static io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties.getProperty;
+import io.github.duoduobingbing.gelflogging4j.RuntimeContainerProperties;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -85,11 +79,11 @@ public class RuntimeContainer {
      * @param errorReporter the error reporter
      */
     public static void lookupHostname(ErrorReporter errorReporter) {
-        String myHostName = getProperty(PROPERTY_LOGSTASH_GELF_HOSTNAME, "unknown");
-        String myFQDNHostName = getProperty(PROPERTY_LOGSTASH_GELF_FQDN_HOSTNAME, "unknown");
+        String myHostName = RuntimeContainerProperties.getProperty(RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_HOSTNAME, "unknown");
+        String myFQDNHostName = RuntimeContainerProperties.getProperty(RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_FQDN_HOSTNAME, "unknown");
         String myAddress = "";
 
-        if (Boolean.parseBoolean(getProperty(PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "false"))) {
+        if (Boolean.parseBoolean(RuntimeContainerProperties.getProperty(RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "false"))) {
             FQDN_HOSTNAME = myFQDNHostName;
             HOSTNAME = myHostName;
             ADDRESS = myAddress;
@@ -97,15 +91,17 @@ public class RuntimeContainer {
         }
 
         try {
-            String resolutionOrder = getProperty(PROPERTY_LOGSTASH_GELF_HOSTNAME_RESOLUTION_ORDER,
-                    RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK);
+            String resolutionOrder = RuntimeContainerProperties.getProperty(
+                    RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_HOSTNAME_RESOLUTION_ORDER,
+                    RuntimeContainerProperties.RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK
+            );
 
             InetAddress inetAddress = null;
-            if (resolutionOrder.equals(RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK)) {
+            if (resolutionOrder.equals(RuntimeContainerProperties.RESOLUTION_ORDER_NETWORK_LOCALHOST_FALLBACK)) {
                 inetAddress = getInetAddressWithHostname();
             }
 
-            if (resolutionOrder.equals(RESOLUTION_ORDER_LOCALHOST_NETWORK_FALLBACK)) {
+            if (resolutionOrder.equals(RuntimeContainerProperties.RESOLUTION_ORDER_LOCALHOST_NETWORK_FALLBACK)) {
                 if (isQualified(InetAddress.getLocalHost())) {
                     inetAddress = InetAddress.getLocalHost();
                 } else {

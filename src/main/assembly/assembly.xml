@@ -32,12 +32,4 @@
             </includes>
         </dependencySet>
     </dependencySets>
-
-    <files>
-        <file>
-            <source>src/main/assembly/module.xml</source>
-            <filtered>true</filtered>
-            <outputDirectory>io/github/duoduobingbing/gelflogging4j/main</outputDirectory>
-        </file>
-    </files>
 </assembly>

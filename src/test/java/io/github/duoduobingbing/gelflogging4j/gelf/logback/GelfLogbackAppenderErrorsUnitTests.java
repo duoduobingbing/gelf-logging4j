@@ -1,15 +1,12 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderFactory;
@@ -26,8 +23,14 @@ class GelfLogbackAppenderErrorsUnitTests {
 
     private static final String THE_HOST = "the host";
 
-    private static final LoggingEvent LOGGING_EVENT = new LoggingEvent("my.class", new LoggerContext().getLogger("my.class"),
-            Level.INFO, "message", null, null);
+    private static final LoggingEvent LOGGING_EVENT = new LoggingEvent(
+            "my.class",
+            new LoggerContext().getLogger("my.class"),
+            Level.INFO,
+            "message",
+            null,
+            null
+    );
 
     @Mock
     private GelfSenderProvider senderProvider;
@@ -45,7 +48,7 @@ class GelfLogbackAppenderErrorsUnitTests {
         GelfSenderFactory.addGelfSenderProvider(senderProvider);
 
         sut.setContext(context);
-        when(context.getStatusManager()).thenReturn(statusManager);
+        Mockito.when(context.getStatusManager()).thenReturn(statusManager);
 
         LOGGING_EVENT.setCallerData(new StackTraceElement[] { new StackTraceElement("a", "b", "c", 1) });
 
@@ -64,7 +67,7 @@ class GelfLogbackAppenderErrorsUnitTests {
 
         sut.append(LOGGING_EVENT);
 
-        verify(statusManager, atLeast(1)).add(any(Status.class));
+        Mockito.verify(statusManager, Mockito.atLeast(1)).add(ArgumentMatchers.any(Status.class));
     }
 
     @Test
@@ -72,7 +75,7 @@ class GelfLogbackAppenderErrorsUnitTests {
 
         sut.append(LOGGING_EVENT);
 
-        verify(statusManager, atLeast(1)).add(any(Status.class));
+        Mockito.verify(statusManager, Mockito.atLeast(1)).add(ArgumentMatchers.any(Status.class));
     }
 
     @Test
@@ -80,6 +83,6 @@ class GelfLogbackAppenderErrorsUnitTests {
 
         sut.append(LOGGING_EVENT);
 
-        verify(statusManager, atLeast(1)).add(any(Status.class));
+        Mockito.verify(statusManager, Mockito.atLeast(1)).add(ArgumentMatchers.any(Status.class));
     }
 }

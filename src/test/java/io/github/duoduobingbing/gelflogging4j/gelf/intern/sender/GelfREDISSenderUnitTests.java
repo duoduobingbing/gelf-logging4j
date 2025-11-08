@@ -1,10 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.mockito.Mockito.verify;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import redis.clients.jedis.Jedis;
@@ -32,6 +31,6 @@ class GelfREDISSenderUnitTests {
 
         sender.close();
 
-        verify(pool).destroy();
+        Mockito.verify(pool).destroy();
     }
 }

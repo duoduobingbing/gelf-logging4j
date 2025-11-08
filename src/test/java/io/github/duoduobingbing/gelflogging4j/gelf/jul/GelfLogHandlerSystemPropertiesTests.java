@@ -1,10 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,14 +40,14 @@ class GelfLogHandlerSystemPropertiesTests {
         Logger logger = Logger.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("propertyField1")).isEqualTo("${user.language}");
-        assertThat(gelfMessage.getField("propertyField2")).isEqualTo("${myproperty}");
-        assertThat(gelfMessage.getField("propertyField3")).isEqualTo("${otherproperty:fallback}");
-        assertThat(gelfMessage.getField("propertyField4")).isEqualTo("embedded${myproperty}property");
+        AssertJAssertions.assertThat(gelfMessage.getField("propertyField1")).isEqualTo("${user.language}");
+        AssertJAssertions.assertThat(gelfMessage.getField("propertyField2")).isEqualTo("${myproperty}");
+        AssertJAssertions.assertThat(gelfMessage.getField("propertyField3")).isEqualTo("${otherproperty:fallback}");
+        AssertJAssertions.assertThat(gelfMessage.getField("propertyField4")).isEqualTo("embedded${myproperty}property");
     }
 
 }

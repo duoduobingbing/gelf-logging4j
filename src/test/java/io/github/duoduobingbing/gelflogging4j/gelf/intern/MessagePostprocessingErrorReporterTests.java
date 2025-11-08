@@ -1,12 +1,11 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
-import static org.mockito.Mockito.verify;
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -24,7 +23,7 @@ class MessagePostprocessingErrorReporterTests {
         IOException e = new IOException();
         new MessagePostprocessingErrorReporter(target).reportError("foo", e);
 
-        verify(target).reportError("foo", e);
+        Mockito.verify(target).reportError("foo", e);
     }
 
     @Test
@@ -33,7 +32,7 @@ class MessagePostprocessingErrorReporterTests {
         IOException e = new IOException();
         new MessagePostprocessingErrorReporter(target).reportError(null, e);
 
-        verify(target).reportError("IOException", e);
+        Mockito.verify(target).reportError("IOException", e);
     }
 
     @Test
@@ -42,6 +41,6 @@ class MessagePostprocessingErrorReporterTests {
         IOException e = new IOException("foo");
         new MessagePostprocessingErrorReporter(target).reportError(null, e);
 
-        verify(target).reportError("foo", e);
+        Mockito.verify(target).reportError("foo", e);
     }
 }

@@ -1,11 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -43,11 +42,11 @@ class GelfLogHandlerMessageFormatTests {
         logger.addHandler(handler);
 
         logger.log(Level.INFO, logMessage, new String[] { "aaa" });
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getFullMessage()).isEqualTo(expectedMessage);
-        assertThat(gelfMessage.getShortMessage()).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo(expectedMessage);
     }
 }

@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -52,9 +51,9 @@ class GelfLogAppenderTests {
     void testSimpleDebug() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
         logger.debug(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
     }
 
     @Test
@@ -63,21 +62,21 @@ class GelfLogAppenderTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
-        assertThat(gelfMessage.getFullMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
-        assertThat(gelfMessage.getShortMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
-        assertThat(gelfMessage.getVersion()).isEqualTo(GelfMessage.GELF_VERSION_1_1);
-        assertThat(gelfMessage.getLevel()).isEqualTo("6");
-        assertThat(gelfMessage.getMaximumMessageSize()).isEqualTo(8192);
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(gelfMessage.getVersion()).isEqualTo(GelfMessage.GELF_VERSION_1_1);
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("6");
+        AssertJAssertions.assertThat(gelfMessage.getMaximumMessageSize()).isEqualTo(8192);
 
-        assertThat(gelfMessage.getField("server")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
-        assertThat(gelfMessage.getField("server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);
-        assertThat(gelfMessage.getField("server.fqdn")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
-        assertThat(gelfMessage.getField("server.addr")).isEqualTo(RuntimeContainer.ADDRESS);
+        AssertJAssertions.assertThat(gelfMessage.getField("server")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(gelfMessage.getField("server.simple")).isEqualTo(RuntimeContainer.HOSTNAME);
+        AssertJAssertions.assertThat(gelfMessage.getField("server.fqdn")).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(gelfMessage.getField("server.addr")).isEqualTo(RuntimeContainer.ADDRESS);
 
-        assertThat(gelfMessage.getField("simpleClassName")).isEqualTo(GelfLogAppenderTests.class.getSimpleName());
+        AssertJAssertions.assertThat(gelfMessage.getField("simpleClassName")).isEqualTo(GelfLogAppenderTests.class.getSimpleName());
     }
 
     @Test
@@ -87,10 +86,10 @@ class GelfLogAppenderTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(gelfMessage.getHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
     }
 
     @Test
@@ -100,10 +99,10 @@ class GelfLogAppenderTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getHost()).isEqualTo(RuntimeContainer.HOSTNAME);
+        AssertJAssertions.assertThat(gelfMessage.getHost()).isEqualTo(RuntimeContainer.HOSTNAME);
     }
 
     @Test
@@ -113,10 +112,10 @@ class GelfLogAppenderTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getHost()).isEqualTo("my.custom.host");
+        AssertJAssertions.assertThat(gelfMessage.getHost()).isEqualTo("my.custom.host");
     }
 
     @Test
@@ -126,10 +125,10 @@ class GelfLogAppenderTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getFacility()).isEqualTo("");
+        AssertJAssertions.assertThat(gelfMessage.getFacility()).isEqualTo("");
     }
 
     @Test
@@ -140,7 +139,7 @@ class GelfLogAppenderTests {
         logger.warn(LOG_MESSAGE);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getLevel()).isEqualTo("4");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("4");
     }
 
     @Test
@@ -151,7 +150,7 @@ class GelfLogAppenderTests {
         logger.error(LOG_MESSAGE);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getLevel()).isEqualTo("3");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("3");
     }
 
     @Test
@@ -162,7 +161,7 @@ class GelfLogAppenderTests {
         logger.fatal(LOG_MESSAGE);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getLevel()).isEqualTo("2");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("2");
     }
 
     @Test
@@ -175,38 +174,116 @@ class GelfLogAppenderTests {
         ThreadContext.put(GelfUtil.MDC_REQUEST_START_MS, "" + System.currentTimeMillis());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
-        assertThat(gelfMessage.getField("mdcField1")).isEqualTo("my mdc value");
-        assertThat(gelfMessage.getAdditonalFields()).doesNotContainKeys("mdcField2");
+        AssertJAssertions.assertThat(gelfMessage.getField("mdcField1")).isEqualTo("my mdc value");
+        AssertJAssertions.assertThat(gelfMessage.getAdditonalFields()).doesNotContainKeys("mdcField2");
 
-        assertThat(gelfMessage.getField(GelfUtil.MDC_REQUEST_DURATION)).isNotNull();
-        assertThat(gelfMessage.getField(GelfUtil.MDC_REQUEST_END)).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(GelfUtil.MDC_REQUEST_DURATION)).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(GelfUtil.MDC_REQUEST_END)).isNotNull();
     }
 
     @Test
     void testFactory() throws Exception {
-        GelfLogAppender result = GelfLogAppender.createAppender(null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, false);
+        GelfLogAppender result = GelfLogAppender.createAppender(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false
+        );
 
-        assertThat(result).isNull();
+        AssertJAssertions.assertThat(result).isNull();
 
-        result = GelfLogAppender.createAppender(null, "name", null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, true);
+        result = GelfLogAppender.createAppender(
+                null,
+                "name",
+                null,
+                null,
+                null,
+                null,
+                null, null,
+                null, null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true
+        );
 
-        assertThat(result).isNull();
+        AssertJAssertions.assertThat(result).isNull();
 
-        result = GelfLogAppender.createAppender(null, "name", null, null, null, null, null, "host", null, null, null, null, null,
-                null, null, null, null, null, null, false);
+        result = GelfLogAppender.createAppender(
+                null,
+                "name",
+                null,
+                null,
+                null,
+                null,
+                null,
+                "host",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false
+        );
 
-        assertThat(result).isNotNull();
+        AssertJAssertions.assertThat(result).isNotNull();
 
-        result = GelfLogAppender.createAppender(null, "name", null, null, null, null, null, "host", null, null, null, null, null,
-                null, "facility", null, null, null, null, false);
+        result = GelfLogAppender.createAppender(
+                null,
+                "name",
+                null,
+                null,
+                null,
+                null,
+                null,
+                "host",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "facility",
+                null,
+                null,
+                null,
+                null,
+                false
+        );
 
-        assertThat(result).isNotNull();
+        AssertJAssertions.assertThat(result).isNotNull();
     }
 
     @Test
@@ -215,12 +292,12 @@ class GelfLogAppenderTests {
 
         logger.info((String) null, new IllegalStateException());
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
-        assertThat(gelfMessage.getFullMessage()).isEqualTo("null");
-        assertThat(gelfMessage.getShortMessage()).isEqualTo("null");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo("null");
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo("null");
     }
 
     @Test
@@ -229,12 +306,12 @@ class GelfLogAppenderTests {
 
         logger.info("", new IllegalStateException("Help!"));
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
-        assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
-        assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
     }
 
     @Test
@@ -243,6 +320,6 @@ class GelfLogAppenderTests {
 
         logger.info("");
 
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
     }
 }

@@ -82,6 +82,7 @@ public class IntegrationTestSslCertHelper {
         return keyGen.generateKeyPair();
     }
 
+    @SuppressWarnings("checkstyle:illegaltype")
     private static X509Certificate generateServerCertificate(X509Certificate caCert, KeyPair caKeyPair, PKCS10CertificationRequest serverCsr) throws CertificateException, IOException, OperatorCreationException {
         ZonedDateTime notBefore = ZonedDateTime.now();
         ZonedDateTime notAfter = notBefore.plusDays(375);
@@ -113,6 +114,7 @@ public class IntegrationTestSslCertHelper {
         return serverCert;
     }
 
+    @SuppressWarnings("checkstyle:illegaltype") /*ignore Date b/c there is no method with modern Instant in BouncyCastle for that*/
     private static X509Certificate generateCaCertificate(
             KeyPair caKeyPair
     ) throws CertificateException, OperatorCreationException, CertIOException, NoSuchAlgorithmException {

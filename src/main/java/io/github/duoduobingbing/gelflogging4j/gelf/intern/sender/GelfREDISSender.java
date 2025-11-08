@@ -21,7 +21,7 @@ public class GelfREDISSender implements GelfSender {
     private final Pool<Jedis> jedisPool;
     private final ErrorReporter errorReporter;
     private final String redisKey;
-    private final Set<Thread> callers = Collections.newSetFromMap(new WeakHashMap<Thread, Boolean>());
+    final Set<Thread> callers = Collections.newSetFromMap(new WeakHashMap<Thread, Boolean>());
 
     public GelfREDISSender(Pool<Jedis> jedisPool, String redisKey, ErrorReporter errorReporter) {
         this.jedisPool = jedisPool;

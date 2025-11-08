@@ -1,10 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 
@@ -35,57 +32,46 @@ class GelfLogbackAppenderUnitTests {
         sut.setMdcFields("");
         sut.setMdcProfiling(true);
 
-        assertThat(sut.getFacility()).isEqualTo(FACILITY);
-        assertThat(sut.getGraylogHost()).isEqualTo(HOST);
-        assertThat(sut.getHost()).isEqualTo(HOST);
-        assertThat(sut.getPort()).isEqualTo(GRAYLOG_PORT);
-        assertThat(sut.getGraylogPort()).isEqualTo(GRAYLOG_PORT);
-        assertThat(sut.getMaximumMessageSize()).isEqualTo(MAXIMUM_MESSAGE_SIZE);
-        assertThat(sut.getTimestampPattern()).isEqualTo(TIMESTAMP_PATTERN);
-        assertThat(sut.getOriginHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(sut.getFacility()).isEqualTo(FACILITY);
+        AssertJAssertions.assertThat(sut.getGraylogHost()).isEqualTo(HOST);
+        AssertJAssertions.assertThat(sut.getHost()).isEqualTo(HOST);
+        AssertJAssertions.assertThat(sut.getPort()).isEqualTo(GRAYLOG_PORT);
+        AssertJAssertions.assertThat(sut.getGraylogPort()).isEqualTo(GRAYLOG_PORT);
+        AssertJAssertions.assertThat(sut.getMaximumMessageSize()).isEqualTo(MAXIMUM_MESSAGE_SIZE);
+        AssertJAssertions.assertThat(sut.getTimestampPattern()).isEqualTo(TIMESTAMP_PATTERN);
+        AssertJAssertions.assertThat(sut.getOriginHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
 
-        assertThat(sut.getExtractStackTrace()).isEqualTo("true");
-        assertThat(sut.isFilterStackTrace()).isTrue();
-        assertThat(sut.isIncludeFullMdc()).isTrue();
-        assertThat(sut.isMdcProfiling()).isTrue();
+        AssertJAssertions.assertThat(sut.getExtractStackTrace()).isEqualTo("true");
+        AssertJAssertions.assertThat(sut.isFilterStackTrace()).isTrue();
+        AssertJAssertions.assertThat(sut.isIncludeFullMdc()).isTrue();
+        AssertJAssertions.assertThat(sut.isMdcProfiling()).isTrue();
     }
 
     @Test
     void testInvalidPort() throws Exception {
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                GelfLogbackAppender sut = new GelfLogbackAppender();
-                sut.setPort(-1);
-            }
-        });
+        AssertJAssertions.assertThatThrownBy(() -> {
+            GelfLogbackAppender sut = new GelfLogbackAppender();
+            sut.setPort(-1);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void testInvalidMaximumMessageSize() throws Exception {
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
+        AssertJAssertions.assertThatThrownBy(() -> {
                 GelfLogbackAppender sut = new GelfLogbackAppender();
                 sut.setMaximumMessageSize(-1);
-            }
-        });
+
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void testInvalidVersion() throws Exception {
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
+        AssertJAssertions.assertThatThrownBy(() -> {
                 GelfLogbackAppender sut = new GelfLogbackAppender();
                 sut.setVersion("7");
-            }
-        });
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 }

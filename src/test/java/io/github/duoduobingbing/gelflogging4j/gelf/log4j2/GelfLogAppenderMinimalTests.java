@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.MarkerManager;
@@ -52,9 +51,9 @@ class GelfLogAppenderMinimalTests {
     void testSimpleDebug() throws Exception {
 
         Logger logger = loggerContext.getLogger(getClass().getName());
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
         logger.debug(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
 
     }
 
@@ -64,18 +63,18 @@ class GelfLogAppenderMinimalTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(new MarkerManager.Log4jMarker("test"), LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
-        assertThat(gelfMessage.getFullMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
-        assertThat(gelfMessage.getShortMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
-        assertThat(gelfMessage.getField("MyTime")).isNotNull();
-        assertThat(gelfMessage.getAdditonalFields().get("Marker")).isEqualTo("test");
-        assertThat(gelfMessage.getLevel()).isEqualTo("6");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo(EXPECTED_LOG_MESSAGE);
+        AssertJAssertions.assertThat(gelfMessage.getField("MyTime")).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getAdditonalFields().get("Marker")).isEqualTo("test");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("6");
 
-        assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceLineNumber.name())).isNotNull();
-        assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceMethodName.name())).isEqualTo("testSimpleInfo");
-        assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceClassName.name())).isEqualTo(getClass().getName());
+        AssertJAssertions.assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceLineNumber.name())).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceMethodName.name())).isEqualTo("testSimpleInfo");
+        AssertJAssertions.assertThat(gelfMessage.getField(LogMessageField.NamedLogField.SourceClassName.name())).isEqualTo(getClass().getName());
 
     }
 }

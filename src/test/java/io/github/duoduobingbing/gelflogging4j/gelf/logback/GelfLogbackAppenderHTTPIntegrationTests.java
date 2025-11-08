@@ -1,11 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,10 +58,10 @@ class GelfLogbackAppenderHTTPIntegrationTests {
         List<Object> jsonValues = server.getJsonValues();
         String uri = server.getHandlerInitializer().getHandler().getUri();
 
-        assertThat(uri).isEqualTo("/foo/bar");
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(uri).isEqualTo("/foo/bar");
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonObject = (Map<String, Object>) jsonValues.getFirst();
-        assertThat(jsonObject.get("short_message")).isEqualTo("Hi there");
+        AssertJAssertions.assertThat(jsonObject.get("short_message")).isEqualTo("Hi there");
     }
 }

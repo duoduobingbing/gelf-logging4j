@@ -1,5 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.DockerFileUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -26,7 +27,10 @@ public class KafkaIntegrationTestBase {
      * @return KafkaContainer
      */
     protected static KafkaContainer provideKafkaContainer(){
-        return new KafkaContainer(DockerImageName.parse("apache/kafka:4.1.0"))
+        String kafkaDockerImage = DockerFileUtil.parseDockerImageFromClassPathFile("docker/Kafka.Dockerfile");
+        logger.info("Using kafka docker image: {}", kafkaDockerImage);
+
+        return new KafkaContainer(DockerImageName.parse(kafkaDockerImage))
                 .withEnv("KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS", "2000") //increase min timeout so, we can use 2s instead of the default 6s
                 .withLogConsumer((output) -> logger.info(output.getUtf8StringWithoutLineEnding()));
     }

@@ -1,7 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -17,7 +15,6 @@ import org.apache.logging.log4j.core.impl.Log4jProvider;
 import org.apache.logging.log4j.spi.DefaultThreadContextMap;
 import org.apache.logging.log4j.spi.ObjectThreadContextMap;
 import org.apache.logging.log4j.spi.Provider;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.ProviderUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -105,17 +102,17 @@ class GelfLogAppenderNonStringMdcTests {
         contextMap.putValue("myMdcf", 2.2d);
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
         Map<String, Object> jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject).containsEntry("myMdcs", "String");
-        assertThat(jsonObject).containsEntry("myMdcl", 1);
-        assertThat(jsonObject).containsEntry("myMdci", 2);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcs", "String");
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcl", 1);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdci", 2);
 
-        assertThat(jsonObject).containsEntry("myMdcd", 2.1);
-        assertThat(jsonObject).containsEntry("myMdcf", 2.2);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcd", 2.1);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcf", 2.2);
 
         ThreadContext.put("myMdcl", "1.1");
         ThreadContext.put("myMdci", "2.1");
@@ -124,29 +121,29 @@ class GelfLogAppenderNonStringMdcTests {
 
         GelfTestSender.getMessages().clear();
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject).containsEntry("myMdcl", 1);
-        assertThat(jsonObject).containsEntry("myMdci", 2);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcl", 1);
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdci", 2);
 
-        assertThat(jsonObject).doesNotContainKey("myMdcd");
-        assertThat(jsonObject).containsEntry("myMdcf", 0.0);
+        AssertJAssertions.assertThat(jsonObject).doesNotContainKey("myMdcd");
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdcf", 0.0);
 
         ThreadContext.put("myMdcl", "b");
         ThreadContext.put("myMdci", "a");
 
         GelfTestSender.getMessages().clear();
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject).doesNotContainKey("myMdcl");
-        assertThat(jsonObject).containsEntry("myMdci", 0);
+        AssertJAssertions.assertThat(jsonObject).doesNotContainKey("myMdcl");
+        AssertJAssertions.assertThat(jsonObject).containsEntry("myMdci", 0);
     }
 
 }

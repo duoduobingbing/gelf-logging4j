@@ -1,9 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URL;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -46,12 +45,12 @@ class GelfLogbackAppenderHostnameTests {
         Logger logger = lc.getLogger(getClass());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
         String json = gelfMessage.toJson();
-        assertThat(json).contains("\"host\":\"1.2.3.4\"");
+        AssertJAssertions.assertThat(json).contains("\"host\":\"1.2.3.4\"");
     }
 
     @Test
@@ -60,12 +59,12 @@ class GelfLogbackAppenderHostnameTests {
         Logger logger = lc.getLogger(getClass());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
         String json = gelfMessage.toJson();
-        assertThat(json).contains("\"_myOriginHost\":\"");
+        AssertJAssertions.assertThat(json).contains("\"_myOriginHost\":\"");
     }
 
 }

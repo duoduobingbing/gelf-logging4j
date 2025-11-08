@@ -1,14 +1,12 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.netty.NettyLocalServer;
@@ -73,11 +70,11 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
         waitForGelf();
 
         List<?> jsonValues = server.getJsonValues();
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
 
-        assertThat(jsonValue.get("facility")).isNull();
+        AssertJAssertions.assertThat(jsonValue.get("facility")).isNull();
 
     }
 
@@ -88,13 +85,7 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
 
         logger.info("");
 
-        assertThrows(TimeoutException.class, new Executable() {
-
-            @Override
-            public void execute() throws Throwable {
-                waitForGelf();
-            }
-        });
+        AssertJAssertions.assertThatThrownBy(this::waitForGelf).isInstanceOf(TimeoutException.class);
 
     }
 
@@ -118,13 +109,13 @@ class GelfLogAppenderEmptyFacilityNettyUdpIntegrationTests {
         waitForGelf();
 
         List<?> jsonValues = server.getJsonValues();
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> jsonValue = (Map<String, Object>) jsonValues.get(0);
 
         String shortMessage = builder.substring(0, 249);
-        assertThat(jsonValue.get("full_message")).isEqualTo(builder.toString());
-        assertThat(jsonValue.get("short_message")).isEqualTo(shortMessage);
+        AssertJAssertions.assertThat(jsonValue.get("full_message")).isEqualTo(builder.toString());
+        AssertJAssertions.assertThat(jsonValue.get("short_message")).isEqualTo(shortMessage);
 
     }
 

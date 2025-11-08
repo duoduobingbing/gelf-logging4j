@@ -2,6 +2,7 @@ package io.github.duoduobingbing.gelflogging4j.gelf;
 
 /**
  * Provides access to Log-Framework properties.
+ * Used by JUL
  *
  * @author Mark Paluch
  * @author Thomas Herzog
@@ -9,17 +10,8 @@ package io.github.duoduobingbing.gelflogging4j.gelf;
  */
 public interface PropertyProvider {
 
-    /**
-     * @deprecated Use host.
-     */
-    @Deprecated
-    String PROPERTY_GRAYLOG_HOST = "graylogHost";
-
-    /**
-     * @deprecated use port.
-     */
-    @Deprecated
-    String PROPERTY_GRAYLOG_PORT = "graylogPort";
+    String PROPERTY_GRAYLOG_HOST = "graylogHost"; //alternative for PROPERTY_HOST
+    String PROPERTY_GRAYLOG_PORT = "graylogPort"; //alternative for PROPERTY_PORT
 
     String PROPERTY_HOST = "host";
     String PROPERTY_PORT = "port";

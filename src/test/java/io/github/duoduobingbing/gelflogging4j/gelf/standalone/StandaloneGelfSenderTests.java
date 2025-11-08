@@ -1,8 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.standalone;
 
-import static io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageBuilder.newInstance;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageBuilder;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +29,15 @@ class StandaloneGelfSenderTests {
 
         GelfSender sender = GelfSenderFactory.createSender(configuration);
 
-        sender.sendMessage(newInstance().withFullMessage("message").withFacility(null).build());
+        sender.sendMessage(GelfMessageBuilder.newInstance().withFullMessage("message").withFacility(null).build());
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
-        assertThat(gelfMessage.getFullMessage()).isEqualTo("message");
-        assertThat(gelfMessage.toJson()).isEqualTo("{\"full_message\":\"message\"}");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo("message");
+        AssertJAssertions.assertThat(gelfMessage.toJson()).isEqualTo("{\"full_message\":\"message\"}");
+
+        sender.close();
 
     }
 }

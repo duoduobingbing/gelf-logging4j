@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
@@ -31,16 +30,16 @@ class GelfLogHandlerUnitTests {
 
         sut.flush();
 
-        assertThat(sut.getFacility()).isEqualTo(FACILITY);
-        assertThat(sut.getGraylogHost()).isEqualTo(HOST);
-        assertThat(sut.getHost()).isEqualTo(HOST);
-        assertThat(sut.getPort()).isEqualTo(GRAYLOG_PORT);
-        assertThat(sut.getGraylogPort()).isEqualTo(GRAYLOG_PORT);
-        assertThat(sut.getMaximumMessageSize()).isEqualTo(MAXIMUM_MESSAGE_SIZE);
-        assertThat(sut.getTimestampPattern()).isEqualTo(TIMESTAMP_PATTERN);
-        assertThat(sut.getOriginHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
+        AssertJAssertions.assertThat(sut.getFacility()).isEqualTo(FACILITY);
+        AssertJAssertions.assertThat(sut.getGraylogHost()).isEqualTo(HOST);
+        AssertJAssertions.assertThat(sut.getHost()).isEqualTo(HOST);
+        AssertJAssertions.assertThat(sut.getPort()).isEqualTo(GRAYLOG_PORT);
+        AssertJAssertions.assertThat(sut.getGraylogPort()).isEqualTo(GRAYLOG_PORT);
+        AssertJAssertions.assertThat(sut.getMaximumMessageSize()).isEqualTo(MAXIMUM_MESSAGE_SIZE);
+        AssertJAssertions.assertThat(sut.getTimestampPattern()).isEqualTo(TIMESTAMP_PATTERN);
+        AssertJAssertions.assertThat(sut.getOriginHost()).isEqualTo(RuntimeContainer.FQDN_HOSTNAME);
 
-        assertThat(sut.getExtractStackTrace()).isEqualTo("true");
-        assertThat(sut.isFilterStackTrace()).isTrue();
+        AssertJAssertions.assertThat(sut.getExtractStackTrace()).isEqualTo("true");
+        AssertJAssertions.assertThat(sut.isFilterStackTrace()).isTrue();
     }
 }

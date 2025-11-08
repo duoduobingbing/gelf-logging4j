@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -55,12 +54,12 @@ class GelfLogAppenderIncludeFullMdcTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField(MDC_MY_MDC1)).isNull();
-        assertThat(gelfMessage.getField(MDC_MY_MDC2)).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(MDC_MY_MDC1)).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(MDC_MY_MDC2)).isNull();
     }
 
     @Test
@@ -71,12 +70,12 @@ class GelfLogAppenderIncludeFullMdcTests {
         ThreadContext.put(MDC_MY_MDC2, VALUE_2);
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField(MDC_MY_MDC1)).isEqualTo(VALUE_1);
-        assertThat(gelfMessage.getField(MDC_MY_MDC2)).isEqualTo(VALUE_2);
+        AssertJAssertions.assertThat(gelfMessage.getField(MDC_MY_MDC1)).isEqualTo(VALUE_1);
+        AssertJAssertions.assertThat(gelfMessage.getField(MDC_MY_MDC2)).isEqualTo(VALUE_2);
 
     }
 

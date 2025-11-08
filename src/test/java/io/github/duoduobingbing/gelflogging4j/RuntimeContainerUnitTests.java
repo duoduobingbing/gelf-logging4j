@@ -1,7 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 
 class RuntimeContainerUnitTests {
@@ -32,9 +31,9 @@ class RuntimeContainerUnitTests {
         System.setProperty(RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION, "true");
         RuntimeContainer.lookupHostname(null);
 
-        assertThat(RuntimeContainer.ADDRESS).isEqualTo("");
-        assertThat(RuntimeContainer.HOSTNAME).isEqualTo("unknown");
-        assertThat(RuntimeContainer.FQDN_HOSTNAME).isEqualTo("unknown");
+        AssertJAssertions.assertThat(RuntimeContainer.ADDRESS).isEqualTo("");
+        AssertJAssertions.assertThat(RuntimeContainer.HOSTNAME).isEqualTo("unknown");
+        AssertJAssertions.assertThat(RuntimeContainer.FQDN_HOSTNAME).isEqualTo("unknown");
 
         System.clearProperty(RuntimeContainerProperties.PROPERTY_LOGSTASH_GELF_SKIP_HOSTNAME_RESOLUTION);
     }

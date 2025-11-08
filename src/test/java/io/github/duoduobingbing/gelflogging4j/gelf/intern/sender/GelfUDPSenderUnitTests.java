@@ -1,15 +1,15 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.mockito.Mockito.*;
-
 import java.net.DatagramSocket;
-import java.util.Random;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PortHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
@@ -32,24 +32,26 @@ class GelfUDPSenderUnitTests {
     @Test
     void unreachablePacketsShouldBeDiscardedSilently() throws Exception {
 
-        GelfUDPSender udpSender = new GelfUDPSender("127.0.0.1", 65534, errorReporter);
+        try(GelfUDPSender udpSender = new GelfUDPSender("127.0.0.1", 65534, errorReporter);) {
 
-        udpSender.sendMessage(new GelfMessage());
+            udpSender.sendMessage(new GelfMessage());
 
-        verifyNoInteractions(errorReporter);
+            Mockito.verifyNoInteractions(errorReporter);
+        }
     }
 
     @Test
     void unknownHostShouldThrowException() throws Exception {
 
-        new GelfUDPSender("unknown.host.unknown", 65534, errorReporter);
-        verify(errorReporter).reportError(anyString(), any(Exception.class));
+        try(GelfUDPSender sender = new GelfUDPSender("unknown.host.unknown", 65534, errorReporter)) {
+            Mockito.verify(errorReporter).reportError(ArgumentMatchers.anyString(), ArgumentMatchers.any(Exception.class));
+        }
     }
 
     @Test
     void shouldSendDataToOpenPort() throws Exception {
 
-        int port = randomPort();
+        int port = PortHelper.findAvailableTcpPort(1100, 51024);
 
         DatagramSocket socket = new DatagramSocket(port);
 
@@ -60,12 +62,12 @@ class GelfUDPSenderUnitTests {
 
         udpSender.sendMessage(gelfMessage);
 
-        GelfUDPSender spy = spy(udpSender);
+        GelfUDPSender spy = Mockito.spy(udpSender);
 
         spy.sendMessage(gelfMessage);
 
-        verify(spy).isConnected();
-        verify(spy, never()).connect();
+        Mockito.verify(spy).isConnected();
+        Mockito.verify(spy, Mockito.never()).connect();
 
         socket.close();
         spy.close();
@@ -74,7 +76,7 @@ class GelfUDPSenderUnitTests {
     @Test
     void shouldSendDataToClosedPort() throws Exception {
 
-        int port = randomPort();
+        int port = PortHelper.findAvailableTcpPort(1100, 51024);
 
         DatagramSocket socket = new DatagramSocket(port);
 
@@ -86,20 +88,15 @@ class GelfUDPSenderUnitTests {
 
         udpSender.sendMessage(gelfMessage);
 
-        GelfUDPSender spy = spy(udpSender);
-        doReturn(true).when(spy).isConnected();
+        GelfUDPSender spy = Mockito.spy(udpSender);
+        Mockito.doReturn(true).when(spy).isConnected();
 
         spy.sendMessage(gelfMessage);
 
-        verify(spy).isConnected();
-        verify(spy, never()).connect();
+        Mockito.verify(spy).isConnected();
+        Mockito.verify(spy, Mockito.never()).connect();
 
         spy.close();
-    }
-
-    int randomPort() {
-        Random random = new Random();
-        return random.nextInt(50000) + 1024;
     }
 
 }

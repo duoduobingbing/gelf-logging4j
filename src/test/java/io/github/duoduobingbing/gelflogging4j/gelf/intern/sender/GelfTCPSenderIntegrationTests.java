@@ -1,7 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -111,6 +110,7 @@ class GelfTCPSenderIntegrationTests {
         SmallBufferTCPSender sender = new SmallBufferTCPSender("localhost", PORT, 1000, 1000, new ErrorReporter() {
             @Override
             public void reportError(String message, Exception e) {
+                System.out.println(message + ": " + e.getClass().getName() + ": " + e.getMessage());
             }
         });
 
@@ -126,7 +126,7 @@ class GelfTCPSenderIntegrationTests {
 
         thread.join();
 
-        assertThat(out.size()).isEqualTo(size);
+        AssertJAssertions.assertThat(out.size()).isEqualTo(size);
     }
 
     @Test
@@ -144,13 +144,13 @@ class GelfTCPSenderIntegrationTests {
         GelfMessage gelfMessage = new GelfMessage("hello", StringUtils.repeat("hello", 100000), PORT, "7");
         ByteBuffer byteBuffer = gelfMessage.toTCPBuffer();
 
-        assertThat(sender.sendMessage(gelfMessage)).isTrue();
+        AssertJAssertions.assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
         TimingHelper.waitUntil(() -> socketReady.get(),2L,ChronoUnit.SECONDS);
 
         sockets.poll().close();
 
-        assertThat(sender.sendMessage(gelfMessage)).isTrue();
+        AssertJAssertions.assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
         sender.close();
     }
@@ -170,21 +170,21 @@ class GelfTCPSenderIntegrationTests {
         GelfMessage gelfMessage = new GelfMessage("hello", StringUtils.repeat("hello", 100000), PORT, "7");
         ByteBuffer byteBuffer = gelfMessage.toTCPBuffer();
 
-        assertThat(sender.sendMessage(gelfMessage)).isTrue();
+        AssertJAssertions.assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
         TimingHelper.waitUntil(() -> socketReady.get(),2L,ChronoUnit.SECONDS);
 
         sockets.poll().close();
         serverSocket.close();
 
-        assertThat(sender.sendMessage(gelfMessage)).isFalse();
+        AssertJAssertions.assertThat(sender.sendMessage(gelfMessage)).isFalse();
 
         serverSocket = new ServerSocket(PORT);
 
         TimingHelper.waitUntil(() -> !serverSocket.isClosed(), 1L, ChronoUnit.SECONDS);
         TimingHelper.waitUntil(socketReady::get, 1L, ChronoUnit.SECONDS);
 
-        assertThat(sender.sendMessage(gelfMessage)).isTrue();
+        AssertJAssertions.assertThat(sender.sendMessage(gelfMessage)).isTrue();
 
         sender.close();
     }
@@ -210,8 +210,8 @@ class GelfTCPSenderIntegrationTests {
 
         TimingHelper.waitUntil(() -> !errors.isEmpty(), 3, ChronoUnit.SECONDS);
 
-        assertThat(errors).hasSize(1);
-        assertThat(errors).containsOnly("Cannot write buffer to channel, no progress in writing");
+        AssertJAssertions.assertThat(errors).hasSize(1);
+        AssertJAssertions.assertThat(errors).containsOnly("Cannot write buffer to channel, no progress in writing");
 
         sender.close();
     }

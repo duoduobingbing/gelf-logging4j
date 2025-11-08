@@ -1,7 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,6 +10,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.duoduobingbing.gelflogging4j.StackTraceFilter;
@@ -31,19 +30,26 @@ class PoolingGelfMessageIntegrationTests {
     private static final long TIMESTAMP = 42;
     private static final int MESSAGE_SIZE = 5344;
 
-    private static final Map<String, String> ADDITIONAL_FIELDS = new HashMap<String, String>() {
-        {
-            put("a", "b");
-            put("doubleNoDecimals", "2.0");
-            put("doubleWithDecimals", "2.1");
-            put("int", "2");
-            put("exception1", StackTraceFilter.getFilteredStackTrace(new IOException(new Exception(new Exception()))));
-            put("exception2",
-                    StackTraceFilter.getFilteredStackTrace(new IllegalStateException(new Exception(new Exception()))));
-            put("exception3", StackTraceFilter
-                    .getFilteredStackTrace(new IllegalArgumentException(new Exception(new IllegalArgumentException()))));
-        }
-    };
+    private static final Map<String, String> ADDITIONAL_FIELDS = new HashMap<>(
+            Map.ofEntries(
+                    Map.entry("a", "b"),
+                    Map.entry("doubleNoDecimals", "2.0"),
+                    Map.entry("doubleWithDecimals", "2.1"),
+                    Map.entry("int", "2"),
+                    Map.entry(
+                            "exception1",
+                            StackTraceFilter.getFilteredStackTrace(new IOException(new Exception(new Exception())))
+                    ),
+                    Map.entry(
+                            "exception2",
+                            StackTraceFilter.getFilteredStackTrace(new IllegalStateException(new Exception(new Exception())))
+                    ),
+                    Map.entry(
+                            "exception3",
+                            StackTraceFilter.getFilteredStackTrace(new IllegalArgumentException(new Exception(new IllegalArgumentException())))
+                    )
+            )
+    );
 
     static String convertGzipBytesToString(byte[] bytes) throws IOException {
         String result;
@@ -71,7 +77,7 @@ class PoolingGelfMessageIntegrationTests {
 
         ByteBuffer[] newWay = poolingGelfMessage.toUDPBuffers(buffer, tempBuffer);
 
-        assertThat(newWay.length).isEqualTo(oldWay.length);
+        AssertJAssertions.assertThat(newWay.length).isEqualTo(oldWay.length);
 
         for (int i = 0; i < oldWay.length; i++) {
 
@@ -87,7 +93,7 @@ class PoolingGelfMessageIntegrationTests {
             String s1 = convertGzipBytesToString(oldBytes);
             String s2 = convertGzipBytesToString(newBytes);
 
-            assertThat(s2).isEqualTo(s1);
+            AssertJAssertions.assertThat(s2).isEqualTo(s1);
 
             //TODO: for whatever reasons original gzip bytes are different
 //            assertThat(newBytes).containsExactly(oldBytes);
@@ -96,13 +102,13 @@ class PoolingGelfMessageIntegrationTests {
     }
 
     static byte[] unchunk(byte[] chunk) throws IOException {
-            //GELF_CHUNKED_ID -> 2 Bytes
-            //Message ID -> 8 Bytes
-            //datagram sequence number -> 1 Byte
-            //total number of datagrams -> 1 Byte
-            byte[] segment = new byte[chunk.length - 12];
-            System.arraycopy(chunk, 12, segment, 0, segment.length);
-            return segment;
+        //GELF_CHUNKED_ID -> 2 Bytes
+        //Message ID -> 8 Bytes
+        //datagram sequence number -> 1 Byte
+        //total number of datagrams -> 1 Byte
+        byte[] segment = new byte[chunk.length - 12];
+        System.arraycopy(chunk, 12, segment, 0, segment.length);
+        return segment;
     }
 
     @Test
@@ -126,7 +132,7 @@ class PoolingGelfMessageIntegrationTests {
         ByteBuffer[] oldWay = gelfMessage.toUDPBuffers();
         ByteBuffer[] newWay = poolingGelfMessage.toUDPBuffers(buffer, tempBuffer);
 
-        assertThat(newWay.length).isEqualTo(oldWay.length);
+        AssertJAssertions.assertThat(newWay.length).isEqualTo(oldWay.length);
 
         ByteArrayOutputStream byteArrayOutputStream1 = new ByteArrayOutputStream();
         ByteArrayOutputStream byteArrayOutputStream2 = new ByteArrayOutputStream();
@@ -155,7 +161,7 @@ class PoolingGelfMessageIntegrationTests {
         String s2 = convertGzipBytesToString(barr2);
 
 
-        assertThat(s1).isEqualTo(s2);
+        AssertJAssertions.assertThat(s1).isEqualTo(s2);
     }
 
     private GelfMessage createGelfMessage() {
