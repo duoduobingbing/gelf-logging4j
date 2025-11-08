@@ -1,9 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.concurrent.TimeUnit;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,7 +17,7 @@ class ConstantBackOffUnitTests {
 
         ConstantBackOff backOff = new ConstantBackOff(10, TimeUnit.SECONDS);
 
-        assertThat(backOff.start().nextBackOff()).isEqualTo(TimeUnit.SECONDS.toMillis(10));
+        AssertJAssertions.assertThat(backOff.start().nextBackOff()).isEqualTo(TimeUnit.SECONDS.toMillis(10));
     }
 
 }

@@ -1,11 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,16 +27,16 @@ class GelfLogHandlerTests {
     }
 
     private void assertExpectedMessage(String expectedMessage) {
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getVersion()).isEqualTo(GelfMessage.GELF_VERSION_1_1);
-        assertThat(gelfMessage.getField("MyTime")).isNotNull();
-        assertThat(gelfMessage.getFullMessage()).isEqualTo(expectedMessage);
-        assertThat(gelfMessage.getLevel()).isEqualTo("6");
-        assertThat(gelfMessage.getShortMessage()).isEqualTo(expectedMessage);
-        assertThat(gelfMessage.getMaximumMessageSize()).isEqualTo(8192);
+        AssertJAssertions.assertThat(gelfMessage.getVersion()).isEqualTo(GelfMessage.GELF_VERSION_1_1);
+        AssertJAssertions.assertThat(gelfMessage.getField("MyTime")).isNotNull();
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("6");
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(gelfMessage.getMaximumMessageSize()).isEqualTo(8192);
     }
 
     @Test
@@ -48,12 +47,12 @@ class GelfLogHandlerTests {
         Object[] params = new Object[] { "a", "b", "c" };
         logger.log(Level.INFO, expectedMessage, params);
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("MessageParam0")).isEqualTo("a");
-        assertThat(gelfMessage.getField("MessageParam1")).isEqualTo("b");
+        AssertJAssertions.assertThat(gelfMessage.getField("MessageParam0")).isEqualTo("a");
+        AssertJAssertions.assertThat(gelfMessage.getField("MessageParam1")).isEqualTo("b");
 
         assertExpectedMessage(expectedMessage);
 
@@ -71,12 +70,12 @@ class GelfLogHandlerTests {
         Object[] params = new Object[] { "a", "b", "c" };
         logger.log(Level.INFO, expectedMessage, params);
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("MessageParam0")).isNull();
-        assertThat(gelfMessage.getField("MessageParam1")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("MessageParam0")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("MessageParam1")).isNull();
     }
 
     @Test
@@ -91,14 +90,14 @@ class GelfLogHandlerTests {
         Object[] params = new Object[] { "a", "b", "c" };
         logger.log(Level.INFO, expectedMessage, params);
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getField("SourceClassName")).isNull();
-        assertThat(gelfMessage.getField("SourceSimpleClassName")).isNull();
-        assertThat(gelfMessage.getField("SourceMethodName")).isNull();
-        assertThat(gelfMessage.getField("SourceLineNumber")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceClassName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceSimpleClassName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceMethodName")).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField("SourceLineNumber")).isNull();
     }
 
     @Test
@@ -172,7 +171,7 @@ class GelfLogHandlerTests {
         String expectedMessage = null;
         logger.info(expectedMessage);
 
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
     }
 
     @Test
@@ -183,7 +182,7 @@ class GelfLogHandlerTests {
         logger.warning(expectedMessage);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
-        assertThat(gelfMessage.getLevel()).isEqualTo("4");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("4");
 
     }
 
@@ -195,7 +194,7 @@ class GelfLogHandlerTests {
         logger.severe(expectedMessage);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
-        assertThat(gelfMessage.getLevel()).isEqualTo("3");
+        AssertJAssertions.assertThat(gelfMessage.getLevel()).isEqualTo("3");
 
     }
 
@@ -205,12 +204,12 @@ class GelfLogHandlerTests {
 
         logger.log(Level.INFO, null, new IllegalStateException());
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException");
-        assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException");
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException");
     }
 
     @Test
@@ -219,12 +218,12 @@ class GelfLogHandlerTests {
 
         logger.log(Level.INFO, "", new IllegalStateException("Help!"));
 
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
-        assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
-        assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
+        AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
+        AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo("java.lang.IllegalStateException: Help!");
     }
 
     @Test
@@ -233,7 +232,7 @@ class GelfLogHandlerTests {
 
         logger.info("");
 
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
     }
 
 }

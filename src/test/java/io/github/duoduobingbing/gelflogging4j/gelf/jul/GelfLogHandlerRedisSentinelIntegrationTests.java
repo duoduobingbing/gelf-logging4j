@@ -5,6 +5,8 @@ import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisSentinelIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.Sockets;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -16,9 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 /**
  * @author tktiki
  * @author duoduobingbing
@@ -28,8 +27,8 @@ public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIn
 
     @BeforeEach
     void before() {
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisMasterResolvedPort));
-        assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalSentinelTestcontainer.getMappedPort(redisLocalSentinelPort)));
+        Assumptions.assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisMasterResolvedPort));
+        Assumptions.assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisLocalSentinelTestcontainer.getMappedPort(redisLocalSentinelPort)));
 
         GelfTestSender.getMessages().clear();
         MDC.remove("mdcField1");
@@ -53,12 +52,12 @@ public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIn
         logger.log(Level.INFO, expectedMessage);
 
         List<String> list = jedisMaster.lrange("list", 0, jedisMaster.llen("list"));
-        assertThat(list).hasSize(1);
+        AssertJAssertions.assertThat(list).hasSize(1);
 
         Map<String, Object> map = JsonUtil.parseToMap(list.get(0));
 
-        assertThat(map.get("full_message")).isEqualTo(expectedMessage);
-        assertThat(map.get("short_message")).isEqualTo(expectedMessage);
-        assertThat(map.get("fieldName1")).isEqualTo("fieldValue1");
+        AssertJAssertions.assertThat(map.get("full_message")).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(map.get("short_message")).isEqualTo(expectedMessage);
+        AssertJAssertions.assertThat(map.get("fieldName1")).isEqualTo("fieldValue1");
     }
 }

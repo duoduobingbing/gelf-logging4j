@@ -1,10 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +21,10 @@ class GelfLogHandlerFilterTests {
     void before() throws Exception {
 
         GelfTestSender.getMessages().clear();
-        LogManager.getLogManager()
+        LogManager
+                .getLogManager()
                 .readConfiguration(getClass().getResourceAsStream("/jul/test-logging-with-filter.properties"));
+
         MDC.remove("mdcField1");
     }
 
@@ -39,6 +40,6 @@ class GelfLogHandlerFilterTests {
 
         String expectedMessage = "foo bar test log message";
         logger.info(expectedMessage);
-        assertThat(GelfTestSender.getMessages()).isEmpty();
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).isEmpty();
     }
 }

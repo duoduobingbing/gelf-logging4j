@@ -1,8 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +8,7 @@ import java.net.Socket;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -30,7 +28,7 @@ class CloserUnitTests {
 
         Closer.close(socket);
 
-        verify(socket).close();
+        Mockito.verify(socket).close();
     }
 
     @Test
@@ -42,7 +40,7 @@ class CloserUnitTests {
     @Test
     void closeSocketShouldNotPropagateExceptions() throws Exception {
 
-        doThrow(new IOException()).when(socket).close();
+        Mockito.doThrow(new IOException()).when(socket).close();
         Closer.close(socket);
     }
 
@@ -51,13 +49,13 @@ class CloserUnitTests {
 
         Closer.close(inputStream);
 
-        verify(inputStream).close();
+        Mockito.verify(inputStream).close();
     }
 
     @Test
     void closeCloseableShouldNotPropagateExceptions() throws Exception {
 
-        doThrow(new IOException()).when(inputStream).close();
+        Mockito.doThrow(new IOException()).when(inputStream).close();
         Closer.close(inputStream);
     }
 

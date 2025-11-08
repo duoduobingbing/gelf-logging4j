@@ -1,10 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,13 +27,13 @@ class StackTraceFilterUnitTests {
     @Test
     void testFindThrowable() {
 
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), 0)).isExactlyInstanceOf(RuntimeException.class);
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), 1)).isExactlyInstanceOf(MyException.class);
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), 3)).isExactlyInstanceOf(IllegalStateException.class);
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), -1)).isExactlyInstanceOf(IllegalStateException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), 0)).isExactlyInstanceOf(RuntimeException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), 1)).isExactlyInstanceOf(MyException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), 3)).isExactlyInstanceOf(IllegalStateException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), -1)).isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), -10)).isExactlyInstanceOf(RuntimeException.class);
-        assertThat(StackTraceFilter.getThrowable(entryMethod(), 10)).isExactlyInstanceOf(IllegalStateException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), -10)).isExactlyInstanceOf(RuntimeException.class);
+        AssertJAssertions.assertThat(StackTraceFilter.getThrowable(entryMethod(), 10)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -43,8 +42,8 @@ class StackTraceFilterUnitTests {
         String filteredStackTrace = StackTraceFilter.getFilteredStackTrace(entryMethod());
         List<String> lines = Arrays.asList(filteredStackTrace.split(System.getProperty("line.separator")));
 
-        assertThat(lines).contains("\tSuppressed: java.lang.RuntimeException: suppressed");
-        assertThat(lines).contains("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
+        AssertJAssertions.assertThat(lines).contains("\tSuppressed: java.lang.RuntimeException: suppressed");
+        AssertJAssertions.assertThat(lines).contains("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
     }
 
     @Test
@@ -53,9 +52,9 @@ class StackTraceFilterUnitTests {
         String plainStackTrace = StackTraceFilter.getStackTrace(entryMethod());
         List<String> lines = Arrays.asList(plainStackTrace.split(System.getProperty("line.separator")));
 
-        assertThat(lines).contains("\tSuppressed: java.lang.RuntimeException: suppressed");
-        assertThat(lines).contains("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
-        assertThat(lines).doesNotContain("\t\t\t\t\t1 line skipped for [org.jboss]");
+        AssertJAssertions.assertThat(lines).contains("\tSuppressed: java.lang.RuntimeException: suppressed");
+        AssertJAssertions.assertThat(lines).contains("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
+        AssertJAssertions.assertThat(lines).doesNotContain("\t\t\t\t\t1 line skipped for [org.jboss]");
     }
 
     @Test
@@ -64,12 +63,15 @@ class StackTraceFilterUnitTests {
         String plainStackTrace = StackTraceFilter.getStackTrace(entryMethod(), 2);
         List<String> lines = Arrays.asList(plainStackTrace.split(System.getProperty("line.separator")));
 
-        assertThat(lines).containsSequence("java.lang.RuntimeException: entryMethod",
-                "Caused by: io.github.duoduobingbing.gelflogging4j.StackTraceFilterUnitTests$MyException: Intermediate 2");
-        assertThat(lines).doesNotContain("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
-        assertThat(lines).doesNotContain("\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
-        assertThat(lines).contains("\tSuppressed: java.lang.IllegalStateException: Some illegal state");
-        assertThat(lines).doesNotContain("\t\t\t\t\t1 line skipped for [org.jboss]");
+        AssertJAssertions. assertThat(lines).containsSequence(
+                "java.lang.RuntimeException: entryMethod",
+                "Caused by: io.github.duoduobingbing.gelflogging4j.StackTraceFilterUnitTests$MyException: Intermediate 2"
+        );
+
+        AssertJAssertions.assertThat(lines).doesNotContain("\t\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
+        AssertJAssertions.assertThat(lines).doesNotContain("\tCaused by: java.lang.NumberFormatException: For input string: \"text\"");
+        AssertJAssertions.assertThat(lines).contains("\tSuppressed: java.lang.IllegalStateException: Some illegal state");
+        AssertJAssertions.assertThat(lines).doesNotContain("\t\t\t\t\t1 line skipped for [org.jboss]");
     }
 
     @Test
@@ -78,12 +80,14 @@ class StackTraceFilterUnitTests {
         String filteredStackTrace = StackTraceFilter.getFilteredStackTrace(entryMethod(), -1);
         List<String> lines = Arrays.asList(filteredStackTrace.split(System.getProperty("line.separator")));
 
-        assertThat(filteredStackTrace).doesNotContain("NumberFormatException");
+        AssertJAssertions.assertThat(filteredStackTrace).doesNotContain("NumberFormatException");
 
-        assertThat(lines).containsSequence("java.lang.RuntimeException: entryMethod",
+        AssertJAssertions.assertThat(lines).containsSequence(
+                "java.lang.RuntimeException: entryMethod",
                 "Caused by: io.github.duoduobingbing.gelflogging4j.StackTraceFilterUnitTests$MyException: Intermediate 2",
                 "Caused by: io.github.duoduobingbing.gelflogging4j.StackTraceFilterUnitTests$MyException: Message",
-                "Caused by: java.lang.IllegalStateException: Some illegal state");
+                "Caused by: java.lang.IllegalStateException: Some illegal state"
+        );
     }
 
     private RuntimeException entryMethod() {

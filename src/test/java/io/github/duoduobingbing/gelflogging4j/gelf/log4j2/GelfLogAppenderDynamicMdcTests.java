@@ -1,23 +1,20 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
-
+import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
+import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.duoduobingbing.gelflogging4j.gelf.GelfTestSender;
-import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
+import java.util.Map;
 
 /**
  * @author Mark Paluch
@@ -62,12 +59,12 @@ class GelfLogAppenderDynamicMdcTests {
         Logger logger = loggerContext.getLogger(getClass().getName());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         String myMdc = gelfMessage.getField(MDC_MY_MDC);
-        assertThat(myMdc).isNull();
+        AssertJAssertions.assertThat(myMdc).isNull();
     }
 
     @Test
@@ -79,13 +76,13 @@ class GelfLogAppenderDynamicMdcTests {
         ThreadContext.put(MY_MDC_WITH_SUFFIX2, VALUE_3);
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
-        assertThat(gelfMessage.getField(MDC_MY_MDC)).isEqualTo(VALUE_1);
-        assertThat(gelfMessage.getField(MY_MDC_WITH_SUFFIX1)).isEqualTo(VALUE_2);
-        assertThat(gelfMessage.getField(MY_MDC_WITH_SUFFIX2)).isEqualTo(VALUE_3);
+        AssertJAssertions.assertThat(gelfMessage.getField(MDC_MY_MDC)).isEqualTo(VALUE_1);
+        AssertJAssertions.assertThat(gelfMessage.getField(MY_MDC_WITH_SUFFIX1)).isEqualTo(VALUE_2);
+        AssertJAssertions.assertThat(gelfMessage.getField(MY_MDC_WITH_SUFFIX2)).isEqualTo(VALUE_3);
     }
 
     @Test
@@ -96,12 +93,12 @@ class GelfLogAppenderDynamicMdcTests {
         ThreadContext.put(SOME_OTHER_FIELD, "excluded");
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
-        assertThat(gelfMessage.getField(SOME_FIELD)).isEqualTo("included");
-        assertThat(gelfMessage.getField(SOME_OTHER_FIELD)).isNull();
+        AssertJAssertions.assertThat(gelfMessage.getField(SOME_FIELD)).isEqualTo("included");
+        AssertJAssertions.assertThat(gelfMessage.getField(SOME_OTHER_FIELD)).isNull();
     }
 
     @Test
@@ -115,17 +112,17 @@ class GelfLogAppenderDynamicMdcTests {
         ThreadContext.put("myMdcf", "2.2");
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
         Map<String, Object> jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject.get("myMdcs")).isEqualTo("String");
-        assertThat(jsonObject.get("myMdcl")).isEqualTo(1);
-        assertThat(jsonObject.get("myMdci")).isEqualTo(2);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcs")).isEqualTo("String");
+        AssertJAssertions.assertThat(jsonObject.get("myMdcl")).isEqualTo(1);
+        AssertJAssertions.assertThat(jsonObject.get("myMdci")).isEqualTo(2);
 
-        assertThat(jsonObject.get("myMdcd")).isEqualTo(2.1);
-        assertThat(jsonObject.get("myMdcf")).isEqualTo(2.2);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcd")).isEqualTo(2.1);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcf")).isEqualTo(2.2);
 
         ThreadContext.put("myMdcl", "1.1");
         ThreadContext.put("myMdci", "2.1");
@@ -134,28 +131,28 @@ class GelfLogAppenderDynamicMdcTests {
 
         GelfTestSender.getMessages().clear();
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject.get("myMdcl")).isEqualTo(1);
-        assertThat(jsonObject.get("myMdci")).isEqualTo(2);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcl")).isEqualTo(1);
+        AssertJAssertions.assertThat(jsonObject.get("myMdci")).isEqualTo(2);
 
-        assertThat(jsonObject.get("myMdcd")).isNull();
-        assertThat(jsonObject.get("myMdcf")).isEqualTo(0.0);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcd")).isNull();
+        AssertJAssertions.assertThat(jsonObject.get("myMdcf")).isEqualTo(0.0);
 
         ThreadContext.put("myMdcl", "b");
         ThreadContext.put("myMdci", "a");
 
         GelfTestSender.getMessages().clear();
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         gelfMessage = GelfTestSender.getMessages().getFirst();
         jsonObject = JsonUtil.parseToMap(gelfMessage.toJson(""));
 
-        assertThat(jsonObject.get("myMdcl")).isNull();
-        assertThat(jsonObject.get("myMdci")).isEqualTo(0);
+        AssertJAssertions.assertThat(jsonObject.get("myMdcl")).isNull();
+        AssertJAssertions.assertThat(jsonObject.get("myMdci")).isEqualTo(0);
     }
 }

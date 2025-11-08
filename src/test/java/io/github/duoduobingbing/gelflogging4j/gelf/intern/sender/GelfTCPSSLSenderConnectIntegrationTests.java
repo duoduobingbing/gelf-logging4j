@@ -1,14 +1,9 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -16,6 +11,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.IntegrationTestSslCertHelper;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TimingHelper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
@@ -50,7 +46,7 @@ class GelfTCPSSLSenderConnectIntegrationTests {
         final byte[] keyStoreBytes = IntegrationTestSslCertHelper.generateKeystore(keyStorePassword);
 
         KeyStore keyStore = KeyStore.getInstance("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
-        try(ByteArrayInputStream bais = new ByteArrayInputStream(keyStoreBytes)) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(keyStoreBytes)) {
             keyStore.load(bais, keyStorePassword.toCharArray());
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -80,6 +76,7 @@ class GelfTCPSSLSenderConnectIntegrationTests {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldSendTCPMessagesViaSsl() throws Exception {
 
         final GelfTCPSSLSender tcpsslSender = new GelfTCPSSLSender("localhost", server.getPort(), 1000, 1000, 1, true,
@@ -125,8 +122,20 @@ class GelfTCPSSLSenderConnectIntegrationTests {
 
         TimingHelper.waitUntil(() -> server.getJsonValues().size() == 2, 5, ChronoUnit.SECONDS);
 
-        assertThat(server.getJsonValues()).isNotEmpty();
-        assertThat(server.getJsonValues()).hasSize(2);
+        AssertJAssertions.assertThat(server.getJsonValues()).isNotEmpty();
+        AssertJAssertions.assertThat(server.getJsonValues()).hasSize(2);
+
+        AssertJAssertions
+                .assertThat(
+                        server.getJsonValues().get(0)
+                )
+                .containsEntry(GelfMessage.FIELD_FULL_MESSAGE, "long1");
+
+        AssertJAssertions
+                .assertThat(
+                        server.getJsonValues().get(1)
+                )
+                .containsEntry(GelfMessage.FIELD_FULL_MESSAGE, "long1");
 
         tcpsslSender.close();
     }

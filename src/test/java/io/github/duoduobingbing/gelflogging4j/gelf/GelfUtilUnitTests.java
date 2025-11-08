@@ -1,8 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.duoduobingbing.gelflogging4j.gelf.log4j2.Log4j2LogEvent;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.util.SortedArrayStringMap;
 import org.apache.logging.log4j.util.StringMap;
@@ -29,7 +28,7 @@ class GelfUtilUnitTests {
 
         GelfUtil.addMdcProfiling(log4j2LogEvent, message);
 
-        assertThat(message.getAdditonalFields().get(GelfUtil.MDC_REQUEST_DURATION)).isEqualTo("12sec");
+        AssertJAssertions.assertThat(message.getAdditonalFields().get(GelfUtil.MDC_REQUEST_DURATION)).isEqualTo("12sec");
     }
 
     @Test
@@ -47,7 +46,7 @@ class GelfUtilUnitTests {
 
         GelfUtil.addMdcProfiling(log4j2LogEvent, message);
 
-        assertThat(message.getAdditonalFields().get(GelfUtil.MDC_REQUEST_DURATION)).isEqualTo("12sec");
+        AssertJAssertions.assertThat(message.getAdditonalFields().get(GelfUtil.MDC_REQUEST_DURATION)).isEqualTo("12sec");
     }
 
 }

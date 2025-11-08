@@ -1,23 +1,18 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
@@ -45,18 +40,19 @@ class GelfHTTPSenderIntegrationTests {
         server = new NettyLocalHTTPServer();
         server.run();
 
-        sender = new GelfHTTPSender(URI.create("http://127.0.0.1:19393").toURL(), 1000, 1000, new ErrorReporter() {
+        sender = new GelfHTTPSender(
+                URI.create("http://127.0.0.1:19393").toURL(),
+                1000,
+                1000,
+                (message, e) -> {
 
-            @Override
-            public void reportError(String message, Exception e) {
+                    System.out.println(message);
 
-                System.out.println(message);
-
-                if (e != null) {
-                    e.printStackTrace();
+                    if (e != null) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+        );
     }
 
     @AfterEach
@@ -74,17 +70,17 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(gelfMessage);
 
-        assertThat(success).isTrue();
-        verifyNoInteractions(errorReporter);
+        AssertJAssertions.assertThat(success).isTrue();
+        Mockito.verifyNoInteractions(errorReporter);
 
         List<Object> jsonValues = server.getJsonValues();
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> messageJson = (Map<String, Object>) jsonValues.getFirst();
-        assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
-        assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
-        assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
-        assertThat(messageJson.get("level")).isEqualTo(gelfMessage.getLevel());
+        AssertJAssertions.assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
+        AssertJAssertions.assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
+        AssertJAssertions.assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
+        AssertJAssertions.assertThat(messageJson.get("level")).isEqualTo(gelfMessage.getLevel());
     }
 
     @Test
@@ -96,17 +92,17 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(gelfMessage);
 
-        assertThat(success).isTrue();
-        verifyNoInteractions(errorReporter);
+        AssertJAssertions.assertThat(success).isTrue();
+        Mockito.verifyNoInteractions(errorReporter);
 
         List<Object> jsonValues = server.getJsonValues();
-        assertThat(jsonValues).hasSize(1);
+        AssertJAssertions.assertThat(jsonValues).hasSize(1);
 
         Map<String, Object> messageJson = (Map<String, Object>) jsonValues.getFirst();
-        assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
-        assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
-        assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
-        assertThat(messageJson.get("level")).isEqualTo(gelfMessage.getLevel());
+        AssertJAssertions.assertThat(messageJson.get("short_message")).isEqualTo(gelfMessage.getShortMessage());
+        AssertJAssertions.assertThat(messageJson.get("full_message")).isEqualTo(gelfMessage.getFullMessage());
+        AssertJAssertions.assertThat(messageJson.get("timestamp")).isEqualTo(gelfMessage.getTimestamp());
+        AssertJAssertions.assertThat(messageJson.get("level")).isEqualTo(gelfMessage.getLevel());
     }
 
     @Test
@@ -116,8 +112,8 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 
-        assertThat(success).isTrue();
-        assertThat(server.getLastHttpRequest().name()).isEqualTo("POST");
+        AssertJAssertions.assertThat(success).isTrue();
+        AssertJAssertions.assertThat(server.getLastHttpRequest().name()).isEqualTo("POST");
     }
 
     @Test
@@ -127,8 +123,8 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 
-        assertThat(success).isTrue();
-        assertThat(server.getLastHttpHeaders().get("Content-type")).isEqualTo("application/json");
+        AssertJAssertions.assertThat(success).isTrue();
+        AssertJAssertions.assertThat(server.getLastHttpHeaders().get("Content-type")).isEqualTo("application/json");
     }
 
     @Test
@@ -141,8 +137,14 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 
-        assertThat(success).isFalse();
-        verify(errorReporter, times(1)).reportError(anyString(), ArgumentMatchers.<Exception> isNull());
+        AssertJAssertions.assertThat(success).isFalse();
+        Mockito.verify(errorReporter, Mockito.times(1)).reportError(ArgumentMatchers.anyString(), ArgumentMatchers.<Exception>isNull());
+
+        try {
+            sender.close();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -155,9 +157,18 @@ class GelfHTTPSenderIntegrationTests {
 
         boolean success = sender.sendMessage(GELF_MESSAGE);
 
-        assertThat(success).isFalse();
-        verify(errorReporter, times(1)).reportError(
-                ArgumentMatchers.eq("Cannot send data to http://127.0.0.1:19394"), ArgumentMatchers.<Exception> isNotNull());
+        AssertJAssertions.assertThat(success).isFalse();
+        Mockito
+                .verify(errorReporter, Mockito.times(1))
+                .reportError(
+                        ArgumentMatchers.eq("Cannot send data to http://127.0.0.1:19394"), ArgumentMatchers.<Exception>isNotNull()
+                );
+
+        try {
+            sender.close();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
 }

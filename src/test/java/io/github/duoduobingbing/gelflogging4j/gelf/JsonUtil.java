@@ -1,6 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf;
 
-import tools.jackson.core.JacksonException;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.type.TypeReference;

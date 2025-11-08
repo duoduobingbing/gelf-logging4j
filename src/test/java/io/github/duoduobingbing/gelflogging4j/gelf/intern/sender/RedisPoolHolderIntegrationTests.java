@@ -1,11 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.net.URI;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisIntegrationTestBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,7 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(Sockets.isOpen("localhost", redisMasterResolvedPort));
+        Assumptions.assumeTrue(Sockets.isOpen("localhost", redisMasterResolvedPort));
     }
 
     @Test
@@ -32,11 +31,11 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
         Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
         Jedis resource = pool.getResource();
-        assertThat(resource.ping()).isEqualTo("PONG");
+        AssertJAssertions.assertThat(resource.ping()).isEqualTo("PONG");
         resource.close();
 
         pool.destroy();
-        assertThat(pool.isClosed()).isTrue();
+        AssertJAssertions.assertThat(pool.isClosed()).isTrue();
     }
 
     @Test
@@ -45,18 +44,18 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
         Pool<Jedis> pool1 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
         Pool<Jedis> pool2 = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
-        assertThat(pool1.isClosed()).isFalse();
-        assertThat(pool2.isClosed()).isFalse();
+        AssertJAssertions.assertThat(pool1.isClosed()).isFalse();
+        AssertJAssertions.assertThat(pool2.isClosed()).isFalse();
 
         pool1.destroy();
 
-        assertThat(pool1.isClosed()).isFalse();
-        assertThat(pool2.isClosed()).isFalse();
+        AssertJAssertions.assertThat(pool1.isClosed()).isFalse();
+        AssertJAssertions.assertThat(pool2.isClosed()).isFalse();
 
         pool2.destroy();
 
-        assertThat(pool1.isClosed()).isTrue();
-        assertThat(pool2.isClosed()).isTrue();
+        AssertJAssertions.assertThat(pool1.isClosed()).isTrue();
+        AssertJAssertions.assertThat(pool2.isClosed()).isTrue();
     }
 
     @Test
@@ -65,11 +64,11 @@ class RedisPoolHolderIntegrationTests extends RedisIntegrationTestBase {
         RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort).destroy();
         Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(URI.create("redis://localhost/1"), redisMasterResolvedPort);
 
-        assertThat(pool.isClosed()).isFalse();
+        AssertJAssertions.assertThat(pool.isClosed()).isFalse();
 
         pool.destroy();
 
-        assertThat(pool.isClosed()).isTrue();
+        AssertJAssertions.assertThat(pool.isClosed()).isTrue();
     }
 
 }

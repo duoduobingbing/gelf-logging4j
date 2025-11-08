@@ -1,9 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashMap;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -68,7 +67,7 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
 
         // -- When --
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
         GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         // -- Then --
@@ -79,12 +78,12 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
                 .enable(DeserializationFeature.USE_LONG_FOR_INTS).build()
                 .readValue(json, STRING_OBJECT_HASHMAP_TYPE_REF);
 
-        assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNotNull().isEqualTo(LONG_VALUE_1);
-        assertThat(result.get("_" + MY_MDC_LONG_VALUE_2)).isNotNull().isEqualTo(LONG_VALUE_2);
-        assertThat(result.get("_" + MY_MDC_DOUBLE_VALUE_1)).isNotNull().isEqualTo(DOUBLE_VALUE_1);
-        assertThat(result.get("_" + MY_MDC_DOUBLE_VALUE_2)).isNotNull().isEqualTo(DOUBLE_VALUE_2);
-        assertThat(result.get("_" + MY_MDC_STRING_VALUE)).isNotNull().isEqualTo(STRING_VALUE);
-        assertThat(result.get("_" + MY_MDC_UNDEFINED_VALUE)).isNotNull().isEqualTo(UNDEFINED_VALUE);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNotNull().isEqualTo(LONG_VALUE_1);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_LONG_VALUE_2)).isNotNull().isEqualTo(LONG_VALUE_2);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_DOUBLE_VALUE_1)).isNotNull().isEqualTo(DOUBLE_VALUE_1);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_DOUBLE_VALUE_2)).isNotNull().isEqualTo(DOUBLE_VALUE_2);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_STRING_VALUE)).isNotNull().isEqualTo(STRING_VALUE);
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_UNDEFINED_VALUE)).isNotNull().isEqualTo(UNDEFINED_VALUE);
     }
 
     @Test
@@ -95,7 +94,7 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
 
         // -- When --
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
         // -- Then --
@@ -106,6 +105,6 @@ class GelfLogAppenderPropertiesDynamicMdcFieldTypesTest {
                 .enable(DeserializationFeature.USE_LONG_FOR_INTS).build()
                 .readValue(json, STRING_OBJECT_HASHMAP_TYPE_REF);
 
-        assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNull();
+        AssertJAssertions.assertThat(result.get("_" + MY_MDC_LONG_VALUE_1)).isNull();
     }
 }

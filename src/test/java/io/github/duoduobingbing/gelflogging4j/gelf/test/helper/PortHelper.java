@@ -19,8 +19,6 @@ public class PortHelper {
      */
     static final int PORT_RANGE_MAX = 65535;
 
-    private static final int PORT_RANGE_PLUS_ONE = PORT_RANGE_MAX - PORT_RANGE_MIN + 1;
-
     private static final int MAX_ATTEMPTS = 1_000;
 
     private static final Random random;
@@ -44,6 +42,10 @@ public class PortHelper {
     }
 
     public static int findAvailableTcpPort() {
+        return findAvailableTcpPort(PORT_RANGE_MIN, PORT_RANGE_MAX);
+    }
+
+    public static int findAvailableTcpPort(int minPort, int maxPort) {
         int candidatePort;
         int searchCounter = 0;
         do {
@@ -51,12 +53,13 @@ public class PortHelper {
                 throw new RuntimeException(
                         String.format(
                                 "Could not find an available TCP port in the range [%d, %d] after %d attempts",
-                                PORT_RANGE_MIN, PORT_RANGE_MAX, MAX_ATTEMPTS
+                                minPort, maxPort, MAX_ATTEMPTS
                         )
                 );
             }
 
-            candidatePort = PORT_RANGE_MIN + random.nextInt(PORT_RANGE_PLUS_ONE);
+            int portRangePlusOne = maxPort - minPort + 1;
+            candidatePort = minPort + random.nextInt(portRangePlusOne);
         }
         while (!isPortAvailable(candidatePort));
 

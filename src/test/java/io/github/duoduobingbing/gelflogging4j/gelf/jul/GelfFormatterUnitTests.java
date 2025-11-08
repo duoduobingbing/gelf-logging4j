@@ -1,11 +1,10 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,10 +39,10 @@ class GelfFormatterUnitTests {
         logger.info("test3");
 
         String[] loggedLines = TestHandler.getLoggedLines();
-        assertThat(loggedLines.length).isEqualTo(3);
-        assertThat(parseToJSONObject(loggedLines[0]).get("full_message")).isEqualTo("test1");
-        assertThat(parseToJSONObject(loggedLines[1]).get("full_message")).isEqualTo("test2");
-        assertThat(parseToJSONObject(loggedLines[2]).get("full_message")).isEqualTo("test3");
+        AssertJAssertions.assertThat(loggedLines.length).isEqualTo(3);
+        AssertJAssertions.assertThat(parseToJSONObject(loggedLines[0]).get("full_message")).isEqualTo("test1");
+        AssertJAssertions.assertThat(parseToJSONObject(loggedLines[1]).get("full_message")).isEqualTo("test2");
+        AssertJAssertions.assertThat(parseToJSONObject(loggedLines[2]).get("full_message")).isEqualTo("test3");
     }
 
     @Test
@@ -55,14 +54,14 @@ class GelfFormatterUnitTests {
 
         Map<String, Object> message = getMessage();
 
-        assertThat(message.get("version")).isNull();
-        assertThat(message).containsEntry("full_message", "test1");
-        assertThat(message).containsEntry("short_message", "test1");
-        assertThat(message).containsEntry("facility", "gelf-logging4j");
-        assertThat(message).containsEntry("level", "6");
-        assertThat(message).containsEntry(LogMessageField.NamedLogField.SourceMethodName.name(), "testDefaults");
-        assertThat(message).containsEntry(LogMessageField.NamedLogField.SourceClassName.name(), getClass().getName());
-        assertThat(message).containsKeys("Thread", "timestamp", "MyTime");
+        AssertJAssertions.assertThat(message.get("version")).isNull();
+        AssertJAssertions.assertThat(message).containsEntry("full_message", "test1");
+        AssertJAssertions.assertThat(message).containsEntry("short_message", "test1");
+        AssertJAssertions.assertThat(message).containsEntry("facility", "gelf-logging4j");
+        AssertJAssertions.assertThat(message).containsEntry("level", "6");
+        AssertJAssertions.assertThat(message).containsEntry(LogMessageField.NamedLogField.SourceMethodName.name(), "testDefaults");
+        AssertJAssertions.assertThat(message).containsEntry(LogMessageField.NamedLogField.SourceClassName.name(), getClass().getName());
+        AssertJAssertions.assertThat(message).containsKeys("Thread", "timestamp", "MyTime");
     }
 
     @Test
@@ -76,18 +75,23 @@ class GelfFormatterUnitTests {
 
         Map<String, Object> message = getMessage();
 
-        assertThat(message.get("version")).isNull();
-        assertThat(message).containsEntry("full_message", "test1");
-        assertThat(message).containsEntry("short_message", "test1");
-        assertThat(message).containsEntry("facility", "test");
-        assertThat(message).containsEntry("level", "6");
-        assertThat(message).doesNotContainKeys("SourceLineNumber", "SourceMethodName", "SourceSimpleClassName",
-                "SourceClassName");
+        AssertJAssertions.assertThat(message.get("version")).isNull();
+        AssertJAssertions.assertThat(message).containsEntry("full_message", "test1");
+        AssertJAssertions.assertThat(message).containsEntry("short_message", "test1");
+        AssertJAssertions.assertThat(message).containsEntry("facility", "test");
+        AssertJAssertions.assertThat(message).containsEntry("level", "6");
 
-        assertThat(message).containsEntry("fieldName1", "fieldValue1");
-        assertThat(message).containsEntry("LoggerName", getClass().getName());
+        AssertJAssertions.assertThat(message).doesNotContainKeys(
+                "SourceLineNumber",
+                "SourceMethodName",
+                "SourceSimpleClassName",
+                "SourceClassName"
+        );
 
-        assertThat(message).containsKeys("timestamp", "MyTime");
+        AssertJAssertions.assertThat(message).containsEntry("fieldName1", "fieldValue1");
+        AssertJAssertions.assertThat(message).containsEntry("LoggerName", getClass().getName());
+
+        AssertJAssertions.assertThat(message).containsKeys("timestamp", "MyTime");
     }
 
     Map<String, Object> getMessage() {

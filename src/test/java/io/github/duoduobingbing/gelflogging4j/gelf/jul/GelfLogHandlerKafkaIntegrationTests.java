@@ -4,26 +4,20 @@ import com.google.common.collect.Lists;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
-import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PortHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -36,8 +30,6 @@ import java.util.logging.Logger;
 class GelfLogHandlerKafkaIntegrationTests extends KafkaIntegrationTestBase {
 
     private static final String KAFKA_LOG_TOPIC = "kafka-log-topic";
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GelfLogHandlerKafkaIntegrationTests.class);
 
     @Container
     final KafkaContainer kafkaContainer = KafkaIntegrationTestBase.provideKafkaContainer();

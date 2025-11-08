@@ -26,7 +26,7 @@ public class RedisNonStartingIntegrationTestBase {
 
     protected static int redisMasterResolvedPort;
 
-    protected static int redisLocalMasterPort = 6479;
+    protected static final int redisLocalMasterPort = 6479;
     protected static final String redisLocalMasterPortAsString = String.valueOf(redisLocalMasterPort);
 
     protected static final Logger logger = LoggerFactory.getLogger(RedisNonStartingIntegrationTestBase.class);

@@ -10,7 +10,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -26,12 +25,12 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 
     private static final Logger logger = LoggerFactory.getLogger(RedisSentinelIntegrationTestBase.class);
 
-    protected static int redisLocalSentinelPort = 26379;
+    protected static final int redisLocalSentinelPort = 26379;
     private static final String redisLocalSentinelPortAsString = String.valueOf(redisLocalSentinelPort);
 
-    private static Network network = Network.newNetwork();
-    protected static String redisLocalSentinelAlias = "redis-local-sentinel";
-    protected static String redisLocalMasterAlias = "redis-local-master";
+    private static final Network network = Network.newNetwork();
+    protected static final String redisLocalSentinelAlias = "redis-local-sentinel";
+    protected static final String redisLocalMasterAlias = "redis-local-master";
 
 
     @BeforeAll

@@ -1,8 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
 
@@ -12,6 +9,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.IntegrationTestSslCertHelper;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -95,7 +93,7 @@ class GelfTCPSSLSenderIntegrationTests {
             Thread.sleep(100);
         }
 
-        assertThat(server.getJsonValues()).isNotEmpty();
+        AssertJAssertions.assertThat(server.getJsonValues()).isNotEmpty();
 
         tcpsslSender.close();
     }

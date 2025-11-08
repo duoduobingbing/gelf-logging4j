@@ -1,9 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
-
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports.Binding;
 import com.google.common.collect.Lists;
 import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.KafkaIntegrationTestBase;

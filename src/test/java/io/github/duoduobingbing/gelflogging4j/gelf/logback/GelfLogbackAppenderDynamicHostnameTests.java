@@ -1,9 +1,8 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URL;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -44,14 +43,14 @@ class GelfLogbackAppenderDynamicHostnameTests {
         Logger logger = lc.getLogger(getClass());
 
         logger.info(LOG_MESSAGE);
-        assertThat(GelfTestSender.getMessages()).hasSize(1);
+        AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
         GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
 
         String crossCheckHostName = gelfMessage.getAdditonalFields().get("crossCheckHostName");
 
         String json = gelfMessage.toJson();
-        assertThat(json).contains("\"_crossCheckHostName\":\"" + crossCheckHostName + "\"");
-        assertThat(json).contains("\"host\":\"" + crossCheckHostName + "\"");
+        AssertJAssertions.assertThat(json).contains("\"_crossCheckHostName\":\"" + crossCheckHostName + "\"");
+        AssertJAssertions.assertThat(json).contains("\"host\":\"" + crossCheckHostName + "\"");
     }
 }

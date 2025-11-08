@@ -19,6 +19,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.ReferenceCountUtil;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -27,11 +28,14 @@ import tools.jackson.databind.json.JsonMapper;
  * @since 10.11.13 10:35
  */
 public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
+    private static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP_REF = new TypeReference<Map<String, Object>>() {
+    };
+
     private static final byte[] GELF_CHUNKED_ID = new byte[] { 0x1e, 0x0f };
     private static final byte[] GZIP_ID = new byte[] { 0x1f, 0xffffff8b };
 
     private final Map<ChunkId, List<Chunk>> chunks = new HashMap<>();
-    private final List<Object> values = new ArrayList<>();
+    private final List<Map<String, Object>> values = new ArrayList<>();
     private ByteArrayOutputStream intermediate;
 
     private final JsonMapper jsonMapper = JsonMapper.builder(
@@ -122,7 +126,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
 
-                Object parse = jsonMapper.readValue(is, Map.class);
+                Map<String, Object> parse = jsonMapper.readValue(is, STRING_OBJECT_MAP_REF);
                 synchronized (values) {
                     values.add(parse);
                 }
@@ -156,7 +160,7 @@ public class GelfInboundHandler extends ChannelInboundHandlerAdapter {
         return false;
     }
 
-    public List<Object> getJsonValues() {
+    public List<Map<String, Object>> getJsonValues() {
         synchronized (values) {
             return new ArrayList<>(values);
         }

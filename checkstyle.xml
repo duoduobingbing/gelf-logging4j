@@ -6,9 +6,13 @@
 <module name="Checker">
     <!-- Set the charset -->
     <property name="charset" value="UTF-8"/>
+    <module name="SuppressWarningsFilter" />
 
     <!-- TreeWalker is the main module for most checks -->
     <module name="TreeWalker">
+        <!-- enable suppressions -->
+        <module name="SuppressWarningsHolder" />
+
         <!-- Naming conventions -->
         <module name="TypeName"/>
         <module name="MethodName"/>

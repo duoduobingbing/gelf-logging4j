@@ -1,12 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.jul;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.logging.ErrorManager;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -17,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageAssembler;
@@ -63,12 +57,16 @@ class GelfLogHandlerErrorsTests {
 
         sut.setGraylogHost(THE_HOST);
 
-        when(senderProvider.supports(anyString())).thenReturn(true);
-        when(senderProvider.create(any(GelfSenderConfiguration.class))).thenThrow(new IllegalStateException());
+        Mockito.when(senderProvider.supports(ArgumentMatchers.anyString())).thenReturn(true);
+        Mockito.when(senderProvider.create(ArgumentMatchers.any(GelfSenderConfiguration.class))).thenThrow(new IllegalStateException());
 
         sut.publish(MESSAGE);
 
-        verify(errorManager, atLeast(1)).error(anyString(), any(IllegalStateException.class), anyInt());
+        Mockito.verify(errorManager, Mockito.atLeast(1)).error(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(IllegalStateException.class),
+                ArgumentMatchers.anyInt()
+        );
     }
 
     @Test
@@ -76,7 +74,11 @@ class GelfLogHandlerErrorsTests {
 
         sut.publish(MESSAGE);
 
-        verify(errorManager, atLeast(1)).error(anyString(), ArgumentMatchers.<Exception> isNull(), anyInt());
+        Mockito.verify(errorManager, Mockito.atLeast(1)).error(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.<Exception>isNull(),
+                ArgumentMatchers.anyInt()
+        );
     }
 
     @Test
@@ -84,7 +86,10 @@ class GelfLogHandlerErrorsTests {
 
         sut.publish(MESSAGE);
 
-        verify(errorManager, atLeast(1)).error(anyString(), ArgumentMatchers.<Exception> isNull(), anyInt());
+        Mockito.verify(errorManager, Mockito.atLeast(1)).error(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.<Exception>isNull(),
+                ArgumentMatchers.anyInt());
     }
 
 }

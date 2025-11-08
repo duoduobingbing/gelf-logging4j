@@ -1,17 +1,15 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.intern;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
+import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tools.jackson.core.StreamReadFeature;
-import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -33,14 +31,6 @@ class JsonWriterUnitTests {
         content = new String(bytes, StandardCharsets.UTF_8);
     }
 
-    private JsonMapper getJsonMapper() {
-        return JsonMapper
-                .builder(
-                        JsonFactory.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build()
-                )
-                .build();
-    }
-
     @Test
     void testUtf8Encoding() throws Exception {
 
@@ -50,9 +40,9 @@ class JsonWriterUnitTests {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         JsonWriter.toJSONString(OutputAccessor.from(buffer), map);
 
-        JsonMapper jsonMapper = getJsonMapper();
+        JsonMapper jsonMapper = JsonUtil.createJsonMapper();
         Map<?, ?> parsedByJackson = jsonMapper.readValue(buffer.toByteArray(), Map.class);
-        assertThat(parsedByJackson).isEqualTo(map);
+        AssertJAssertions.assertThat(parsedByJackson).isEqualTo(map);
     }
 
     @Test
@@ -61,10 +51,10 @@ class JsonWriterUnitTests {
         Map<String, String> map = new HashMap<>();
         map.put("key", content);
 
-        JsonMapper jsonMapper = getJsonMapper();
+        JsonMapper jsonMapper = JsonUtil.createJsonMapper();
         Map<?, ?> parsedByJackson = jsonMapper.readValue(jsonMapper.writeValueAsBytes(map), Map.class);
 
-        assertThat(parsedByJackson).isEqualTo(map);
+        AssertJAssertions.assertThat(parsedByJackson).isEqualTo(map);
     }
 
     static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP_REF = new TypeReference<Map<String, Object>>() {
@@ -92,8 +82,8 @@ class JsonWriterUnitTests {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         JsonWriter.toJSONString(OutputAccessor.from(buffer), map);
 
-        JsonMapper jsonMapper = getJsonMapper();
+        JsonMapper jsonMapper = JsonUtil.createJsonMapper();
         Map<String, Object> parsedByJackson = jsonMapper.readValue(buffer.toByteArray(), STRING_OBJECT_MAP_REF);
-        assertThat(parsedByJackson).isEqualTo(expected);
+        AssertJAssertions.assertThat(parsedByJackson).isEqualTo(expected);
     }
 }
