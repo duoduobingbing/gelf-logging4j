@@ -63,6 +63,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>21</maven.compiler.release>
+
         <log4j2.version>2.25.2</log4j2.version>
         <junit.version>6.0.1</junit.version>
         <assertj.version>3.27.6</assertj.version>
@@ -74,21 +75,26 @@
         <slf4j-api.version>2.0.17</slf4j-api.version>
         <logback-classic.version>1.5.18</logback-classic.version>
         <org.jboss.logmanager.version>3.1.2.Final</org.jboss.logmanager.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
-        <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <netty-bom.version>4.2.7.Final</netty-bom.version>
-        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
-        <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <kafka-clients.version>4.1.0</kafka-clients.version>
         <bouncycastle.version>1.82</bouncycastle.version>
         <testcontainers.version>2.0.1</testcontainers.version>
         <lmax.disruptor.version>4.0.0</lmax.disruptor.version>
+
+        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <maven-versions-plugin.version>2.19.1</maven-versions-plugin.version>
+        <maven-central-publishing-plugin.version>0.6.0</maven-central-publishing-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
+        <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
+
 
         <argLine/>
     </properties>
@@ -349,7 +355,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <inputEncoding>UTF-8</inputEncoding>
@@ -403,25 +409,36 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.18.0</version>
+                <version>${maven-versions-plugin.version}</version>
+                <configuration>
+                    <ruleSet>
+                        <ignoreVersions>
+                            <ignoreVersion>
+                                <type>regex</type>
+                                <version>.+-?(SNAPSHOT|M|[Aa]lpha|[bB]eta|RC)-?\d?$</version>
+                            </ignoreVersion>
+                        </ignoreVersions>
+                    </ruleSet>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-cli</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>display-dependency-updates</goal>
                         </goals>
                         <configuration>
                             <processDependencyManagementTransitive>false</processDependencyManagementTransitive>
-                            <ruleSet>
-                                <ignoreVersions>
-                                    <ignoreVersion>
-                                        <type>regex</type>
-                                        <version>.+-?(SNAPSHOT|M|[Aa]lpha|[bB]eta|RC)\d?$</version>
-                                    </ignoreVersion>
-                                </ignoreVersions>
-                            </ruleSet>
+                            <processPluginDependencies>true</processPluginDependencies>
+                            <processPluginDependenciesInPluginManagement>true</processPluginDependenciesInPluginManagement>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-cli2</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>display-property-updates</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -586,7 +603,7 @@
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.6.0</version>
+                        <version>${maven-central-publishing-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
@@ -599,7 +616,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.8</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <gpgArguments>

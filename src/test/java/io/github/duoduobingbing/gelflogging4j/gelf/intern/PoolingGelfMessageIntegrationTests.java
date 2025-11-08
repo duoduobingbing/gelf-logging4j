@@ -72,8 +72,8 @@ class PoolingGelfMessageIntegrationTests {
 
         ByteBuffer[] oldWay = gelfMessage.toUDPBuffers();
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(8192);
-        ByteBuffer tempBuffer = ByteBuffer.allocateDirect(8192);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(16384);
+        ByteBuffer tempBuffer = ByteBuffer.allocateDirect(16384);
 
         ByteBuffer[] newWay = poolingGelfMessage.toUDPBuffers(buffer, tempBuffer);
 
@@ -96,7 +96,7 @@ class PoolingGelfMessageIntegrationTests {
             AssertJAssertions.assertThat(s2).isEqualTo(s1);
 
             //TODO: for whatever reasons original gzip bytes are different
-//            assertThat(newBytes).containsExactly(oldBytes);
+//            AssertJAssertions.assertThat(newBytes).containsExactly(oldBytes);
 //            assertThat(Arrays.equals(newBytes, oldBytes)).isTrue();
         }
     }

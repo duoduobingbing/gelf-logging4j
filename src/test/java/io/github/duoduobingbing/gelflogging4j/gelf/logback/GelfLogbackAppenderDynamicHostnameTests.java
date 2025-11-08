@@ -27,6 +27,7 @@ class GelfLogbackAppenderDynamicHostnameTests {
         lc = new LoggerContext();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
+        lc.setMDCAdapter(MDC.getMDCAdapter());
 
         URL xmlConfigFile = getClass().getResource("/logback/logback-gelf-with-dynamic-originhost.xml");
 
