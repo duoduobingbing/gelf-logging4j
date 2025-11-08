@@ -1,6 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.log4j2;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.DynamicMdcMessageField;
@@ -92,33 +93,31 @@ public class Log4j2LogEvent implements LogEvent {
     }
 
     public String getValues(LogMessageField field) {
-        switch (field.getNamedLogField()) {
-            case Severity:
-                return logEvent.getLevel().toString();
-            case ThreadName:
-                return logEvent.getThreadName();
-            case SourceClassName:
-                return getSourceClassName();
-            case SourceLineNumber:
-                return getSourceLineNumber();
-            case SourceMethodName:
-                return getSourceMethodName();
-            case SourceSimpleClassName:
+        return switch (field.getNamedLogField()) {
+            case Severity -> logEvent.getLevel().toString();
+            case ThreadName -> logEvent.getThreadName();
+            case SourceClassName -> getSourceClassName();
+            case SourceLineNumber -> getSourceLineNumber();
+            case SourceMethodName -> getSourceMethodName();
+            case SourceSimpleClassName -> {
                 String sourceClassName = getSourceClassName();
                 if (sourceClassName == null) {
-                    return null;
+                    yield null;
                 }
-                return GelfUtil.getSimpleClassName(sourceClassName);
-            case LoggerName:
-                return logEvent.getLoggerName();
-            case Marker:
-                if (logEvent.getMarker() != null && !"".equals(logEvent.getMarker().toString())) {
-                    return logEvent.getMarker().toString();
+                yield GelfUtil.getSimpleClassName(sourceClassName);
+            }
+            case LoggerName -> logEvent.getLoggerName();
+            case Marker -> {
+                if(logEvent.getMarker() == null || logEvent.getMarker().toString().isEmpty()) {
+                    yield null;
                 }
-                return null;
-        }
 
-        throw new UnsupportedOperationException("Cannot provide value for " + field);
+                yield logEvent.getMarker().toString();
+            }
+            default -> throw new UnsupportedOperationException("Cannot provide value for " + field);
+        };
+
+
     }
 
     private String getSourceMethodName() {
@@ -179,15 +178,17 @@ public class Log4j2LogEvent implements LogEvent {
     @Override
     public String getMdcValue(String mdcName) {
         ReadOnlyStringMap contextData = logEvent.getContextData();
-        if (null != contextData && contextData.containsKey(mdcName)) {
-            // Values in the context data are not guaranteed to be String, e.g. if
-            // log4j2.threadContextMap is set to
-            // org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
-            Object value = contextData.getValue(mdcName);
-            return value != null ? value.toString() : null;
+        if (contextData == null || !contextData.containsKey(mdcName)) {
+            return null;
         }
 
-        return null;
+
+        // Values in the context data are not guaranteed to be String, e.g. if
+        // log4j2.threadContextMap is set to
+        // org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
+        Object value = contextData.getValue(mdcName);
+        return Objects.toString(value, null);
+
     }
 
     @Override

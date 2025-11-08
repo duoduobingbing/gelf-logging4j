@@ -127,16 +127,20 @@ class LogbackLogEvent implements LogEvent {
 
     @Override
     public Values getValues(MessageField field) {
-        if (field instanceof LogMessageField) {
-            return new Values(field.getName(), getValue((LogMessageField) field));
+        if(field instanceof LogbackPatternLogMessageField logbackPatternLogMessageField) {
+            return new Values(field.getName(), getValue(logbackPatternLogMessageField));
         }
 
-        if (field instanceof MdcMessageField) {
-            return new Values(field.getName(), getValue((MdcMessageField) field));
+        if (field instanceof LogMessageField logMessageField) {
+            return new Values(field.getName(), getValue(logMessageField));
         }
 
-        if (field instanceof DynamicMdcMessageField) {
-            return getMdcValues((DynamicMdcMessageField) field);
+        if (field instanceof MdcMessageField mdcMessageField) {
+            return new Values(field.getName(), getValue(mdcMessageField));
+        }
+
+        if (field instanceof DynamicMdcMessageField dynamicMdcMessageField) {
+            return getMdcValues(dynamicMdcMessageField);
         }
 
         throw new UnsupportedOperationException("Cannot provide value for " + field);
@@ -144,33 +148,33 @@ class LogbackLogEvent implements LogEvent {
 
     public String getValue(LogMessageField field) {
 
-        switch (field.getNamedLogField()) {
-            case Severity:
-                return loggingEvent.getLevel().toString();
-            case ThreadName:
-                return loggingEvent.getThreadName();
-            case SourceClassName:
-                return getSourceClassName();
-            case SourceMethodName:
-                return getSourceMethodName();
-            case SourceLineNumber:
-                return getSourceLine();
-            case SourceSimpleClassName:
+        return switch (field.getNamedLogField()) {
+            case Severity -> loggingEvent.getLevel().toString();
+            case ThreadName -> loggingEvent.getThreadName();
+            case SourceClassName -> getSourceClassName();
+            case SourceMethodName -> getSourceMethodName();
+            case SourceLineNumber -> getSourceLine();
+            case SourceSimpleClassName -> {
                 String sourceClassName = getSourceClassName();
                 if (sourceClassName == null) {
-                    return null;
+                    yield null;
                 }
-                return GelfUtil.getSimpleClassName(getSourceClassName());
-            case LoggerName:
-                return loggingEvent.getLoggerName();
-            case Marker:
-                if(loggingEvent.getMarkerList() != null && !loggingEvent.getMarkerList().isEmpty()) {
-                    return loggingEvent.getMarkerList().stream().map(Object::toString).collect(Collectors.joining(","));
+                yield GelfUtil.getSimpleClassName(getSourceClassName());
+            }
+            case LoggerName -> loggingEvent.getLoggerName();
+            case Marker -> {
+                if (loggingEvent.getMarkerList() != null && !loggingEvent.getMarkerList().isEmpty()) {
+                    yield loggingEvent.getMarkerList().stream().map(Object::toString).collect(Collectors.joining(","));
                 }
-                return null;
-        }
+                yield null;
+            }
+            default -> throw new UnsupportedOperationException("Cannot provide value for " + field);
+        };
 
-        throw new UnsupportedOperationException("Cannot provide value for " + field);
+    }
+
+    private String getValue(LogbackPatternLogMessageField field) {
+        return field.getPatternLayout().doLayout(loggingEvent);
     }
 
     private Values getMdcValues(DynamicMdcMessageField field) {

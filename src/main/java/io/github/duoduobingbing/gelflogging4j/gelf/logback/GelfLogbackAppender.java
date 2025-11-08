@@ -1,5 +1,6 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
+import ch.qos.logback.core.pattern.PatternLayoutBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
 
 import java.util.Collections;
@@ -75,10 +76,11 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
     protected GelfSender gelfSender;
     protected MdcGelfMessageAssembler gelfMessageAssembler;
     private final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
+    protected PatternGelfLogFieldFactory patternGelfLogFieldFactory = new PatternGelfLogFieldFactory();
 
-    public GelfLogbackAppender() {
-        super();
-        gelfMessageAssembler = new MdcGelfMessageAssembler();
+    protected boolean addDefaultFields = true;
+
+    private void addDefaultFieldMappings() {
         gelfMessageAssembler.addFields(
                 LogMessageField.getDefaultMapping(
                         NamedLogField.Time,
@@ -93,6 +95,37 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
                 )
         );
     }
+
+    private void beforeStart() {
+        final boolean noPatternLogFieldsSet = this.patternGelfLogFieldFactory.getPatternGelfLogFields().isEmpty();
+
+        if (addDefaultFields || noPatternLogFieldsSet) {
+            addDefaultFieldMappings();
+        }
+
+        if (noPatternLogFieldsSet) {
+            return;
+        }
+
+        for (PatternGelfLogField patternLogFields : this.patternGelfLogFieldFactory.getPatternGelfLogFields()) {
+            final PatternLayoutBase<ILoggingEvent> patternLayout;
+
+            if (patternLogFields.isHostNameAware()) {
+                patternLayout = PatternLayoutHelper.createHostNamePatternLayout(patternLogFields.getPattern(), context, true);
+            } else {
+                patternLayout = PatternLayoutHelper.createPatternLayout(patternLogFields.getPattern(), context, true);
+            }
+
+            gelfMessageAssembler.addField(new LogbackPatternLogMessageField(patternLogFields.getName(), null, patternLayout));
+        }
+
+    }
+
+    public GelfLogbackAppender() {
+        super();
+        gelfMessageAssembler = new MdcGelfMessageAssembler();
+    }
+
 
     @Override
     protected void append(ILoggingEvent event) {
@@ -124,6 +157,8 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
             gelfSender = createGelfSender();
         }
 
+        this.beforeStart();
+
         super.start();
     }
 
@@ -151,22 +186,37 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.createGelfMessage(new LogbackLogEvent(loggingEvent));
     }
 
+    //Exposed to config
+    public void setPatternLogFields(PatternGelfLogFieldFactory patternGelfLogFieldFactory) {
+        this.patternGelfLogFieldFactory = patternGelfLogFieldFactory;
+    }
+
+    //Exposed to config
+    public void setAddDefaultFields(boolean addDefaultFields) {
+        this.addDefaultFields = addDefaultFields;
+    }
+
+    //Exposed to config
     public void setAdditionalFields(String spec) {
         ConfigurationSupport.setAdditionalFields(spec, gelfMessageAssembler);
     }
 
+    //Exposed to config
     public void setAdditionalFieldTypes(String spec) {
         ConfigurationSupport.setAdditionalFieldTypes(spec, gelfMessageAssembler);
     }
 
+    //Exposed to config
     public void setMdcFields(String spec) {
         ConfigurationSupport.setMdcFields(spec, gelfMessageAssembler);
     }
 
+    //Exposed to config
     public void setDynamicMdcFields(String spec) {
         ConfigurationSupport.setDynamicMdcFields(spec, gelfMessageAssembler);
     }
 
+    //Exposed to config
     public void setDynamicMdcFieldTypes(String spec) {
         ConfigurationSupport.setDynamicMdcFieldTypes(spec, gelfMessageAssembler);
     }
@@ -175,6 +225,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getHost();
     }
 
+    //Exposed to config
     public void setGraylogHost(String graylogHost) {
         gelfMessageAssembler.setHost(graylogHost);
     }
@@ -183,6 +234,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getOriginHost();
     }
 
+    //Exposed to config
     public void setOriginHost(String originHost) {
         gelfMessageAssembler.setOriginHost(originHost);
     }
@@ -191,6 +243,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getPort();
     }
 
+    //Exposed to config
     public void setGraylogPort(int graylogPort) {
         gelfMessageAssembler.setPort(graylogPort);
     }
@@ -199,6 +252,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getHost();
     }
 
+    //Exposed to config
     public void setHost(String host) {
         gelfMessageAssembler.setHost(host);
     }
@@ -207,6 +261,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getPort();
     }
 
+    //Exposed to config
     public void setPort(int port) {
         gelfMessageAssembler.setPort(port);
     }
@@ -215,6 +270,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getFacility();
     }
 
+    //Exposed to config
     public void setFacility(String facility) {
         gelfMessageAssembler.setFacility(facility);
     }
@@ -223,6 +279,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getExtractStackTrace();
     }
 
+    //Exposed to config
     public void setExtractStackTrace(String extractStacktrace) {
         gelfMessageAssembler.setExtractStackTrace(extractStacktrace);
     }
@@ -231,6 +288,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.isFilterStackTrace();
     }
 
+    //Exposed to config
     public void setFilterStackTrace(boolean filterStackTrace) {
         gelfMessageAssembler.setFilterStackTrace(filterStackTrace);
     }
@@ -239,6 +297,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.isIncludeLocation();
     }
 
+    //Exposed to config
     public void setIncludeLocation(boolean includeLocation) {
         gelfMessageAssembler.setIncludeLocation(includeLocation);
     }
@@ -247,6 +306,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.isMdcProfiling();
     }
 
+    //Exposed to config
     public void setMdcProfiling(boolean mdcProfiling) {
         gelfMessageAssembler.setMdcProfiling(mdcProfiling);
     }
@@ -255,6 +315,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getTimestampPattern();
     }
 
+    //Exposed to config
     public void setTimestampPattern(String timestampPattern) {
         gelfMessageAssembler.setTimestampPattern(timestampPattern);
     }
@@ -263,6 +324,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getMaximumMessageSize();
     }
 
+    //Exposed to config
     public void setMaximumMessageSize(int maximumMessageSize) {
         gelfMessageAssembler.setMaximumMessageSize(maximumMessageSize);
     }
@@ -271,6 +333,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.isIncludeFullMdc();
     }
 
+    //Exposed to config
     public void setIncludeFullMdc(boolean includeFullMdc) {
         gelfMessageAssembler.setIncludeFullMdc(includeFullMdc);
     }
@@ -279,6 +342,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         return gelfMessageAssembler.getVersion();
     }
 
+    //Exposed to config
     public void setVersion(String version) {
         gelfMessageAssembler.setVersion(version);
     }

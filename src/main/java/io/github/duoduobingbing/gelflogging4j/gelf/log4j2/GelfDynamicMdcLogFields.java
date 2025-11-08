@@ -30,8 +30,10 @@ public class GelfDynamicMdcLogFields {
     }
 
     @PluginFactory
-    public static GelfDynamicMdcLogFields createField(@PluginConfiguration final Configuration config,
-            @PluginAttribute("regex") String regex) {
+    public static GelfDynamicMdcLogFields createField(
+            @PluginConfiguration final Configuration config,
+            @PluginAttribute("regex") String regex
+    ) {
 
         if (Strings.isEmpty(regex)) {
             LOGGER.error("The regex is empty");

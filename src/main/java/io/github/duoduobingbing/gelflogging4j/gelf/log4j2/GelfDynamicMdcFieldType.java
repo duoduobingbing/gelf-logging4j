@@ -32,8 +32,10 @@ public class GelfDynamicMdcFieldType {
     }
 
     @PluginFactory
-    public static GelfDynamicMdcFieldType createField(@PluginAttribute("regex") String regex,
-            @PluginAttribute("type") String type) {
+    public static GelfDynamicMdcFieldType createField(
+            @PluginAttribute("regex") String regex,
+            @PluginAttribute("type") String type
+    ) {
 
         if (Strings.isEmpty(regex)) {
             throw new IllegalArgumentException("Regex is empty");
