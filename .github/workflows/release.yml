@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       # another option to having this handled by setup java would be to use https://github.com/crazy-max/ghaction-import-gpg beforehand
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
