@@ -13,14 +13,14 @@ import java.util.function.Supplier;
 
 public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
 
-    private static final Map<String, String> ALL_CONVERTERS_MAP = new HashMap<String, String>();
+//    private static final Map<String, String> ALL_CONVERTERS_MAP = new HashMap<String, String>(); //TODO: Legacy way, deprecated, remove once removed in PatternLayout
 
     @SuppressWarnings("rawtypes")
     public static final Map<String, Supplier<DynamicConverter>> ALL_CONVERTER_SUPPLIER_MAP = new HashMap<>();
 
     static{
-        ALL_CONVERTERS_MAP.putAll(PatternLayout.DEFAULT_CONVERTER_MAP); //Legacy way, deprecated, remove once removed in PatternLayout
-        ALL_CONVERTERS_MAP.put("host", HostnameConverter.class.getName()); //Legacy way, deprecated, remove once removed in PatternLayout
+//        ALL_CONVERTERS_MAP.putAll(PatternLayout.DEFAULT_CONVERTER_MAP); //Legacy way, deprecated, remove once removed in PatternLayout
+//        ALL_CONVERTERS_MAP.put("host", HostnameConverter.class.getName()); //Legacy way, deprecated, remove once removed in PatternLayout
 
         ALL_CONVERTER_SUPPLIER_MAP.putAll(PatternLayout.DEFAULT_CONVERTER_SUPPLIER_MAP);
         ALL_CONVERTER_SUPPLIER_MAP.put("host", HostnameConverter::new);
@@ -34,16 +34,26 @@ public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
         this.postCompileProcessor = new EnsureExceptionHandling();
     }
 
+    /**
+     * @see PatternLayout#getDefaultConverterSupplierMap()
+     * @return a map of keys and class instances by supplier
+     */
     @Override
     @SuppressWarnings("rawtypes")
     public Map<String, Supplier<DynamicConverter>> getDefaultConverterSupplierMap() {
         return ALL_CONVERTER_SUPPLIER_MAP;
     }
 
+    /**
+     * @deprecated Use {@link #getDefaultConverterSupplierMap()} instead.
+     * @see PatternLayout#getDefaultConverterMap()
+     * @return {@link Map}
+     */
     @Deprecated //Löschen wenn in PatternLayout auch nicht mehr vorhanden (Deprecated in Logback Classic)
     @Override
     public Map<String, String> getDefaultConverterMap() {
-        return ALL_CONVERTERS_MAP;
+        return Map.of();
+        //return ALL_CONVERTERS_MAP;
     }
 
     /**

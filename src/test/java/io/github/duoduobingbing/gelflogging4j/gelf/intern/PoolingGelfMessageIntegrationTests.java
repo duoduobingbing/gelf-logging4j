@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.AbstractNioSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -72,8 +73,8 @@ class PoolingGelfMessageIntegrationTests {
 
         ByteBuffer[] oldWay = gelfMessage.toUDPBuffers();
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect(8192);
-        ByteBuffer tempBuffer = ByteBuffer.allocateDirect(8192);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(AbstractNioSender.INITIAL_BUFFER_SIZE);
+        ByteBuffer tempBuffer = ByteBuffer.allocateDirect(AbstractNioSender.INITIAL_BUFFER_SIZE);
 
         ByteBuffer[] newWay = poolingGelfMessage.toUDPBuffers(buffer, tempBuffer);
 
