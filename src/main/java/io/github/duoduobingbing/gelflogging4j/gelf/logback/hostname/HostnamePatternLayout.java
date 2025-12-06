@@ -49,7 +49,7 @@ public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
      * @see PatternLayout#getDefaultConverterMap()
      * @return {@link Map}
      */
-    @Deprecated //Löschen wenn in PatternLayout auch nicht mehr vorhanden (Deprecated in Logback Classic)
+    @Deprecated //Legacy way, deprecated, remove once removed in PatternLayout
     @Override
     public Map<String, String> getDefaultConverterMap() {
         return Map.of();
