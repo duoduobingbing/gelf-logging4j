@@ -3,14 +3,30 @@
 
 <configuration debug="true">
     <contextName>test</contextName>
-    <jmxConfigurator />
 
     <appender name="GELF" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <graylogHost>test:localhost</graylogHost>
         <graylogPort>12201</graylogPort>
-        <additionalFields>
-            propertyField1=${user.language},propertyField2=${myproperty},propertyField3=${otherproperty:fallback},propertyField4=embedded${myproperty}property
-        </additionalFields>
+
+        <additionalLogFields>
+            <staticLogField>
+                <name>propertyField1</name>
+                <literal>${user.language}</literal>
+            </staticLogField>
+            <staticLogField>
+                <name>propertyField2</name>
+                <literal>${myproperty}</literal>
+            </staticLogField>
+            <staticLogField>
+                <name>propertyField3</name>
+                <literal>${otherproperty:fallback}</literal>
+            </staticLogField>
+            <staticLogField>
+                <name>propertyField4</name>
+                <literal>embedded${myproperty}property</literal>
+            </staticLogField>
+        </additionalLogFields>
+
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>

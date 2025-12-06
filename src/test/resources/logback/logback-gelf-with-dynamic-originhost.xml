@@ -3,7 +3,6 @@
 
 <configuration debug="true">
     <contextName>test</contextName>
-    <jmxConfigurator />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -16,7 +15,14 @@
         <graylogPort>12201</graylogPort>
         <facility>gelf-logging4j</facility>
         <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
-        <additionalFields>crossCheckHostName=${HOSTNAME}</additionalFields>
+
+        <additionalLogFields>
+            <staticLogField>
+                <name>crossCheckHostName</name>
+                <literal>${HOSTNAME}</literal>
+            </staticLogField>
+        </additionalLogFields>
+
         <originHost>${HOSTNAME}</originHost>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>

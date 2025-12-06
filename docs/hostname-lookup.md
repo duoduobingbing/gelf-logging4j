@@ -1,6 +1,6 @@
 # Hostname-Lookup
 
-gelf-logging4j contains a class (io.github.duoduobingbing.gelflogging4j.RuntimeContainer) which performs a hostname resolution on the first use of the framework.
+gelf-logging4j contains a class (`io.github.duoduobingbing.gelflogging4j.RuntimeContainer`) which performs a hostname resolution on the first use of the framework.
 This can take some time, especially, when your DNS is not set up for all host addresses.
 
 The lookup is performed in that way:
@@ -31,7 +31,7 @@ your logger, so the properties value will be used anyway. If you didn't set the 
 Default/Fallback Values for Hostname-Lookup
 --------------------------------------------
 
-* Set `lgelf-logging4j.hostname` to use a fixed hostname (simple). This property can be handy in case the lookup runs into IO Exceptions.
+* Set `gelf-logging4j.hostname` to use a fixed hostname (simple). This property can be handy in case the lookup runs into IO Exceptions.
 * Set `gelf-logging4j.fqdn.hostname` to use a fixed hostname (fully qualified). This property can be handy in case the lookup runs into IO Exceptions.
 
 See [Javadoc](apidocs/biz/paluch/logging/RuntimeContainerProperties.html) for further details.

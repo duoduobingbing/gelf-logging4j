@@ -13,87 +13,94 @@ for later consolidation and reporting.
 
 Examples:
 
-    public class MyServlet extends HttpServlet {
+```java
+public class MyServlet extends HttpServlet {
 
-        public Datenpumpe datenpumpe;
+    public Datenpumpe datenpumpe;
 
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp)  {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)  {
 
-            Map<String, Object> message = new HashMap<>;
-            message.put("uri", req.getRequestUri());
-            message.put("resource", "MyServlet");
-            message.put("event", "access");
+        Map<String, Object> message = new HashMap<>;
+        message.put("uri", req.getRequestUri());
+        message.put("resource", "MyServlet");
+        message.put("event", "access");
 
-            datenpumpe.submit(message);
-        }
+        datenpumpe.submit(message);
     }
+}
+```
 
 Or more sophisticated (using reflection to retrieve the fields from your model):
 
-    @Stateless
-    public class MyEjb {
+```java
+@Stateless
+public class MyEjb {
 
-        public Datenpumpe datenpumpe;
+    public Datenpumpe datenpumpe;
 
-        public void shoppingCartOrdered(ShoppingCart cart) {
-            datenpumpe.submit(cart);
-        }
+    public void shoppingCartOrdered(ShoppingCart cart) {
+        datenpumpe.submit(cart);
+    }
+}
+
+public class ShoppingCart{
+
+    private String cartId;
+    private double amount;
+    private String customerId;
+
+    public String getCartId(){
+        return cartId;
     }
 
-    public class ShoppingCart{
-
-        private String cartId;
-        private double amount;
-        private String customerId;
-
-        public String getCartId(){
-            return cartId;
-        }
-
-        public double getAmount(){
-            return amount;
-        }
-
-        public String getCustomerId(){
-            return customerId;
-        }
+    public double getAmount(){
+        return amount;
     }
+
+    public String getCustomerId(){
+        return customerId;
+    }
+}
+```
 
 Setup:
+```java
+GelfSenderConfiguration senderConfiguration = new GelfSenderConfiguration() {
 
-    GelfSenderConfiguration senderConfiguration = new GelfSenderConfiguration() {
-    
-        @Override
-        public int getPort() {
-            return 12201;
-        }
-    
-        @Override
-        public String getHost() {
-            return "tcp:myhost";
-        }
-    
-        @Override
-        public ErrorReporter getErrorReporter() {
-            return new Slf4jErrorReporter();
-        }
-    
-        @Override
-        public Map<String, Object> getSpecificConfigurations() {
-            return Collections.emptyMap();
-        }
-    };
+    @Override
+    public int getPort() {
+        return 12201;
+    }
 
-    Datenpumpe datenpumpe = new DatenpumpeImpl(senderConfiguration);
+    @Override
+    public String getHost() {
+        return "tcp:myhost";
+    }
+
+    @Override
+    public ErrorReporter getErrorReporter() {
+        return new Slf4jErrorReporter();
+    }
+
+    @Override
+    public Map<String, Object> getSpecificConfigurations() {
+        return Collections.emptyMap();
+    }
+};
+
+Datenpumpe datenpumpe = new DatenpumpeImpl(senderConfiguration);
+```
 
 This results in a Gelf message like:
 
-    { "timestamp": 1406797244.645,
-      "facility": "gelf-logging4j",
-      "_cartId": "the cart id",
-      "_amount": 9.27,
-      "_customerId": "the customer id"
-    }
-
+```json
+{ 
+  "timestamp": 1406797244.645,
+  "facility": "gelf-logging4j",
+  "_cartId": "the cart id",
+  "_amount": 9.27,
+  "_customerId": "the customer id"
+}
+```
 

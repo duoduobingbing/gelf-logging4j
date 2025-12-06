@@ -135,7 +135,7 @@ These are not regular expressions, and the entries do not support wildcards.
 ## Verbose logging
 
 You can turn on verbose logging to inspect the discovery of `StackTraceFilter.packages` by setting 
-the system property `logstash-gelf.StackTraceFilter.verbose` to `true`.
+the system property `gelf-logging4j.StackTraceFilter.verbose` to `true`.
 
 ## Advanced Stack Trace Extraction
 

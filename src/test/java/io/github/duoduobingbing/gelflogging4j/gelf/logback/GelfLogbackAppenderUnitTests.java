@@ -20,7 +20,6 @@ class GelfLogbackAppenderUnitTests {
     void testSameFieldsGelfLogbackAppender() {
         GelfLogbackAppender sut = new GelfLogbackAppender();
 
-        sut.setAdditionalFields("");
         sut.setExtractStackTrace("true");
         sut.setFacility(FACILITY);
         sut.setFilterStackTrace(true);
@@ -29,7 +28,6 @@ class GelfLogbackAppenderUnitTests {
         sut.setMaximumMessageSize(MAXIMUM_MESSAGE_SIZE);
         sut.setDynamicMdcFields(".*");
         sut.setIncludeFullMdc(true);
-        sut.setMdcFields("");
         sut.setMdcProfiling(true);
 
         AssertJAssertions.assertThat(sut.getFacility()).isEqualTo(FACILITY);

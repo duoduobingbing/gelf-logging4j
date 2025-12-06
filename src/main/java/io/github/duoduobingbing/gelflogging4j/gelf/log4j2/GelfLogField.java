@@ -50,9 +50,13 @@ public class GelfLogField {
     }
 
     @PluginFactory
-    public static GelfLogField createField(@PluginConfiguration final Configuration config,
-            @PluginAttribute("name") String name, @PluginAttribute("literal") String literalValue,
-            @PluginAttribute("mdc") String mdc, @PluginAttribute("pattern") String pattern) {
+    public static GelfLogField createField(
+            @PluginConfiguration final Configuration config,
+            @PluginAttribute("name") String name,
+            @PluginAttribute("literal") String literalValue,
+            @PluginAttribute("mdc") String mdc,
+            @PluginAttribute("pattern") String pattern
+    ) {
 
         final boolean isPattern = Strings.isNotEmpty(pattern);
         final boolean isLiteralValue = Strings.isNotEmpty(literalValue);

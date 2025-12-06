@@ -38,7 +38,7 @@ Simple Configuration:
     .handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
     .level = INFO
     
-    java.util.logging.FileHandler.formatter=jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter
+    java.util.logging.FileHandler.formatter=io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter
 
 Extended Properties:
 
@@ -47,16 +47,16 @@ Extended Properties:
     .handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
     .level = INFO
     
-    java.util.logging.FileHandler.formatter=jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter
+    java.util.logging.FileHandler.formatter=io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter
 
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.fields=Severity, Time, LoggerName
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.version=1.0
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.facility=gelf-logging4j
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.extractStackTrace=true
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.filterStackTrace=true
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.includeLogMessageParameters=true
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.includeLocation=true
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
-    jul.gelf.io.github.duoduobingbing.gelflogging4j.GelfFormatter.linebreak=\\n
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.fields=Severity, Time, LoggerName
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.version=1.0
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.facility=gelf-logging4j
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.extractStackTrace=true
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.filterStackTrace=true
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.includeLogMessageParameters=true
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.includeLocation=true
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.timestampPattern=yyyy-MM-dd HH:mm:ss,SSS
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.additionalFields=fieldName1=fieldValue1,fieldName2=fieldValue2
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.additionalFieldTypes=fieldName1=String,fieldName2=Double,fieldName3=Long
+    io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfFormatter.linebreak=\\n

@@ -63,7 +63,7 @@ public class HostnameConverter extends LogEventPatternConverter {
 
     @Override
     public void format(LogEvent event, StringBuilder toAppendTo) {
-        if (getStyle() == null || getStyle().equals("") || getStyle().equals("fqdn")) {
+        if (getStyle() == null || getStyle().isEmpty() || getStyle().equals("fqdn")) {
             toAppendTo.append(RuntimeContainer.FQDN_HOSTNAME);
         }
 

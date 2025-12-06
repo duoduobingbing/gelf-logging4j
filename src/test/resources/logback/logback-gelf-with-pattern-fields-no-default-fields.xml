@@ -7,35 +7,20 @@
     <appender name="GELF" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <graylogHost>test:localhost</graylogHost>
         <graylogPort>12201</graylogPort>
+        <version>1.1</version>
         <facility>gelf-logging4j</facility>
         <extractStackTrace>true</extractStackTrace>
-        <filterStackTrace>true</filterStackTrace>
+        <filterStackTrace>false</filterStackTrace>
         <mdcProfiling>true</mdcProfiling>
         <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
         <maximumMessageSize>8192</maximumMessageSize>
-
+        <addAdditionalDefaultFields>false</addAdditionalDefaultFields>
         <additionalLogFields>
-            <staticLogField>
-                <name>fieldName1</name>
-                <literal>fieldValue1</literal>
-            </staticLogField>
-            <staticLogField>
-                <name>fieldName2</name>
-                <literal>fieldValue2</literal>
-            </staticLogField>
-            <staticLogField>
-                <name>myOriginHost</name>
-                <literal>${HOSTNAME}</literal>
-            </staticLogField>
-            <mdcLogField>
-                <mdc>mdcField1</mdc>
-            </mdcLogField>
-            <mdcLogField>
-                <mdc>mdcField2</mdc>
-            </mdcLogField>
+            <patternLogField>
+                <name>levelName</name>
+                <pattern>%p-TEST</pattern>
+            </patternLogField>
         </additionalLogFields>
-
-        <originHost>1.2.3.4</originHost>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>

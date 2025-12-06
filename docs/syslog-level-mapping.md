@@ -13,7 +13,7 @@ Resolution of the syslog level is based on the `StandardLevel` property of the l
 * INFO: 6
 * Everything else: 7
 
-## log4j 1.2, JUL, JBoss Logging, Logback
+## JUL, Logback
 
 These frameworks provide an integer representation of the log level value:
 
