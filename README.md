@@ -63,6 +63,8 @@ io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.additionalFieldTy
 io.github.duoduobingbing.gelflogging4j.gelf.jul.GelfLogHandler.level=INFO
 ```
 
+For more information see [our docs](https://github.com/duoduobingbing/gelf-logging4j/tree/master/docs/examples/jul.md).
+
 <a name="log4j2"/>
 
 ## log4j2 GELF configuration
@@ -117,6 +119,8 @@ Additionally, you can add the host-Field, which can supply you either the FQDN h
 Option | Description
 --- | ---
 host{["fqdn"<br/>"simple"<br/>"address"]} | Outputs either the FQDN hostname, the simple hostname or the local address. You can follow the throwable conversion word with an option in the form %host{option}. <br/> %host{fqdn} default setting, outputs the FQDN hostname, e.g. www.you.host.name.com. <br/>%host{simple} outputs simple hostname, e.g. www. <br/>%host{address} outputs the local IP address of the found hostname, e.g. 1.2.3.4 or affe:affe:affe::1. 
+
+For more information see [our docs](https://github.com/duoduobingbing/gelf-logging4j/tree/master/docs/examples/log4j-2.x.md).
 
 **XML**
 
@@ -183,7 +187,7 @@ appender.gelf:
 
 Logback GELF configuration
 --------------------------
-logback.xml Example:
+`logback.xml` example:
 
 ```xml
 <!DOCTYPE configuration>
@@ -247,6 +251,8 @@ logback.xml Example:
     </root>
 </configuration>
 ```
+
+For more information see [our docs](https://github.com/duoduobingbing/gelf-logging4j/tree/master/docs/examples/logback.md).
 
 License
 -------
