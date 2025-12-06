@@ -6,7 +6,9 @@ import io.github.duoduobingbing.gelflogging4j.RuntimeContainer;
 
 /**
  * Provides the servername/Hostname.
- * Also see {@link io.github.duoduobingbing.gelflogging4j.gelf.log4j2.HostnameConverter Log4j2HostnameConverter} for supported options
+ * Also see {@link io.github.duoduobingbing.gelflogging4j.gelf.log4j2.HostnameConverter Log4j2HostnameConverter} for supported options.
+ * <br>
+ * You can call it like <code>%hostname{'fqdn'}</code>
  */
 public class HostnameConverter extends ClassicConverter {
 

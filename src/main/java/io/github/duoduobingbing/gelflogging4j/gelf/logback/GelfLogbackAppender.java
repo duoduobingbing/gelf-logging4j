@@ -1,6 +1,7 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.logback;
 
 import ch.qos.logback.core.pattern.PatternLayoutBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.GelfMessageAssembler;
 import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField;
 
 import java.util.Collections;
@@ -10,6 +11,8 @@ import io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField;
 import io.github.duoduobingbing.gelflogging4j.gelf.MdcGelfMessageAssembler;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import io.github.duoduobingbing.gelflogging4j.gelf.MdcMessageField;
+import io.github.duoduobingbing.gelflogging4j.gelf.StaticMessageField;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.Closer;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ConfigurationSupport;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
@@ -17,6 +20,10 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderFactory;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.MessagePostprocessingErrorReporter;
+import io.github.duoduobingbing.gelflogging4j.gelf.logback.config.AdditionalGelfFieldsFactory;
+import io.github.duoduobingbing.gelflogging4j.gelf.logback.config.MdcGelfLogField;
+import io.github.duoduobingbing.gelflogging4j.gelf.logback.config.PatternGelfLogField;
+import io.github.duoduobingbing.gelflogging4j.gelf.logback.config.StaticGelfLogField;
 
 /**
  * Logging-Handler for GELF (Graylog Extended Logging Format). This Logback Handler creates GELF Messages and posts them using
@@ -39,17 +46,15 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.MessagePostprocessingE
  * Profiling</a>, default false</li>
  * <li>facility (Optional): Name of the Facility, default gelf-java</li>
  * <li>filter (Optional): logback filter (incl. log level)</li>
- * <li>additionalFields(number) (Optional): Post additional fields. Eg.
- * .GelfLogHandler.additionalFields=fieldName=Value,field2=value2</li>
+ * <li>additionalLogFields (Optional): Post additional fields. Either {@link MdcGelfLogField MDC}, {@link StaticGelfLogField static} or {@link PatternGelfLogField pattern}.
  * <li>additionalFieldTypes (Optional): Type specification for additional and MDC fields. Supported types: String, long, Long,
  * double, Double and discover (default if not specified, discover field type on parseability). Eg. field=String,field2=double</li>
- * <li>mdcFields (Optional): Post additional fields, pull Values from MDC. Name of the Fields are comma-separated
- * mdcFields=Application,Version,SomeOtherFieldName</li>
  * <li>dynamicMdcFields (Optional): Dynamic MDC Fields allows you to extract MDC values based on one or more regular
  * expressions. Multiple regex are comma-separated. The name of the MDC entry is used as GELF field name.</li>
  * <li>dynamicMdcFieldTypes (Optional): Pattern-based type specification for additional and MDC fields. Key-value pairs are
  * comma-separated. Supported types: String, long, Long, double, Double. Eg. my_field.*=String,business\..*\.field=double</li>
  * <li>includeFullMdc (Optional): Include all fields from the MDC, default false</li>
+ * <li>addAdditionalDefaultFields (Optional): Include additional fields Time, Severity, ThreadName, ..., default true. See {@link #addDefaultFieldMappings()}.</li>
  * </ul>
  * <a name="mdcProfiling"></a> <h2>MDC Profiling</h2>
  * <p>
@@ -69,6 +74,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.MessagePostprocessingE
  * The {@link #append(ILoggingEvent)} method is thread-safe and may be called by different threads at any time.
  *
  * @author <a href="mailto:tobiassebastian.kaefer@1und1.de">Tobias Kaefer</a>
+ * @author duoduobingbing
  * @since 2013-10-08
  */
 public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements ErrorReporter {
@@ -76,9 +82,9 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
     protected GelfSender gelfSender;
     protected MdcGelfMessageAssembler gelfMessageAssembler;
     private final ErrorReporter errorReporter = new MessagePostprocessingErrorReporter(this);
-    protected PatternGelfLogFieldFactory patternGelfLogFieldFactory = new PatternGelfLogFieldFactory();
+    protected AdditionalGelfFieldsFactory additionalGelfFieldsFactory = new AdditionalGelfFieldsFactory();
 
-    protected boolean addDefaultFields = true;
+    protected boolean addAdditionalDefaultFields = true;
 
     private void addDefaultFieldMappings() {
         gelfMessageAssembler.addFields(
@@ -96,10 +102,33 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
         );
     }
 
+    /**
+     * @see ConfigurationSupport#setAdditionalField(String, GelfMessageAssembler)
+     * @see ConfigurationSupport#setMdcFields(String, GelfMessageAssembler)
+     */
     private void beforeStart() {
-        final boolean noPatternLogFieldsSet = this.patternGelfLogFieldFactory.getPatternGelfLogFields().isEmpty();
+        STATIC_FIELD: for (StaticGelfLogField staticLogField : this.additionalGelfFieldsFactory.getStaticGelfLogFields()) {
+            if(staticLogField.getName() == null || staticLogField.getName().isEmpty()) {
+                addError("<staticLogField> without a name is not allowed! (literal: " + staticLogField.getLiteral() + ")");
+                continue STATIC_FIELD;
+            }
 
-        if (addDefaultFields || noPatternLogFieldsSet) {
+            gelfMessageAssembler.addField(new StaticMessageField(staticLogField.getName(), staticLogField.getLiteral()));
+        }
+
+        MDC_FIELD: for (MdcGelfLogField mdcGelfLogField : this.additionalGelfFieldsFactory.getMdcGelfLogFields()) {
+            if(mdcGelfLogField.getMdcFieldName() == null || mdcGelfLogField.getMdcFieldName().isEmpty()) {
+                addError("<mdcLogField> without <mdc>mdcFieldNameXyz</mdc> is not allowed!");
+                continue MDC_FIELD;
+            }
+
+            String fieldName = mdcGelfLogField.getFieldName() != null ? mdcGelfLogField.getFieldName() : mdcGelfLogField.getMdcFieldName();
+            gelfMessageAssembler.addField(new MdcMessageField(fieldName, mdcGelfLogField.getMdcFieldName()));
+        }
+
+        final boolean noPatternLogFieldsSet = this.additionalGelfFieldsFactory.getPatternGelfLogFields().isEmpty();
+
+        if (addAdditionalDefaultFields || noPatternLogFieldsSet) {
             addDefaultFieldMappings();
         }
 
@@ -107,16 +136,21 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
             return;
         }
 
-        for (PatternGelfLogField patternLogFields : this.patternGelfLogFieldFactory.getPatternGelfLogFields()) {
-            final PatternLayoutBase<ILoggingEvent> patternLayout;
-
-            if (patternLogFields.isHostNameAware()) {
-                patternLayout = PatternLayoutHelper.createHostNamePatternLayout(patternLogFields.getPattern(), context, true);
-            } else {
-                patternLayout = PatternLayoutHelper.createPatternLayout(patternLogFields.getPattern(), context, true);
+        PATTERN_FIELD: for (PatternGelfLogField patternLogField : this.additionalGelfFieldsFactory.getPatternGelfLogFields()) {
+            if(patternLogField.getName() == null || patternLogField.getName().isEmpty()) {
+                addError("<patternLogField> without a name is not allowed! (pattern: " + patternLogField.getPattern() + ")");
+                continue PATTERN_FIELD;
             }
 
-            gelfMessageAssembler.addField(new LogbackPatternLogMessageField(patternLogFields.getName(), null, patternLayout));
+            final PatternLayoutBase<ILoggingEvent> patternLayout;
+
+            if (patternLogField.isHostNameAware()) {
+                patternLayout = PatternLayoutHelper.createHostNamePatternLayout(patternLogField.getPattern(), context, true);
+            } else {
+                patternLayout = PatternLayoutHelper.createPatternLayout(patternLogField.getPattern(), context, true);
+            }
+
+            gelfMessageAssembler.addField(new LogbackPatternLogMessageField(patternLogField.getName(), null, patternLayout));
         }
 
     }
@@ -157,6 +191,7 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
             gelfSender = createGelfSender();
         }
 
+
         this.beforeStart();
 
         super.start();
@@ -187,28 +222,18 @@ public class GelfLogbackAppender extends AppenderBase<ILoggingEvent> implements 
     }
 
     //Exposed to config
-    public void setPatternLogFields(PatternGelfLogFieldFactory patternGelfLogFieldFactory) {
-        this.patternGelfLogFieldFactory = patternGelfLogFieldFactory;
+    public void setAdditionalLogFields(AdditionalGelfFieldsFactory additionalGelfFieldsFactory) {
+        this.additionalGelfFieldsFactory = additionalGelfFieldsFactory;
     }
 
     //Exposed to config
-    public void setAddDefaultFields(boolean addDefaultFields) {
-        this.addDefaultFields = addDefaultFields;
-    }
-
-    //Exposed to config
-    public void setAdditionalFields(String spec) {
-        ConfigurationSupport.setAdditionalFields(spec, gelfMessageAssembler);
+    public void setAddAdditionalDefaultFields(boolean addAdditionalDefaultFields) {
+        this.addAdditionalDefaultFields = addAdditionalDefaultFields;
     }
 
     //Exposed to config
     public void setAdditionalFieldTypes(String spec) {
         ConfigurationSupport.setAdditionalFieldTypes(spec, gelfMessageAssembler);
-    }
-
-    //Exposed to config
-    public void setMdcFields(String spec) {
-        ConfigurationSupport.setMdcFields(spec, gelfMessageAssembler);
     }
 
     //Exposed to config

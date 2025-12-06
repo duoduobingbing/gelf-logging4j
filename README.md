@@ -121,7 +121,7 @@ host{["fqdn"<br/>"simple"<br/>"address"]} | Outputs either the FQDN hostname, th
 **XML**
 
 ```xml    
-<Configuration packages="biz.paluch.logging.gelf.log4j2">
+<Configuration>
     <Appenders>
         <Gelf name="gelf" host="udp:localhost" port="12201" version="1.1" extractStackTrace="true"
               filterStackTrace="true" mdcProfiling="true" includeFullMdc="true" maximumMessageSize="8192"
@@ -190,7 +190,6 @@ logback.xml Example:
 
 <configuration>
     <contextName>test</contextName>
-    <jmxConfigurator/>
 
     <appender name="gelf" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <host>udp:localhost</host>
@@ -203,15 +202,40 @@ logback.xml Example:
         <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
         <maximumMessageSize>8192</maximumMessageSize>
 
-        <!-- This are static fields -->
-        <additionalFields>fieldName1=fieldValue1,fieldName2=fieldValue2</additionalFields>
+        <additionalLogFields>
+            <!-- These are static fields -->
+            <staticLogField>
+                <name>fieldName1</name>
+                <literal>fieldValue1</literal>
+            </staticLogField>
+            <staticLogField>
+                <name>fieldName2</name>
+                <literal>fieldValue2</literal>
+            </staticLogField>
+            <!-- These are fields using MDC -->
+            <mdcLogField>
+                <mdc>mdcField1</mdc>
+            </mdcLogField>
+            <mdcLogField>
+                <mdc>mdcField2</mdc>
+            </mdcLogField>
+            <!-- These are fields using a pattern -->
+            <patternLogField>
+                <name>levelName</name>
+                <pattern>%level</pattern>
+            </patternLogField>
+            <patternLogField>
+                <name>customMessageWithHost</name>
+                <pattern>%host{'simple'}: %m</pattern>
+                <hostNameAware>true</hostNameAware>
+            </patternLogField>
+        </additionalLogFields>
+        
         <!-- Optional: Specify field types -->
         <additionalFieldTypes>fieldName1=String,fieldName2=Double,fieldName3=Long</additionalFieldTypes>
-
-        <!-- This are fields using MDC -->
-        <mdcFields>mdcField1,mdcField2</mdcFields>
         <dynamicMdcFields>mdc.*,(mdc|MDC)fields</dynamicMdcFields>
         <dynamicMdcFieldTypes>my_field.*=String,business\..*\.field=double</dynamicMdcFieldTypes>
+        
         <includeFullMdc>true</includeFullMdc>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>

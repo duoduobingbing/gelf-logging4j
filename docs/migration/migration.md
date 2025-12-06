@@ -9,3 +9,31 @@
   - For `StackTraceFilter.getFilteredStackTrace(throwable, true)` migrate to `StackTraceFilter.getFilteredStackTrace(throwable)`
   - For `StackTraceFilter.getFilteredStackTrace(throwable, false)` migrate to `StackTraceFilter.getStackTrace(throwable)`
 - `GelfMessageAssembler.PROPERTY_USE_POOLING` has been removed. Please use `PoolingGelfMessageBuilder.PROPERTY_USE_POOLING`.
+- Logback XML configuration has changed. If you are using `additionalFields` or `mdcFields`, you have to migrate to the new syntax:
+  So, this:<br>
+  ```xml
+  <additionalFields>fieldName1=fieldValue1,fieldName2=fieldValue2</additionalFields>
+  <mdcFields>mdcField1,mdcField2</mdcFields>
+  ```
+  becomes that:
+  ```xml
+  <additionalLogFields>
+  
+    <staticLogField>
+        <name>fieldName1</name>
+        <literal>fieldValue1</literal>
+    </staticLogField>
+    <staticLogField>
+        <name>fieldName2</name>
+        <literal>fieldValue2</literal>
+    </staticLogField>
+  
+    <mdcLogField>
+        <mdc>mdcField1</mdc>
+    </mdcLogField>
+    <mdcLogField>
+        <mdc>mdcField2</mdc>
+    </mdcLogField>
+  
+  </additionalLogFields>
+  ```

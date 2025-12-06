@@ -36,6 +36,12 @@ public class ConfigurationSupport {
 
     }
 
+    /**
+     * Set an additional (static) field.
+     *
+     * @param fieldDefinition                 field=value
+     * @param gelfMessageAssembler the Gelf message assembler to apply the configuration
+     */
     public static void setAdditionalField(String fieldDefinition, GelfMessageAssembler gelfMessageAssembler) {
         if (fieldDefinition == null) {
             return;

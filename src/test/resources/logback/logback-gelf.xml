@@ -3,7 +3,6 @@
 
 <configuration debug="true">
     <contextName>test</contextName>
-    <jmxConfigurator/>
 
     <appender name="GELF" class="io.github.duoduobingbing.gelflogging4j.gelf.logback.GelfLogbackAppender">
         <graylogHost>test:localhost</graylogHost>
@@ -15,8 +14,22 @@
         <mdcProfiling>true</mdcProfiling>
         <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
         <maximumMessageSize>8192</maximumMessageSize>
-        <additionalFields>fieldName1=fieldValue1,fieldName2=fieldValue2</additionalFields>
-        <mdcFields>mdcField1,mdcField2</mdcFields>
+        <additionalLogFields>
+            <staticLogField>
+                <name>fieldName1</name>
+                <literal>fieldValue1</literal>
+            </staticLogField>
+            <staticLogField>
+                <name>fieldName2</name>
+                <literal>fieldValue2</literal>
+            </staticLogField>
+            <mdcLogField>
+                <mdc>mdcField1</mdc>
+            </mdcLogField>
+            <mdcLogField>
+                <mdc>mdcField2</mdc>
+            </mdcLogField>
+        </additionalLogFields>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>

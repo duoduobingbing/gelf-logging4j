@@ -29,7 +29,7 @@ This are the fields used in GELF messages:
 
 log4j2 currently only provides a full configuration for every individual field. Other implementations can specify only
 additional static/MDC fields since they follow in general a formatter/pattern concept. GELF messages contain a set of fields.
-Users of log4j/JUL/logback can take control over default fields providing the default-logstash-fields.properties` configuration.
+Users of log4j/JUL/logback can take control over default fields providing the `default-gelf-fields.properties` configuration.
 
 ## default-gelf-fields.properties configuration
 
@@ -40,7 +40,9 @@ Typos/wrong field names are discarded quietly. Fields, that are not listed in yo
 ## Format
 The format follows the Java Properties format:
 
-    targetFieldName=sourceFieldName
+```
+targetFieldName=sourceFieldName
+```
 
 ## Field names
 Available field names are (case insensitive, see also `io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField` ):

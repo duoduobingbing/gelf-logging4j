@@ -1,5 +1,8 @@
-package io.github.duoduobingbing.gelflogging4j.gelf.logback;
+package io.github.duoduobingbing.gelflogging4j.gelf.logback.config;
 
+/**
+ * @see <a href="https://logback.qos.ch/manual/layouts.html#conversionWord">Logback Patterns</a>
+ */
 public class PatternGelfLogField {
 
     String pattern;
