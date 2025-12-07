@@ -27,7 +27,7 @@ Maven:
 <dependency>
     <groupId>io.github.duoduobingbing</groupId>
     <artifactId>gelf-logging4j</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
     
