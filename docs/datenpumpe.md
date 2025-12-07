@@ -4,7 +4,7 @@ Central logging, log aggregation and the use of logstash facilitate event sourci
 more value you can gain of those events. Business related events and technical events might be produced now by your software and carried
 out as log events. Log events are limited at a certain point. Sure, MDC is a good way to enrich log events with details of your runtime.
 When it comes down to add real business related data (monetary amounts, durations, aggregations) you don't want to use MDC
-since MDC is thread-bound and you have to clean it up afterwards. Datenpumpe is here to provide an appropriate API for
+since MDC is thread-bound, and you have to clean it up afterwards. Datenpumpe is here to provide an appropriate API for
 sending arbitrary data using GELF.
 
 Datenpumpe is a german term, which means pump for data. And this is the exact purpose of it.

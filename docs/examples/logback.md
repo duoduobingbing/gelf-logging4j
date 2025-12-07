@@ -98,9 +98,12 @@ Set the desired pattern and the field will be sent using the specified pattern v
 
 Additionally, you can add the host-Field, if `hostNameAware` is set to `true`, which can supply you either the FQDN hostname, the simple hostname or the local address.
 
-| Option                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| host{["fqdn"<br/>"simple"<br/>"address"]} | Outputs either the FQDN hostname, the simple hostname or the local address. You can follow the throwable conversion word with an option in the form %host{option}. <br/> %host{fqdn} default setting, outputs the FQDN hostname, e.g. www.you.host.name.com. <br/>%host{simple} outputs simple hostname, e.g. www. <br/>%host{address} outputs the local IP address of the found hostname, e.g. 1.2.3.4 or affe:affe:affe::1. |
+| Option                                          | Description                                                                                                                                                                            |
+|-------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `%host{['fqdn' \| 'simple' \| 'address']}`       | Outputs either the FQDN hostname, the simple hostname or the local address. You can follow the throwable conversion word with an option in the form <code>%host{<i>option</i>}</code>. |
+| `%host{'fqdn'}`                                   | `%host{'fqdn'}` default setting, outputs the FQDN hostname, e.g. <i>www.you.host.name.com</i>.                                                                                          |
+| `%host{'simple'}` | outputs simple hostname, e.g. <i>name.com</i>                                                                                                                                          |
+| `%host{'address'}`                                              | `%host{'address'}` outputs the local IP address of the found hostname, e.g. <tt>1.2.3.4</tt> or <tt>affe:affe:affe::1</tt>.                                                              |
 
 ```xml
 <patternLogField>
@@ -113,7 +116,7 @@ Additionally, you can add the host-Field, if `hostNameAware` is set to `true`, w
 Logback Configuration
 --------------
 
-<tt>logback.xml</tt> Example:
+<tt>logback.xml</tt> example:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>

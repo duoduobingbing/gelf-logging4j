@@ -1,7 +1,7 @@
-# HTTP transport for logstash-gelf 
+# HTTP transport for Gelf-Logging4J
 
 
-logstash-gelf provides a HTTP/HTTPS transport to send log events to HTTP endpoints. The HTTP sender uses `POST` to
+This library provides an HTTP/HTTPS transport to send log events to HTTP endpoints. The HTTP sender uses `POST` to
 send uncompressed JSON data. It sets the `Content-type` header to `application/json` and expects response status `202 Accepted`.
 
     http://host[:port]/[path] (POST)

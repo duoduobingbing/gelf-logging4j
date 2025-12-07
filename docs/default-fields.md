@@ -1,6 +1,6 @@
 # Default Fields
 
-This are the fields used in GELF messages:
+These are the fields used in GELF messages:
 
 **Default Fields**
 
@@ -45,7 +45,7 @@ targetFieldName=sourceFieldName
 ```
 
 ## Field names
-Available field names are (case insensitive, see also `io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField` ):
+Available field names are (case-insensitive, see also `io.github.duoduobingbing.gelflogging4j.gelf.LogMessageField.NamedLogField` ):
 
 * Time
 * Severity
