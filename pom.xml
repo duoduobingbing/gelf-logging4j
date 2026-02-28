@@ -93,7 +93,7 @@
         <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
         <kafka-clients.version>4.1.1</kafka-clients.version>
         <bouncycastle.version>1.83</bouncycastle.version>
-        <testcontainers.version>2.0.2</testcontainers.version>
+        <testcontainers.version>2.0.3</testcontainers.version>
         <lmax.disruptor.version>4.0.0</lmax.disruptor.version>
 
         <argLine/>
