@@ -9,13 +9,16 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1000
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1000
   - package-ecosystem: "docker"
     directory: "src/test/resources/docker/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1000
       
 
