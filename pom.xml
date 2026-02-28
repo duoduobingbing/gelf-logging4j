@@ -88,7 +88,7 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 <!--        <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>-->
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
         <maven-resources-plugin.version>3.4.0</maven-resources-plugin.version>
         <kafka-clients.version>4.1.1</kafka-clients.version>
