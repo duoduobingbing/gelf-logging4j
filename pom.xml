@@ -65,7 +65,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <log4j2.version>2.25.2</log4j2.version>
         <junit.version>6.0.1</junit.version>
-        <assertj.version>3.27.6</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <mockito.version>5.20.0</mockito.version>
         <jackson.version>3.0.3</jackson.version>
         <jedis.version>7.1.0</jedis.version>
