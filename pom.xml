@@ -75,7 +75,7 @@
         <logback-classic.version>1.5.21</logback-classic.version>
         <org.jboss.logmanager.version>3.1.2.Final</org.jboss.logmanager.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
