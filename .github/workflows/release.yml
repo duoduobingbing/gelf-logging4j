@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v6
       # another option to having this handled by setup java would be to use https://github.com/crazy-max/ghaction-import-gpg beforehand
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           trust_level: 5
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY_RAW }}
