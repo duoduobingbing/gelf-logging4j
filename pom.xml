@@ -73,7 +73,6 @@
         <commons-pool2.version>2.13.1</commons-pool2.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
         <logback-classic.version>1.5.32</logback-classic.version>
-        <org.jboss.logmanager.version>3.2.2.Final</org.jboss.logmanager.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
@@ -287,14 +286,6 @@
             <artifactId>commons-pool2</artifactId>
             <version>${commons-pool2.version}</version>
             <optional>true</optional>
-        </dependency>
-
-        <!--JBoss Logging -->
-        <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>jboss-logmanager</artifactId>
-            <version>${org.jboss.logmanager.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

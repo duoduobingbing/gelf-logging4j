@@ -5,6 +5,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,10 +21,19 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
  */
 class GelfLogHandlerMessageFormatTests {
 
-    @BeforeEach
-    public void beforeEach() {
+    static void reset(){
         GelfTestSender.getMessages().clear();
         LogManager.getLogManager().reset();
+    }
+
+    @AfterAll
+    public static void cleanUp() {
+        reset();
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+       reset();
     }
 
     @ParameterizedTest
@@ -44,7 +54,7 @@ class GelfLogHandlerMessageFormatTests {
         logger.log(Level.INFO, logMessage, new String[] { "aaa" });
         AssertJAssertions.assertThat(GelfTestSender.getMessages()).hasSize(1);
 
-        GelfMessage gelfMessage = GelfTestSender.getMessages().get(0);
+        GelfMessage gelfMessage = GelfTestSender.getMessages().getFirst();
 
         AssertJAssertions.assertThat(gelfMessage.getFullMessage()).isEqualTo(expectedMessage);
         AssertJAssertions.assertThat(gelfMessage.getShortMessage()).isEqualTo(expectedMessage);

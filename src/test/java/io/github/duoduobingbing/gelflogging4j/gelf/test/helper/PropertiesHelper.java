@@ -1,6 +1,5 @@
 package io.github.duoduobingbing.gelflogging4j.gelf.test.helper;
 
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.ByteArrayInputStream;
@@ -56,7 +55,7 @@ public class PropertiesHelper {
         //Of course this leads to trouble if the same port number appears in a different context in the same file and is not meant to be replaced.
         try (InputStream propertiesStream = PropertiesHelper.class.getResourceAsStream(resourcePath)) {
             String s = new String(Objects.requireNonNull(propertiesStream).readAllBytes(), StandardCharsets.UTF_8);
-            LoggerFactory.getLogger(PropertiesHelper.class).info("Replacing port {} with {} in config", portInProperties, resolvedPort);
+            System.out.printf("Replacing port %s with %s in config%n", portInProperties, resolvedPort);
             String replaceProperties = s.replaceAll(String.valueOf(portInProperties), String.valueOf(resolvedPort)); //naively replace the number everywhere in the file
             resolvedPropertiesStream = new ByteArrayInputStream(replaceProperties.getBytes(StandardCharsets.UTF_8));
         }

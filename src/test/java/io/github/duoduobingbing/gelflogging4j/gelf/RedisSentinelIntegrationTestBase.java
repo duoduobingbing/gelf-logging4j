@@ -3,8 +3,6 @@ package io.github.duoduobingbing.gelflogging4j.gelf;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.DockerFileUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
@@ -22,8 +20,6 @@ import java.util.List;
 public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegrationTestBase {
 
     protected static GenericContainer<?> redisLocalSentinelTestcontainer;
-
-    private static final Logger logger = LoggerFactory.getLogger(RedisSentinelIntegrationTestBase.class);
 
     protected static final int redisLocalSentinelPort = 26379;
     private static final String redisLocalSentinelPortAsString = String.valueOf(redisLocalSentinelPort);
@@ -66,7 +62,7 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
         }
 
         String redisDockerImage = DockerFileUtil.parseDockerImageFromClassPathFile("docker/Redis.Dockerfile");
-        logger.info("Using redis docker image: {}", redisDockerImage);
+        System.out.printf("Using redis docker image: %s%n", redisDockerImage);
 
         redisLocalSentinelTestcontainer = new GenericContainer<>(redisDockerImage)
                 .dependsOn(RedisNonStartingIntegrationTestBase.redisLocalMasterTestcontainer)
@@ -76,7 +72,7 @@ public class RedisSentinelIntegrationTestBase extends RedisNonStartingIntegratio
 //                .withCommand("sh", "-c", "chown redis:redis /etc/sentinel.conf && redis-sentinel /etc/sentinel.conf") //can be used instead of SKIP_DROP_PRIVS=1
                 .withEnv("SKIP_DROP_PRIVS", "1")
                 .withStartupTimeout(Duration.ofSeconds(30))
-                .withLogConsumer((outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding())))
+                .withLogConsumer((outputFrame -> System.out.println(outputFrame.getUtf8StringWithoutLineEnding())))
                 .withCopyFileToContainer(MountableFile.forHostPath(tempFile), "/etc/sentinel.conf");
 
 

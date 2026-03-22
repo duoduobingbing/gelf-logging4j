@@ -24,7 +24,6 @@ import java.util.logging.Logger;
  */
 public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIntegrationTestBase {
 
-
     @BeforeEach
     void before() {
         Assumptions.assumeTrue(Sockets.isOpen("localhost", RedisSentinelIntegrationTestBase.redisMasterResolvedPort));
@@ -36,15 +35,22 @@ public class GelfLogHandlerRedisSentinelIntegrationTests extends RedisSentinelIn
 
     @Test
     void testSentinel() throws Exception {
-        InputStream propertiesStream = PropertiesHelper.replacePortInResource(
+        LogManager logManager = LogManager.getLogManager();
+
+        if (!(logManager.getClass().equals(LogManager.class))) { //sanity check to avoid flaky tests
+            throw new IllegalStateException("LogManager should be the vanilla %s but was %s".formatted(LogManager.class, logManager.getClass()));
+        }
+
+        try (InputStream propertiesStream = PropertiesHelper.replacePortInResource(
                 "/jul/test-redis-sentinel-logging.properties",
                 redisLocalSentinelTestcontainer,
                 redisLocalSentinelPort,
                 26379
-        );
+        )) {
 
-        LogManager.getLogManager()
-                .readConfiguration(propertiesStream);
+            logManager
+                    .readConfiguration(propertiesStream);
+        }
 
         Logger logger = Logger.getLogger(getClass().getName());
         String expectedMessage = "message1";
