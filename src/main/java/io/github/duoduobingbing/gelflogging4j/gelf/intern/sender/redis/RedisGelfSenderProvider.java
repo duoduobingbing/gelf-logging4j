@@ -1,12 +1,10 @@
-package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
+package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis;
 
 import java.io.IOException;
 import java.net.URI;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Protocol;
-import redis.clients.jedis.util.Pool;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderConfiguration;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSenderProvider;
@@ -53,7 +51,8 @@ public class RedisGelfSenderProvider implements GelfSenderProvider {
     }
 
     GelfREDISSender createSenderInternal(URI hostUri, int port, ErrorReporter errorReporter) {
-        Pool<Jedis> pool = RedisPoolHolder.getInstance().getJedisPool(hostUri, port);
-        return new GelfREDISSender(pool, hostUri.getFragment(), errorReporter);
+        RedisClientWrapper redisClientWrapper = RedisClientHolder.getInstance().getRedisClient(hostUri, port);
+
+        return new GelfREDISSender(redisClientWrapper, hostUri.getFragment(), errorReporter);
     }
 }

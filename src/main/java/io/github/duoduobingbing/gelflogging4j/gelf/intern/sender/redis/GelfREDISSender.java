@@ -1,12 +1,10 @@
-package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
+package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.util.Pool;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
@@ -14,17 +12,18 @@ import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
 /**
  * @author https://github.com/strima/logstash-gelf.git
  * @author Mark Paluch
+ * @author duoduobingbing
  * @since 1.5
  */
 public class GelfREDISSender implements GelfSender {
 
-    private final Pool<Jedis> jedisPool;
+    private final RedisClientWrapper redisClientWrapper;
     private final ErrorReporter errorReporter;
     private final String redisKey;
     final Set<Thread> callers = Collections.newSetFromMap(new WeakHashMap<Thread, Boolean>());
 
-    public GelfREDISSender(Pool<Jedis> jedisPool, String redisKey, ErrorReporter errorReporter) {
-        this.jedisPool = jedisPool;
+    public GelfREDISSender(RedisClientWrapper redisClientWrapper, String redisKey, ErrorReporter errorReporter) {
+        this.redisClientWrapper = redisClientWrapper;
         this.errorReporter = errorReporter;
         this.redisKey = redisKey;
     }
@@ -44,8 +43,13 @@ public class GelfREDISSender implements GelfSender {
     }
 
     protected boolean sendMessage0(GelfMessage message) {
-        try (Jedis jedisClient = jedisPool.getResource()) {
-            jedisClient.lpush(redisKey, message.toJson(""));
+
+        try {
+
+            redisClientWrapper
+                    .getRedisClient()
+                    .lpush(redisKey, message.toJson(""));
+
             return true;
         } catch (Exception e) {
             errorReporter.reportError(e.getMessage(), new IOException("Cannot send REDIS data with key URI " + redisKey, e));
@@ -55,6 +59,6 @@ public class GelfREDISSender implements GelfSender {
 
     public void close() {
         callers.clear();
-        jedisPool.destroy();
+        redisClientWrapper.close();
     }
 }

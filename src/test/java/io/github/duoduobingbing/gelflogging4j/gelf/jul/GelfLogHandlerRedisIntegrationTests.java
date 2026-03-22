@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.RedisIntegrationTestBase;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.ErrorReporter;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.GelfREDISSender;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.TestRedisGelfSenderProvider;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis.GelfREDISSender;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis.TestRedisGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.PropertiesHelper;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.AssertJAssertions;
 import io.github.duoduobingbing.gelflogging4j.gelf.test.helper.TestAssertions.JUnitAssertions;
@@ -28,7 +28,7 @@ import io.github.duoduobingbing.gelflogging4j.gelf.JsonUtil;
 import io.github.duoduobingbing.gelflogging4j.gelf.Sockets;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfMessage;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.GelfSender;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.RedisGelfSenderProvider;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis.RedisGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.standalone.DefaultGelfSenderConfiguration;
 import org.slf4j.MDC;
 

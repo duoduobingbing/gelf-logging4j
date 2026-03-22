@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.DefaultGelfSenderProvider;
 import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.KafkaGelfSenderProvider;
-import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.RedisGelfSenderProvider;
+import io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis.RedisGelfSenderProvider;
 
 /**
  * Factory to create a {@link GelfSender} based on the host and protocol details. This factory uses Java's {@link ServiceLoader}

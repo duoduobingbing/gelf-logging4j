@@ -1,4 +1,4 @@
-package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender;
+package io.github.duoduobingbing.gelflogging4j.gelf.intern.sender.redis;
 
 import java.io.IOException;
 import java.util.Set;
