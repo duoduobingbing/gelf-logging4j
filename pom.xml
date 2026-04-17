@@ -91,7 +91,7 @@
         <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
-        <bouncycastle.version>1.83</bouncycastle.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
         <testcontainers.version>2.0.4</testcontainers.version>
         <lmax.disruptor.version>4.0.0</lmax.disruptor.version>
 
