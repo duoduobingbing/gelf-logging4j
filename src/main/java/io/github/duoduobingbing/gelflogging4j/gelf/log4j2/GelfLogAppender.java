@@ -275,10 +275,10 @@ public class GelfLogAppender extends AbstractAppender {
 
             PatternLayout patternLayout = PatternLayout
                     .newBuilder()
-                    .withPattern(originHost)
-                    .withConfiguration(config)
-                    .withNoConsoleNoAnsi(false)
-                    .withAlwaysWriteExceptions(false)
+                    .setPattern(originHost)
+                    .setConfiguration(config)
+                    .setNoConsoleNoAnsi(false)
+                    .setAlwaysWriteExceptions(false)
                     .build();
 
             mdcGelfMessageAssembler.setOriginHost(patternLayout.toSerializable(new Log4jLogEvent()));

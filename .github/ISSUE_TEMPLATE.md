@@ -9,7 +9,7 @@ Make sure that:
 
 - [ ] You have read the [contribution guidelines](https://github.com/duoduobingbing/gelf-logging4j/blob/master/.github/CONTRIBUTING.md).
 - [ ] You specify the logging-gelf4j version and environment so it's obvious which version is affected
-- [ ] You provide a reproducible test case (either descriptive of as JUnit test) if it's a bug or the expected behavior differs from the actual behavior.
+- [ ] You provide a reproducible test case (either via a detailed description or better as a JUnit test) if it's a bug or how the expected behavior differs from the actual behavior.
 
  <!--
 Great! Live long and prosper.

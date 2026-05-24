@@ -76,10 +76,10 @@ public class GelfLogField {
 
             PatternLayout patternLayout = PatternLayout
                     .newBuilder()
-                    .withPattern(pattern)
-                    .withConfiguration(config)
-                    .withNoConsoleNoAnsi(false)
-                    .withAlwaysWriteExceptions(false)
+                    .setPattern(pattern)
+                    .setConfiguration(config)
+                    .setNoConsoleNoAnsi(false)
+                    .setAlwaysWriteExceptions(false)
                     .build();
 
             return new GelfLogField(name, null, null, patternLayout);

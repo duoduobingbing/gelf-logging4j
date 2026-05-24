@@ -262,4 +262,4 @@ License
 Contributing
 ------------
 Github is for social coding: if you want to write code, I encourage contributions through pull requests from forks of this repository. 
-Create Github tickets for bugs and new features and comment on the ones that you are interested in and take a look into [CONTRIBUTING.md](https://github.com/duoduobingbing/gelf-logging4j/blob/main/.github/CONTRIBUTING.md)
+Create Github tickets for bugs and new features and comment on the ones that you are interested in and take a look into [CONTRIBUTING.md](https://github.com/duoduobingbing/gelf-logging4j/blob/master/.github/CONTRIBUTING.md) and [BUILDING.md](https://github.com/duoduobingbing/gelf-logging4j/blob/master/.github/BUILDING.md).
