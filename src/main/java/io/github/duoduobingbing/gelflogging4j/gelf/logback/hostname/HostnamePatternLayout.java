@@ -45,16 +45,17 @@ public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
     }
 
     /**
+     * This will be completely removed in a later version.
      * @deprecated Use {@link #getDefaultConverterSupplierMap()} instead.
-     * @see PatternLayout#getDefaultConverterMap()
      * @return {@link Map}
      */
-    @Deprecated //Legacy way, deprecated, remove once removed in PatternLayout
-    @Override
+    @Deprecated(forRemoval = true)
     public Map<String, String> getDefaultConverterMap() {
         return Map.of();
         //return ALL_CONVERTERS_MAP;
     }
+
+
 
     /**
      * @see PatternLayout#doLayout(ILoggingEvent)
