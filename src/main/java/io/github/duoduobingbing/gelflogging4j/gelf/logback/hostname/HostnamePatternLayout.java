@@ -13,14 +13,11 @@ import java.util.function.Supplier;
 
 public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
 
-//    private static final Map<String, String> ALL_CONVERTERS_MAP = new HashMap<String, String>(); //TODO: Legacy way, deprecated, remove once removed in PatternLayout
 
     @SuppressWarnings("rawtypes")
     public static final Map<String, Supplier<DynamicConverter>> ALL_CONVERTER_SUPPLIER_MAP = new HashMap<>();
 
     static{
-//        ALL_CONVERTERS_MAP.putAll(PatternLayout.DEFAULT_CONVERTER_MAP); //Legacy way, deprecated, remove once removed in PatternLayout
-//        ALL_CONVERTERS_MAP.put("host", HostnameConverter.class.getName()); //Legacy way, deprecated, remove once removed in PatternLayout
 
         ALL_CONVERTER_SUPPLIER_MAP.putAll(PatternLayout.DEFAULT_CONVERTER_SUPPLIER_MAP);
         ALL_CONVERTER_SUPPLIER_MAP.put("host", HostnameConverter::new);
@@ -47,6 +44,7 @@ public class HostnamePatternLayout extends PatternLayoutBase<ILoggingEvent> {
     /**
      * This will be completely removed in a later version.
      * @deprecated Use {@link #getDefaultConverterSupplierMap()} instead.
+     * Currently kept for backwards compatibility with Logback Classic 1.5.x
      * @return {@link Map}
      */
     @Deprecated(forRemoval = true)
