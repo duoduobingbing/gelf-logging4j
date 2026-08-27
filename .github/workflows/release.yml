@@ -28,6 +28,7 @@ jobs:
           server-id: central # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: MAVEN_USERNAME  # env variable for username in deploy
           server-password: MAVEN_PASSWORD # env variable for token in deploy
+          show-download-progress: true
       - name: check gpg
         run: |
           gpg -K
