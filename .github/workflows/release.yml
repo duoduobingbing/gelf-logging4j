@@ -19,7 +19,7 @@ jobs:
           # get it via gpg --list-secret-keys --keyid-format long --with-keygrip --with-subkey-fingerprints
           fingerprint: ${{ secrets.GPG_FINGERPRINT }}
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           cache: 'maven'
           cache-dependency-path: pom.xml
